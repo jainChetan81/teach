@@ -1,0 +1,196 @@
+/* teac — shared stylesheet. Every page links this so the workspace
+   reads as one course, not a pile of one-offs. */
+
+:root {
+  --paper: #faf7f2;
+  --paper-2: #f3efe7;
+  --ink: #23201a;
+  --ink-soft: #5c564a;
+  --ink-faint: #8a8273;
+  --accent: #9a3b26;       /* deep vermilion */
+  --accent-soft: #f0e0d8;
+  --ok: #3f6b4f;
+  --line: #ddd5c6;
+  --code-bg: #efe9dd;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 17px; }
+
+body {
+  margin: 0 auto;
+  max-width: 46rem;
+  padding: 3rem 1.4rem 6rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  line-height: 1.65;
+}
+
+/* ---------- type ---------- */
+
+h1, h2, h3 { line-height: 1.25; font-weight: 650; }
+h1 { font-size: 1.9rem; margin: 0 0 .4rem; letter-spacing: -0.01em; }
+h2 {
+  font-size: 1.25rem;
+  margin: 2.6rem 0 .7rem;
+  padding-bottom: .3rem;
+  border-bottom: 1px solid var(--line);
+}
+h3 { font-size: 1.02rem; margin: 1.6rem 0 .4rem; }
+p { margin: .6rem 0; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+code, pre {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .88em;
+}
+code { background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+pre {
+  background: var(--code-bg);
+  padding: .9rem 1.1rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+pre code { background: none; padding: 0; }
+
+/* ---------- chrome ---------- */
+
+.crumbs {
+  font-size: .82rem;
+  color: var(--ink-faint);
+  margin-bottom: 2.2rem;
+}
+.crumbs a { color: var(--ink-soft); }
+
+.subtitle {
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  margin-top: 0;
+}
+
+.badge {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: .18em .6em;
+  border-radius: 999px;
+  vertical-align: middle;
+  margin-left: .5em;
+}
+.badge.active   { background: var(--accent); color: #fff; }
+.badge.queued   { background: var(--paper-2); color: var(--ink-soft); border: 1px solid var(--line); }
+.badge.backlog  { background: transparent; color: var(--ink-faint); border: 1px dashed var(--line); }
+.badge.suggested{ background: var(--accent-soft); color: var(--accent); }
+
+/* ---------- cards & grids (dashboard) ---------- */
+
+.track-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .9rem;
+  margin: 1.2rem 0;
+}
+@media (max-width: 640px) { .track-grid { grid-template-columns: 1fr; } }
+
+.track-card {
+  display: block;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+  color: var(--ink);
+}
+.track-card:hover { text-decoration: none; border-color: var(--accent); }
+.track-card h3 { margin: 0 0 .15rem; }
+.track-card p { margin: .25rem 0 .55rem; font-size: .88rem; color: var(--ink-soft); }
+
+.meter {
+  height: 6px;
+  background: var(--paper-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.meter > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width .3s ease;
+}
+.meter-label { font-size: .75rem; color: var(--ink-faint); margin-top: .3rem; }
+
+/* ---------- action items ---------- */
+
+ul.actions { list-style: none; padding: 0; margin: .8rem 0; }
+ul.actions li {
+  display: flex;
+  gap: .65rem;
+  align-items: flex-start;
+  padding: .45rem .6rem;
+  border-radius: 8px;
+}
+ul.actions li:hover { background: var(--paper-2); }
+ul.actions input[type="checkbox"] {
+  margin-top: .32em;
+  accent-color: var(--accent);
+  width: 1.05em;
+  height: 1.05em;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+ul.actions label { cursor: pointer; flex: 1; }
+ul.actions li.done label { color: var(--ink-faint); text-decoration: line-through; }
+ul.actions .tag {
+  font-size: .72rem;
+  color: var(--ink-faint);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 .4em;
+  margin-left: .5em;
+  white-space: nowrap;
+}
+
+/* ---------- callouts ---------- */
+
+.note, .verify, .why {
+  border-radius: var(--radius);
+  padding: .85rem 1.1rem;
+  margin: 1.1rem 0;
+  font-size: .94rem;
+}
+.note  { background: var(--paper-2); border-left: 3px solid var(--ink-faint); }
+.why   { background: var(--accent-soft); border-left: 3px solid var(--accent); }
+.verify{ background: #e9efe9; border-left: 3px solid var(--ok); }
+.verify h3, .why h3, .note h3 { margin-top: 0; }
+
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: .92rem; }
+th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--line); }
+th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); }
+
+hr { border: none; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+
+footer {
+  margin-top: 3.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: .8rem;
+  color: var(--ink-faint);
+}
+
+/* ---------- print ---------- */
+
+@media print {
+  body { background: #fff; max-width: none; font-size: 12pt; }
+  .track-card { border: 1px solid #999; break-inside: avoid; }
+  ul.actions li:hover { background: none; }
+  a { color: inherit; }
+}

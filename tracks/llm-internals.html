@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Internals + kharcha — teac</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../index.html">teac</a> / tracks / llm-internals</nav>
+
+<h1>LLM Internals + kharcha <span class="badge queued">queued</span></h1>
+<p class="subtitle">Understand transformers by building one — then apply it for real:
+a tiny fine-tuned model parsing bank SMS inside kharcha.</p>
+
+<div class="why">
+<h3>Why this track exists</h3>
+<p>Two goals that reinforce each other. The curiosity goal: know what an LLM actually
+<em>is</em>, by building a small one. The product goal: your kharcha plan (already written,
+in <code>plans/kharcha_ml_plan.pdf</code>) needs exactly this understanding to debug its
+own pipeline. Karpathy first, kharcha second — theory earns its keep immediately.</p>
+</div>
+
+<div class="note">
+<strong>Honest scope warning.</strong> The kharcha plan estimates 14–16 hrs/week for
+8 weeks. That is a <em>primary</em> commitment, not a side quest — treat starting it as a
+decision that pauses other tracks, per the two-active-tracks rule.
+</div>
+
+<h2>Module 1 — Build a GPT (understanding first)</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="llm-1" id="llm-1"><label for="llm-1">Karpathy, "Let's build GPT: from scratch, in code" — code along, don't just watch <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="llm-2" id="llm-2"><label for="llm-2">Karpathy, "Let's build the GPT Tokenizer" — then explain BPE from memory to the agent <span class="tag">retrieval</span></label></li>
+  <li><input type="checkbox" data-item="llm-3" id="llm-3"><label for="llm-3">nanoGPT: train the tiny Shakespeare model yourself (local or a few dollars of rented GPU) <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="llm-4" id="llm-4"><label for="llm-4">From memory, write the transformer forward pass: embeddings → attention → MLP → logits → softmax. Check against your nanoGPT code <span class="tag">retrieval</span></label></li>
+</ul>
+
+<h2>Module 2 — kharcha: the go/no-go and the build</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="llm-5" id="llm-5"><label for="llm-5">Re-read <code>plans/kharcha_ml_plan.pdf</code>; make an explicit go/no-go decision and record it in <code>learning-records/</code> <span class="tag">record</span></label></li>
+  <li><input type="checkbox" data-item="llm-6" id="llm-6"><label for="llm-6">kharcha week 1: Python-for-ML weekend + conceptual transformer pass (you'll already have this from Module 1) <span class="tag">skill</span></label></li>
+  <li><input type="checkbox" data-item="llm-7" id="llm-7"><label for="llm-7">Collect and sanitize your own bank SMS dataset (Axis/ICICI/HDFC/SBI formats per the plan) <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="llm-8" id="llm-8"><label for="llm-8">Fine-tune TinyBERT on the dataset; evaluate against the regex-first baseline (<code>transaction-sms-parser</code>) <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="llm-9" id="llm-9"><label for="llm-9">Export to ONNX and integrate via onnxruntime-react-native as the fallback parser <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="llm-10" id="llm-10"><label for="llm-10">Ship it in kharcha; write the learning record: where did ML beat regex, where didn't it <span class="tag">record</span></label></li>
+</ul>
+
+<div class="verify">
+<h3>You've finished this track when</h3>
+<p>You can explain attention with a pen and paper, you've trained a model yourself,
+and — if you went — kharcha parses SMS on-device with a model you fine-tuned.</p>
+</div>
+
+<footer>teac / llm-internals · <a href="../index.html">back to dashboard</a></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>

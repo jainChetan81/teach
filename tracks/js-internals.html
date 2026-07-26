@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JS Runtime Internals — teac</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../index.html">teac</a> / tracks / js-internals</nav>
+
+<h1>JS Runtime Internals <span class="badge backlog">backlog</span></h1>
+<p class="subtitle">Your existing esbuild → fastify → node → bun study plan, distilled into
+verified checkpoints. Source PDFs preserved in <code>plans/</code>.</p>
+
+<div class="why">
+<h3>Why this track exists</h3>
+<p>This is the plan you already wrote and didn't start. It stays — it's genuinely good
+material — but condensed here to its load-bearing projects and verification checkpoints,
+so picking it up later doesn't mean re-reading 48 pages to find where you were.</p>
+</div>
+
+<h2>Module 1 — Bundlers (from esbuild-learning-roadmap)</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="js-1" id="js-1"><label for="js-1">Week 1: module systems + resolution; build the 100–150-line module resolver <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="js-2" id="js-2"><label for="js-2">Week 2: ASTs; build the import/export extractor with @babel/parser <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="js-3" id="js-3"><label for="js-3">Week 3: read esbuild's Go source — scanner → parser → linker pipeline; note what Go concurrency does where <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="js-4" id="js-4"><label for="js-4">Week 4: tree shaking &amp; code splitting; write the explanatory blog post (the plan's real verification) <span class="tag">retrieval</span></label></li>
+</ul>
+
+<h2>Module 2 — Node.js (from comprehensive-study-plan, Part 3)</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="js-5" id="js-5"><label for="js-5">Event loop: build the phase-logger; explain every phase from memory <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="js-6" id="js-6"><label for="js-6">Streams &amp; buffers: implement a transform stream; explain backpressure <span class="tag">build</span></label></li>
+</ul>
+
+<h2>Module 3 — Fastify (Part 2) &amp; Bun (Part 4)</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="js-7" id="js-7"><label for="js-7">HTTP basics: build a tiny router from scratch before reading Fastify's <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="js-8" id="js-8"><label for="js-8">Fastify: plugin architecture &amp; encapsulation; read the source with the study plan's file list <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="js-9" id="js-9"><label for="js-9">Bun: bun-vs-node architecture + JavaScriptCore tour; note what Zig buys them <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="js-10" id="js-10"><label for="js-10">Oral exam: run the study plan's verification checkpoints against yourself, out loud, no notes <span class="tag">retrieval</span></label></li>
+</ul>
+
+<div class="verify">
+<h3>You've finished this track when</h3>
+<p>The study plan's own checkpoints pass: you can trace module resolution by hand,
+explain the event loop's phases, and say what esbuild, Fastify, Node, and Bun each do
+differently — and why.</p>
+</div>
+
+<footer>teac / js-internals · <a href="../index.html">back to dashboard</a> · sources: <code>plans/comprehensive-study-plan.md.pdf</code>, <code>plans/esbuild-learning-roadmap.md.pdf</code></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>

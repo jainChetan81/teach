@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>teac — Chetan's learning workspace</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs">teac / index</nav>
+
+<h1>teac</h1>
+<p class="subtitle">A stateful learning workspace. Synced via iCloud, versioned via git,
+taught in small lessons — built so that <em>finishing</em> is the default, not the exception.</p>
+
+<div class="why">
+<h3>The mission</h3>
+<p>Stop collecting study plans and start completing them. Learn the tools and systems
+that compound into daily workflow leverage — coding agents, Rust/Tauri, networking,
+LLM internals — one small win at a time, from any device.</p>
+<p><strong>The rule that makes it work:</strong> at most <strong>two active tracks</strong>
+at any moment. Everything else waits in the backlog without guilt. A track only becomes
+active when another one ships its final verification.</p>
+</div>
+
+<h2>Tracks</h2>
+
+<div class="track-grid">
+
+  <a class="track-card" href="tracks/ai-tooling.html">
+    <h3>AI Tooling &amp; Coding Agents <span class="badge active">active</span></h3>
+    <p>How coding agents actually work (tokens, context, the agent loop) · MCP · PAL MCP ·
+    t3code fork with your Kimi subscription.</p>
+    <div class="meter-wrap" data-meter="ai-" data-total="12">
+      <div class="meter"><span></span></div>
+      <div class="meter-label"></div>
+    </div>
+  </a>
+
+  <a class="track-card" href="tracks/rust-tauri.html">
+    <h3>Rust &amp; Tauri <span class="badge active">active</span></h3>
+    <p>Rust from zero → confidently reading and modifying the 3–4 Tauri apps you already run every day.</p>
+    <div class="meter-wrap" data-meter="rt-" data-total="10">
+      <div class="meter"><span></span></div>
+      <div class="meter-label"></div>
+    </div>
+  </a>
+
+  <a class="track-card" href="tracks/networking.html">
+    <h3>Networking: SSH · Herdr · Tailscale · VPS <span class="badge queued">queued</span></h3>
+    <p>SSH until it's muscle memory, how herdr moves your connections, how Tailscale/WireGuard
+    punch through NAT — then build a toy one yourself.</p>
+    <div class="meter-wrap" data-meter="net-" data-total="10">
+      <div class="meter"><span></span></div>
+      <div class="meter-label"></div>
+    </div>
+  </a>
+
+  <a class="track-card" href="tracks/llm-internals.html">
+    <h3>LLM Internals + kharcha <span class="badge queued">queued</span></h3>
+    <p>Build a GPT from scratch with Karpathy, then apply it: fine-tune a tiny model that
+    parses bank SMS inside kharcha (your existing 8-week plan).</p>
+    <div class="meter-wrap" data-meter="llm-" data-total="10">
+      <div class="meter"><span></span></div>
+      <div class="meter-label"></div>
+    </div>
+  </a>
+
+  <a class="track-card" href="tracks/js-internals.html">
+    <h3>JS Runtime Internals <span class="badge backlog">backlog</span></h3>
+    <p>Your existing esbuild → fastify → node → bun study plan, broken into verified checkpoints.</p>
+    <div class="meter-wrap" data-meter="js-" data-total="10">
+      <div class="meter"><span></span></div>
+      <div class="meter-label"></div>
+    </div>
+  </a>
+
+  <a class="track-card" href="tracks/ffmpeg.html">
+    <h3>ffmpeg <span class="badge backlog">backlog</span></h3>
+    <p>The smallest track: containers vs codecs, everyday commands from memory, one real automation.</p>
+    <div class="meter-wrap" data-meter="ff-" data-total="5">
+      <div class="meter"><span></span></div>
+      <div class="meter-label"></div>
+    </div>
+  </a>
+
+</div>
+
+<h2>How this workspace works</h2>
+
+<table>
+  <tr><th>Path</th><th>What lives there</th></tr>
+  <tr><td><code>tracks/*.html</code></td><td>Objectives + action items per track. Check boxes as you go — progress is saved on this device.</td></tr>
+  <tr><td><code>lessons/*.html</code></td><td>Short interactive lessons, one tight idea each. This is where teaching happens.</td></tr>
+  <tr><td><code>reference/*.html</code></td><td>Cheat sheets and glossaries — the stuff you'll actually re-open in six months.</td></tr>
+  <tr><td><code>learning-records/*.md</code></td><td>What you learned and what surprised you. Used to pick what comes next.</td></tr>
+  <tr><td><code>plans/*.pdf</code></td><td>Your three existing study plans, preserved as source material.</td></tr>
+  <tr><td><code>MISSION.md · RESOURCES.md · NOTES.md</code></td><td>Agent state — how your teacher (me) keeps continuity between sessions.</td></tr>
+</table>
+
+<div class="note">
+<strong>Motivation design, not motivation hope.</strong> Previous plans died of
+self-propagation failure, so this workspace is built around it: every action item is
+small enough to finish in one sitting, every track ends in something you'll use daily,
+and the checkboxes make progress visible from any device. When you stall, the fix is a
+smaller next step — never a bigger plan.
+</div>
+
+<footer>
+teac · created 26 July 2026 · progress stored in this browser's localStorage ·
+git-versioned · synced by iCloud Drive (Desktop folder)
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
