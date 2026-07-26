@@ -3,82 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>teac — Chetan's learning workspace</title>
+<title>teach — Chetan's learning workspace</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 
-<nav class="crumbs">teac / index</nav>
+<nav class="crumbs">teach / index</nav>
 
-<h1>teac</h1>
+<h1>teach</h1>
 <p class="subtitle">A stateful learning workspace. Synced via iCloud, versioned via git,
 taught in small lessons — built so that <em>finishing</em> is the default, not the exception.</p>
 
 <div class="why">
 <h3>The mission</h3>
-<p>Stop collecting study plans and start completing them. Learn the tools and systems
-that compound into daily workflow leverage — coding agents, Rust/Tauri, networking,
-LLM internals — one small win at a time, from any device.</p>
+<p>Own the tools I use every day — from the inside. The concrete goal tying most of these
+tracks together: <strong>carry a live coding-agent session from one device to
+another</strong> — understand how <a href="topics/networking/plan.html">herdr</a> preserves
+sessions, apply the same model to <a href="topics/ai-tooling/plan.html">t3code</a>, and move
+it over <a href="topics/networking/plan.html">SSH and Tailscale</a>. That single project is
+the <a href="topics/portable-sessions/plan.html"><strong>portable-sessions capstone</strong></a>,
+and it pulls on Rust (herdr's source), Tauri/TS (t3code), SSH, and VPN internals all at once.</p>
 <p><strong>The rule that makes it work:</strong> at most <strong>two active tracks</strong>
 at any moment. Everything else waits in the backlog without guilt. A track only becomes
 active when another one ships its final verification.</p>
 </div>
 
-<h2>Tracks</h2>
+<h2>What I want to understand</h2>
+<p>The general goals, in dependency order. Each lives in its own folder under
+<code>topics/</code> — new study topics get new folders as they arrive.</p>
 
 <div class="track-grid">
 
-  <a class="track-card" href="tracks/ai-tooling.html">
+  <a class="track-card" href="topics/portable-sessions/plan.html">
+    <h3>🏁 Portable Agent Sessions <span class="badge suggested">capstone</span></h3>
+    <p>The unifying project: move a live agent session between devices. Consumes the
+    ai-tooling, networking, and rust tracks below.</p>
+    <div class="meter-wrap" data-meter="ps-" data-total="8">
+      <div class="meter"><span></span></div>
+      <div class="meter-label"></div>
+    </div>
+  </a>
+
+  <a class="track-card" href="topics/ai-tooling/plan.html">
     <h3>AI Tooling &amp; Coding Agents <span class="badge active">active</span></h3>
-    <p>How coding agents actually work (tokens, context, the agent loop) · MCP · PAL MCP ·
-    t3code fork with your Kimi subscription.</p>
+    <p>Agent loop, tokens, context windows · MCP · PAL MCP · t3code fork with Kimi provider.</p>
     <div class="meter-wrap" data-meter="ai-" data-total="12">
       <div class="meter"><span></span></div>
       <div class="meter-label"></div>
     </div>
   </a>
 
-  <a class="track-card" href="tracks/rust-tauri.html">
-    <h3>Rust &amp; Tauri <span class="badge active">active</span></h3>
-    <p>Rust from zero → confidently reading and modifying the 3–4 Tauri apps you already run every day.</p>
-    <div class="meter-wrap" data-meter="rt-" data-total="10">
-      <div class="meter"><span></span></div>
-      <div class="meter-label"></div>
-    </div>
-  </a>
-
-  <a class="track-card" href="tracks/networking.html">
+  <a class="track-card" href="topics/networking/plan.html">
     <h3>Networking: SSH · Herdr · Tailscale · VPS <span class="badge queued">queued</span></h3>
-    <p>SSH until it's muscle memory, how herdr moves your connections, how Tailscale/WireGuard
-    punch through NAT — then build a toy one yourself.</p>
+    <p>SSH to muscle memory · herdr's session server internals · WireGuard/NAT traversal · your own VPS.</p>
     <div class="meter-wrap" data-meter="net-" data-total="10">
       <div class="meter"><span></span></div>
       <div class="meter-label"></div>
     </div>
   </a>
 
-  <a class="track-card" href="tracks/llm-internals.html">
+  <a class="track-card" href="topics/rust-tauri/plan.html">
+    <h3>Rust &amp; Tauri <span class="badge active">active</span></h3>
+    <p>Rust from zero → read herdr's source and modify your own daily Tauri apps.</p>
+    <div class="meter-wrap" data-meter="rt-" data-total="10">
+      <div class="meter"><span></span></div>
+      <div class="meter-label"></div>
+    </div>
+  </a>
+
+  <a class="track-card" href="topics/llm-internals/plan.html">
     <h3>LLM Internals + kharcha <span class="badge queued">queued</span></h3>
-    <p>Build a GPT from scratch with Karpathy, then apply it: fine-tune a tiny model that
-    parses bank SMS inside kharcha (your existing 8-week plan).</p>
+    <p>Build a GPT with Karpathy, then fine-tune a tiny SMS parser inside kharcha (existing 8-week plan).</p>
     <div class="meter-wrap" data-meter="llm-" data-total="10">
       <div class="meter"><span></span></div>
       <div class="meter-label"></div>
     </div>
   </a>
 
-  <a class="track-card" href="tracks/js-internals.html">
+  <a class="track-card" href="topics/js-internals/plan.html">
     <h3>JS Runtime Internals <span class="badge backlog">backlog</span></h3>
-    <p>Your existing esbuild → fastify → node → bun study plan, broken into verified checkpoints.</p>
+    <p>esbuild → fastify → node → bun, from your existing study plans.</p>
     <div class="meter-wrap" data-meter="js-" data-total="10">
       <div class="meter"><span></span></div>
       <div class="meter-label"></div>
     </div>
   </a>
 
-  <a class="track-card" href="tracks/ffmpeg.html">
+  <a class="track-card" href="topics/ffmpeg/plan.html">
     <h3>ffmpeg <span class="badge backlog">backlog</span></h3>
-    <p>The smallest track: containers vs codecs, everyday commands from memory, one real automation.</p>
+    <p>The smallest track: containers vs codecs, ten commands from memory, one real automation.</p>
     <div class="meter-wrap" data-meter="ff-" data-total="5">
       <div class="meter"><span></span></div>
       <div class="meter-label"></div>
@@ -91,12 +104,12 @@ active when another one ships its final verification.</p>
 
 <table>
   <tr><th>Path</th><th>What lives there</th></tr>
-  <tr><td><code>tracks/*.html</code></td><td>Objectives + action items per track. Check boxes as you go — progress is saved on this device.</td></tr>
+  <tr><td><code>topics/&lt;name&gt;/plan.html</code></td><td>One folder per study topic — objectives + action items. Check boxes as you go; progress is saved in this browser. New topics get new folders.</td></tr>
   <tr><td><code>lessons/*.html</code></td><td>Short interactive lessons, one tight idea each. This is where teaching happens.</td></tr>
   <tr><td><code>reference/*.html</code></td><td>Cheat sheets and glossaries — the stuff you'll actually re-open in six months.</td></tr>
   <tr><td><code>learning-records/*.md</code></td><td>What you learned and what surprised you. Used to pick what comes next.</td></tr>
   <tr><td><code>plans/*.pdf</code></td><td>Your three existing study plans, preserved as source material.</td></tr>
-  <tr><td><code>MISSION.md · RESOURCES.md · NOTES.md</code></td><td>Agent state — how your teacher (me) keeps continuity between sessions.</td></tr>
+  <tr><td><code>MISSION.md · RESOURCES.md · NOTES.md · CLAUDE.md</code></td><td>Agent state — how a teaching agent (Claude Code or otherwise) keeps continuity between sessions.</td></tr>
 </table>
 
 <div class="note">
@@ -108,7 +121,7 @@ smaller next step — never a bigger plan.
 </div>
 
 <footer>
-teac · created 26 July 2026 · progress stored in this browser's localStorage ·
+teach · created 26 July 2026 · progress stored in this browser's localStorage ·
 git-versioned · synced by iCloud Drive (Desktop folder)
 </footer>
 

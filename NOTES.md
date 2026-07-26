@@ -1,18 +1,28 @@
 # NOTES.md — teaching scratchpad
 
 ## User preferences (stated 2026-07-26)
-- Prefers HTML for anything he will read; Markdown is fine for agent state he rarely opens.
-- Wants progress visible and synced across devices (Desktop/iCloud + git).
-- Motivation is the historical failure point: previous plans were good but never started.
-  → Design every lesson for a single-sitting win. When he stalls, shrink the step, never grow the plan.
+- **HTML only** for anything he will read (plans, goals, lessons, reference). Markdown is for agent state only.
+- **He studies in Claude Code** (`/teach` there), not on the Kimi platform. The workspace is self-contained — see CLAUDE.md.
+- Folder must be `~/Desktop/teach` (iCloud-synced Desktop, available on all his devices).
+- Structure he asked for: general goals at the top level (index.html), one folder per study topic under `topics/`, growing over time. New topic → new `topics/<name>/` folder with a `plan.html`.
+- Motivation is the historical failure point → single-sitting wins; when he stalls, shrink the step, never grow the plan.
 - Enforce the two-active-tracks rule gently but firmly. Current active: ai-tooling, rust-tauri.
 
-## Open questions for the user
-- "herdr" — confirm which tool this is (need official docs link for RESOURCES.md).
-- "t3code" — confirm the repo (there are several similarly named projects).
-- kharcha go/no-go is deferred to a learning record per llm-5.
+## Confirmed identities (resolved 2026-07-26)
+- **herdr** = ogulcancelik/herdr — Rust agent multiplexer; background session server holds PTYs, thin clients attach via Unix socket or SSH (`herdr --remote`). Docs: herdr.dev/docs (concepts, session state, remote).
+- **t3code** = pingdotgg/t3code — minimal web GUI for coding agents; Effect/TS monorepo, provider-adapter pattern, SQLite session persistence. No Kimi provider yet → that's his spike (ai-11).
+
+## The through-line
+Capstone: portable agent sessions (topics/portable-sessions). herdr's model (server-owned
+PTYs, disposable clients) vs t3code's model (SQLite event store, reconnecting UI). The
+user's goal: move a live session between devices over SSH/Tailscale and port herdr's
+"formula" to t3code. All four named concepts (rust, tauri/t3code, herdr, ssh/tailscale)
+exist to serve this.
+
+## Open items
+- kharcha go/no-go deferred to a learning record per llm-5.
+- Progress checkboxes use browser localStorage — per-device. If cross-device progress matters, commit progress snapshots to git instead (discuss before building).
 
 ## Observations for future sessions
-- User's three prior PDFs are unusually well-structured (phases + verification checkpoints).
-  His failure mode is starting, not planning. Keep plans short; keep momentum artifacts visible.
-- He types fast and informally; don't over-index on typos ("herdr", "t3code") — confirm identity of tools before building lessons around them.
+- His three prior PDFs are well-structured (phases + verification checkpoints). Failure mode is starting, not planning. Keep momentum artifacts visible.
+- He types fast and informally; don't over-index on typos — confirm tool identities before building lessons around them (done for herdr/t3code).

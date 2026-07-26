@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Networking: SSH · Herdr · Tailscale · VPS — teach</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../../index.html">teach</a> / topics / networking</nav>
+
+<h1>Networking: SSH · Herdr · Tailscale · VPS <span class="badge queued">queued</span></h1>
+<p class="subtitle">From "I type ssh and it works" to understanding every layer — the
+plumbing that makes the <a href="../portable-sessions/plan.html">portable-sessions capstone</a> possible.</p>
+
+<div class="why">
+<h3>Why this track exists</h3>
+<p>herdr's persistence works because of two things: a server that never dies, and SSH as
+the transport that reaches it from anywhere. Tailscale removes the "from anywhere"
+friction. This track makes each layer explicit — SSH handshakes, herdr's client-server
+split, WireGuard NAT traversal — so that moving a session between devices stops being
+magic and starts being engineering.</p>
+</div>
+
+<h2>Objectives</h2>
+<ul>
+  <li>Use SSH fluently: keys, config, agent, port forwarding — no copy-pasting from old notes.</li>
+  <li>Explain herdr's client-server architecture and how sessions survive detach, sleep, and SSH drops.</li>
+  <li>Explain WireGuard/Tailscale: key pairs, NAT traversal, DERP relays — then build a toy tunnel.</li>
+  <li>Run and harden a VPS you actually use for something.</li>
+</ul>
+
+<h2>Module 1 — SSH until it's boring</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="net-1" id="net-1"><label for="net-1">A week of deliberate SSH: keys, <code>~/.ssh/config</code>, ssh-agent, <code>-L</code>/<code>-R</code> port forwarding — with your own cheat sheet <span class="tag">skill</span></label></li>
+  <li><input type="checkbox" data-item="net-2" id="net-2"><label for="net-2">From memory: what happens in an SSH handshake (TCP → version exchange → key exchange → host-key verify → auth). Verify against RFC 4253 <span class="tag">retrieval</span></label></li>
+  <li><input type="checkbox" data-item="net-3" id="net-3"><label for="net-3">Set up named hosts in <code>~/.ssh/config</code> for every machine you touch; delete the habit of typing IPs <span class="tag">skill</span></label></li>
+</ul>
+
+<h2>Module 2 — Herdr, inside and out (<code>ogulcancelik/herdr</code>)</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="net-4" id="net-4"><label for="net-4">Use herdr end-to-end: workspaces/tabs/panes, <code>ctrl+b q</code> detach, reattach — close the laptop mid-task and prove the agent survives <span class="tag">skill</span></label></li>
+  <li><input type="checkbox" data-item="net-5" id="net-5"><label for="net-5">Read herdr.dev/docs — concepts, session state, remote: the background session server, the Unix socket API, <code>herdr --remote</code> thin-client-over-SSH <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="net-6" id="net-6"><label for="net-6">Draw herdr's architecture from memory (server holds PTYs; clients are disposable views); verify against docs; save as a <code>reference/</code> note <span class="tag">retrieval</span></label></li>
+</ul>
+
+<h2>Module 3 — Tailscale, WireGuard, and building your own</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="net-7" id="net-7"><label for="net-7">Explain how Tailscale works: WireGuard key pairs, the control plane, DERP relays, NAT traversal (Tailscale's "how it works" posts) <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="net-8" id="net-8"><label for="net-8">Build the toy version: two machines, a direct WireGuard (or minimal Go/Rust) tunnel between them — "just to see" counts as the goal <span class="tag">build</span></label></li>
+</ul>
+
+<h2>Module 4 — VPS</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="net-9" id="net-9"><label for="net-9">Rent the cheapest VPS (Linode/Hetzner); harden it: key-only auth, ufw, fail2ban, non-root user <span class="tag">skill</span></label></li>
+  <li><input type="checkbox" data-item="net-10" id="net-10"><label for="net-10">Run one thing on it you'll actually use — an always-on herdr server you can attach to from any device is the obvious candidate <span class="tag">build</span></label></li>
+</ul>
+
+<div class="verify">
+<h3>You've finished this track when</h3>
+<p>You can explain a packet's journey from your laptop to a herdr session on another
+machine — through SSH <em>and</em> through Tailscale — and at least one piece of your
+daily workflow runs on infrastructure you set up and can diagram from memory.</p>
+</div>
+
+<footer>teach / networking · <a href="../../index.html">back to dashboard</a></footer>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

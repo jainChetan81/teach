@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capstone: Portable Agent Sessions — teach</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../../index.html">teach</a> / topics / portable-sessions</nav>
+
+<h1>Capstone: Portable Agent Sessions <span class="badge suggested">the point of it all</span></h1>
+<p class="subtitle">Learn how herdr preserves sessions → apply the same model to t3code →
+carry a live agent session from one device to another over SSH and Tailscale.</p>
+
+<div class="why">
+<h3>Why this capstone exists</h3>
+<p>This is the project the <a href="../ai-tooling/plan.html">ai-tooling</a>,
+<a href="../networking/plan.html">networking</a>, and <a href="../rust-tauri/plan.html">rust</a>
+tracks feed into. herdr already solved session persistence one way (a background server
+holding real PTYs; thin clients attach over a Unix socket or SSH). t3code solved it
+another way (SQLite-backed session store behind a web GUI). The question: can you carry a
+session between <em>your</em> devices as cleanly as herdr carries one between terminals —
+and what would t3code need for that?</p>
+</div>
+
+<h2>The two session models you're comparing</h2>
+<table>
+  <tr><th></th><th>herdr</th><th>t3code</th></tr>
+  <tr><td>What is "the session"</td><td>A live PTY owned by a background server process</td><td>Rows in a SQLite store: threads, turns, events</td></tr>
+  <tr><td>Survives disconnect because</td><td>The server never dies; clients are disposable views</td><td>State is on disk, event-sourced; UI reconnects and re-projects</td></tr>
+  <tr><td>Remote access today</td><td><code>herdr --remote</code> over SSH (thin client)</td><td>Web GUI; docs have a remote-access page</td></tr>
+  <tr><td>Language</td><td>Rust (single binary)</td><td>TypeScript (Effect, adapter pattern)</td></tr>
+</table>
+
+<h2>Phase 1 — Understand herdr's session model</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="ps-1" id="ps-1"><label for="ps-1">Read herdr docs: <em>session state</em> and <em>remote</em> pages at herdr.dev/docs; note where state lives on disk and what survives a server restart <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="ps-2" id="ps-2"><label for="ps-2">In the source (<code>ogulcancelik/herdr</code>, Rust): find how the session server keeps PTYs alive while clients come and go — socket protocol, reattach handshake <span class="tag">knowledge</span></label></li>
+</ul>
+
+<h2>Phase 2 — Understand t3code's session model</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="ps-3" id="ps-3"><label for="ps-3">Read t3code docs: architecture overview, <em>remote access</em>, <em>keeping T3 Code in sync</em>; find the SQLite session store and the provider-adapter seam <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="ps-4" id="ps-4"><label for="ps-4">Write the side-by-side reference doc in <code>reference/</code>: PTY-server vs event-sourced SQLite — what each makes easy, what each makes impossible <span class="tag">record</span></label></li>
+</ul>
+
+<h2>Phase 3 — Prove the network hops</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="ps-5" id="ps-5"><label for="ps-5">Run herdr on device A, attach from device B over plain SSH — the basic hop works end-to-end <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="ps-6" id="ps-6"><label for="ps-6">Same attach over Tailscale instead; note what changes (no port forwarding, NAT traversal,MagicDNS names) <span class="tag">build</span></label></li>
+</ul>
+
+<h2>Phase 4 — Port the formula to t3code</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="ps-7" id="ps-7"><label for="ps-7">Design doc (one page in this folder): what "resume this session on my other machine" requires for t3code — remote backend? db sync? both? <span class="tag">record</span></label></li>
+  <li><input type="checkbox" data-item="ps-8" id="ps-8"><label for="ps-8">Build the thinnest working version, demo it moving a real session between devices, write the learning record <span class="tag">build</span></label></li>
+</ul>
+
+<div class="verify">
+<h3>You've finished the capstone when</h3>
+<p>You start an agent session on one machine, walk to another device, and continue it —
+and you can explain exactly which layer (PTY server, SQLite store, SSH, Tailscale) made
+each part of that possible.</p>
+</div>
+
+<footer>teach / portable-sessions · <a href="../../index.html">back to dashboard</a></footer>
+<script src="../../assets/app.js"></script>
+</body>
+</html>
