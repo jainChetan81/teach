@@ -1,7 +1,7 @@
 # teach — a stateful learning workspace
 
 This directory is a **teach-skill workspace** (mattpocock skills, installed globally).
-When the user asks to study, learn, continue a track, or be taught something here,
+When the user asks to study, learn, continue a subject, or be taught something here,
 invoke the `/teach` skill and treat this directory as the teaching workspace.
 
 ## How to orient (read in this order)
@@ -10,23 +10,38 @@ invoke the `/teach` skill and treat this directory as the teaching workspace.
    capstone**: move a live coding-agent session between devices (herdr's session model →
    t3code → SSH/Tailscale). Every teaching decision should trace back to it.
 2. `NOTES.md` — user preferences and open items. Key ones: HTML for anything the user
-   reads; two-active-tracks rule; single-sitting lesson sizes.
+   reads; two-active-subjects rule; single-sitting lesson sizes.
 3. `learning-records/` — what's already known/decided; use it to compute the zone of
    proximal development.
 4. `RESOURCES.md` — the curated high-trust sources. Draw lesson knowledge from here,
    not from parametric memory.
-5. `index.html` — the user's dashboard. `topics/<name>/plan.html` holds each track's
-   objectives and action items (checkbox state is the user's progress).
+5. `index.html` — the user's dashboard, linking every subject folder.
 
-## Conventions
+## Layout convention
 
-- New study topic → new `topics/<dash-case-name>/` folder with a `plan.html`, linked from
-  a card in `index.html`. Follow the existing plan pages' structure (objectives, action
-  items with `data-item` checkboxes, verification block).
-- Lessons go in `lessons/NNNN-name.html`; reusable components in `assets/`; cheat sheets
-  in `reference/`. Every HTML page links `assets/style.css` (or `../../assets/style.css`
-  from topic folders) so everything reads as one course.
-- Learning records go in `learning-records/NNNN-slug.md`, incrementing the number.
-- Active tracks: **ai-tooling** and **rust-tauri**. Do not activate others without
-  the user explicitly choosing to swap.
-- Commit meaningful changes to git as you go.
+**One folder per subject at the workspace root.** Everything about a subject lives in
+its folder:
+
+```
+<subject>/
+  plan.html        objectives + action items (checkboxes with data-item ids)
+  lessons/         NNNN-<name>.html, one tight idea each
+  reference/       cheat sheets, glossaries for that subject
+```
+
+Current subjects: `herdr/` (active), `ai-tooling/` (active), `portable-sessions/`
+(capstone), `networking/`, `rust-tauri/`, `llm-internals/` (queued),
+`js-internals/`, `ffmpeg/` (backlog).
+
+## Rules
+
+- New subject → new root folder `<dash-case-name>/` with a `plan.html`, plus a card in
+  `index.html`. Follow the existing plan pages' structure (objectives, action items with
+  `data-item` checkboxes, verification block).
+- Every HTML page links the shared stylesheet (`assets/style.css`; `../assets/` from
+  subject root, `../../assets/` from lessons/reference) so everything reads as one course.
+- Learning records are cross-subject and stay at the root: `learning-records/NNNN-slug.md`,
+  incrementing the number.
+- Active subjects: **herdr** and **ai-tooling**. Do not activate others without the user
+  explicitly choosing to swap.
+- Commit meaningful changes to git as you go; remote is github.com/jainChetan81/teach.
