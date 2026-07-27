@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 0001 — Herdr: sessions that never die — teach</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+/* lesson-specific bits (candidate for assets/ if lesson 2 needs them) */
+.quiz { margin: 1.2rem 0; }
+.quiz-q { font-weight: 600; margin-bottom: .4rem; }
+.quiz-opts { display: grid; gap: .4rem; }
+.quiz-opts button {
+  text-align: left; font: inherit; padding: .55rem .8rem;
+  background: #fff; border: 1px solid var(--line); border-radius: 8px; cursor: pointer;
+}
+.quiz-opts button:hover { border-color: var(--accent); }
+.quiz-opts button.correct { background: #e9efe9; border-color: var(--ok); }
+.quiz-opts button.wrong { background: #f6e4df; border-color: var(--accent); }
+.quiz-fb { font-size: .88rem; min-height: 1.4em; margin-top: .35rem; color: var(--ink-soft); }
+.diagram {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1.1rem 1.3rem; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: .82rem; line-height: 1.8; overflow-x: auto; white-space: pre;
+}
+</style>
+</head>
+<body>
+
+<nav class="crumbs"><a href="../index.html">teach</a> / lessons / 0001-herdr</nav>
+
+<h1>Herdr: sessions that never die</h1>
+<p class="subtitle">Lesson 0001 · ~30 min · feeds
+<a href="../topics/networking/plan.html">net-4 → net-6</a> and
+<a href="../topics/portable-sessions/plan.html">capstone ps-1</a></p>
+
+<div class="why">
+<h3>Why this lesson, why first</h3>
+<p>Every later lesson in the networking track assumes you've <em>felt</em> a persistent
+session: an agent keeps working while your laptop lid is closed, and you reattach from
+another device like nothing happened. Herdr gives you that feeling in 10 minutes. Phase 1
+is hands-on usage (including from your phone). Phase 2 is how it works — because the whole
+<a href="../topics/portable-sessions/plan.html">portable-sessions capstone</a> is about
+porting this exact trick to t3code.</p>
+</div>
+
+<h2>Phase 1 — Use it</h2>
+
+<p>Do every step. Don't read ahead — the "how" lands harder after the "wow".</p>
+
+<ul class="actions">
+  <li><input type="checkbox" data-item="h1-1" id="h1-1"><label for="h1-1"><strong>Install &amp; launch:</strong> <code>brew install herdr</code> then <code>herdr</code> inside a project folder. One binary, no account, no daemon setup — it starts its background server by itself <span class="tag">2 min</span></label></li>
+  <li><input type="checkbox" data-item="h1-2" id="h1-2"><label for="h1-2"><strong>Run an agent:</strong> start Claude Code (or any CLI agent) in a pane. Watch the sidebar flip it to <em>working</em>, then <em>blocked</em> when it asks you something. That state detection is herdr's whole personality <span class="tag">3 min</span></label></li>
+  <li><input type="checkbox" data-item="h1-3" id="h1-3"><label for="h1-3"><strong>The magic trick:</strong> mid-task, press <code>ctrl+b q</code> to detach. Now <em>close the terminal window entirely</em>. Open a new one, run <code>herdr</code> — your agent is still there, still running. Say "oh" out loud <span class="tag">3 min</span></label></li>
+  <li><input type="checkbox" data-item="h1-4" id="h1-4"><label for="h1-4"><strong>From your phone:</strong> install a mobile SSH client — Blink Shell (supports <strong>Mosh</strong>) or Termius — SSH into your Mac (<code>System Settings → Sharing → Remote Login</code> must be on), run <code>herdr</code>, and reattach to the same session from bed <span class="tag">10 min</span></label></li>
+  <li><input type="checkbox" data-item="h1-5" id="h1-5"><label for="h1-5"><strong>Optional, do later:</strong> try Mosh instead of plain SSH from the phone (<code>brew install mosh</code> on the Mac). Walk from Wi-Fi to cellular mid-session and notice… nothing. Hold the question of <em>how that differs from what herdr does</em> — Phase 2 answers it <span class="tag">later</span></label></li>
+</ul>
+
+<div class="note">
+<strong>Phone can't reach your Mac?</strong> That's not a herdr problem — it's the exact
+gap Tailscale fills (your devices on one private network, no port forwarding). It's queued
+in <a href="../topics/networking/plan.html">net-7</a>. For today, same-Wi-Fi is fine.
+</div>
+
+<h2>Phase 2 — How it works</h2>
+
+<p>Read this once, slowly. It's the architecture you'll be re-deriving for t3code later.</p>
+
+<div class="diagram">your terminal (thin client)                your phone (thin client)
+        │                                      │
+        │  Unix socket            SSH ─────────┘
+        ▼                                      ▼
+┌───────────────────────────────────────────────────┐
+│            herdr session server (always on)        │
+│                                                    │
+│   owns the REAL PTYs:  pane 1 ▸ claude (working)   │
+│                        pane 2 ▸ shell              │
+│   tracks state: blocked / working / done / idle    │
+└───────────────────────────────────────────────────┘</div>
+
+<p>Three ideas carry everything:</p>
+
+<p><strong>1. The server owns the session, not your terminal.</strong> When you "run
+herdr", you're starting (or attaching to) a background process that holds the actual
+pseudo-terminals your agents live in. Your terminal window is a disposable <em>view</em>.
+Closing it kills nothing — same reason a dead browser tab doesn't kill a website.</p>
+
+<p><strong>2. Clients are thin and interchangeable.</strong> The TUI talks to the server
+over a local Unix socket. Over SSH, your local herdr acts as a thin client streaming the
+remote server's UI (<code>herdr --remote</code>) — or you just SSH in and run
+<code>herdr</code> there. Mac, phone, future VPS: all just clients. <em>This is the
+formula the capstone ports to t3code: state lives in one long-lived place; devices are
+interchangeable windows onto it.</em></p>
+
+<p><strong>3. Mosh and herdr solve different layers.</strong> Herdr keeps your
+<em>session</em> alive when the connection dies. Mosh keeps your <em>connection</em>
+alive when the network changes (UDP, roaming, rekeying). Stacked together: mosh holds the
+pipe, herdr holds the work. You can lose both ends and nothing dies.</p>
+
+<h2>Check yourself (instant feedback)</h2>
+
+<div class="quiz" data-answer="b">
+  <p class="quiz-q">1. You close your terminal mid-task and the agent keeps running. Why?</p>
+  <div class="quiz-opts">
+    <button data-k="a">Herdr checkpoints the agent's memory to disk constantly</button>
+    <button data-k="b">A background server owns the PTY; the terminal was only a view</button>
+    <button data-k="c">macOS suspends window processes instead of killing them</button>
+    <button data-k="d">The agent migrates into the herdr client's own process space</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="c">
+  <p class="quiz-q">2. Attaching from your phone works because…</p>
+  <div class="quiz-opts">
+    <button data-k="a">Herdr syncs session snapshots between devices over iCloud</button>
+    <button data-k="b">The phone emulates your Mac's terminal exactly, byte for byte</button>
+    <button data-k="c">Your phone is just another thin client to the same session server</button>
+    <button data-k="d">SSH forwards the PTY file descriptor into the phone's memory</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="a">
+  <p class="quiz-q">3. Mosh + herdr together give you…</p>
+  <div class="quiz-opts">
+    <button data-k="a">A connection that survives roaming and work that survives disconnects</button>
+    <button data-k="b">Encrypted sessions that herdr alone cannot provide anywhere</button>
+    <button data-k="c">Faster agents because mosh compresses all terminal traffic heavily</button>
+    <button data-k="d">Automatic migration of running agents between your different devices</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="verify">
+<h3>Done with this lesson when</h3>
+<p>You've reattached to a live session after killing your terminal (h1-3), answered all
+three quiz questions, and can say in one breath: "the server holds the PTYs; everything
+else is a view." Cheat sheet for future-you: <code>reference/herdr-cheatsheet.html</code>.</p>
+</div>
+
+<h2>Go deeper (primary sources)</h2>
+<ul>
+  <li><a href="https://herdr.dev/docs">herdr.dev/docs</a> — start with <em>concepts</em>, then <em>session state</em> and <em>remote</em>. This is the primary source for capstone ps-1.</li>
+  <li><a href="https://github.com/ogulcancelik/herdr">github.com/ogulcancelik/herdr</a> — the Rust source you'll read in ps-2, after rustlings basics.</li>
+  <li><a href="https://mosh.org">mosh.org</a> — how the roaming layer works, when you're ready for h1-5.</li>
+</ul>
+
+<div class="note">
+<strong>Stuck, or something surprising?</strong> Ask your teacher — that's me. "Why a PTY
+and not just a log file?", "what's a Unix socket really?", "could the server die?" are
+all excellent follow-ups, and the answers become the next lesson.
+</div>
+
+<footer>teach / lessons / 0001-herdr · <a href="../index.html">back to dashboard</a> · next: net-4/net-5 checkboxes on the <a href="../topics/networking/plan.html">networking track</a></footer>
+
+<script src="../assets/app.js"></script>
+<script>
+document.querySelectorAll('.quiz').forEach(function (q) {
+  var answer = q.getAttribute('data-answer');
+  var fb = q.querySelector('.quiz-fb');
+  q.querySelectorAll('button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var right = btn.getAttribute('data-k') === answer;
+      q.querySelectorAll('button').forEach(function (b) { b.classList.remove('correct','wrong'); });
+      btn.classList.add(right ? 'correct' : 'wrong');
+      fb.textContent = right
+        ? 'Yes. Hold onto that — you will reuse this exact idea for t3code.'
+        : 'Not quite — re-read the diagram above and try another.';
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Herdr cheat sheet — teach reference</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../index.html">teach</a> / reference / herdr-cheatsheet</nav>
+
+<h1>Herdr cheat sheet</h1>
+<p class="subtitle">The 90% you'll actually use. Source of truth: <a href="https://herdr.dev/docs">herdr.dev/docs</a>.</p>
+
+<h2>Everyday</h2>
+<table>
+  <tr><th>Do this</th><th>How</th></tr>
+  <tr><td>Start / reattach</td><td><code>herdr</code> (starts or attaches to the background server)</td></tr>
+  <tr><td>Detach, keep everything running</td><td><code>ctrl+b q</code></td></tr>
+  <tr><td>New pane / split</td><td>prefix keys or click-drag in the TUI (mouse is first-class)</td></tr>
+  <tr><td>Reload config</td><td>prefix + <code>Shift+r</code> (config at <code>~/.config/herdr/config.toml</code>)</td></tr>
+  <tr><td>Richer agent state</td><td><code>herdr integration install claude</code> (also codex, copilot, …)</td></tr>
+</table>
+
+<h2>Remote (the capstone moves)</h2>
+<table>
+  <tr><th>Do this</th><th>How</th></tr>
+  <tr><td>Attach from another machine</td><td><code>ssh you@machine</code> then <code>herdr</code></td></tr>
+  <tr><td>Thin-client attach (no remote shell)</td><td><code>herdr --remote workbox</code> or <code>herdr --remote ssh://you@host:2222</code></td></tr>
+  <tr><td>Repeat targets</td><td>name them in <code>~/.ssh/config</code>, then <code>herdr --remote &lt;name&gt;</code></td></tr>
+  <tr><td>From a phone</td><td>Blink Shell (Mosh-capable) or Termius → SSH → <code>herdr</code></td></tr>
+  <tr><td>Survive Wi-Fi → cellular</td><td>use <code>mosh</code> instead of <code>ssh</code> as the transport</td></tr>
+</table>
+
+<h2>Socket API (agents driving herdr)</h2>
+<pre><code>herdr workspace create --cwd ~/project --label api
+herdr tab create --label logs
+herdr pane split 1-1 --direction right
+herdr pane run 1-2 "just test"
+herdr wait agent-status 1-1 --status done
+herdr pane read 1-2 --source recent-unwrapped</code></pre>
+
+<h2>Mental model (one line)</h2>
+<p><strong>The server holds the PTYs; every terminal — Mac, phone, VPS — is a disposable view onto them.</strong>
+Mosh keeps the <em>connection</em> alive; herdr keeps the <em>work</em> alive.</p>
+
+<h2>Agent states</h2>
+<table>
+  <tr><th>State</th><th>Meaning</th></tr>
+  <tr><td><em>working</em></td><td>agent is generating / processing</td></tr>
+  <tr><td><em>blocked</em></td><td>waiting on you (prompt, permission)</td></tr>
+  <tr><td><em>done</em></td><td>task finished</td></tr>
+  <tr><td><em>idle</em></td><td>pane exists, no agent activity</td></tr>
+</table>
+
+<footer>teach / reference · <a href="../lessons/0001-herdr-sessions-that-never-die.html">lesson 0001</a> · <a href="../index.html">dashboard</a></footer>
+</body>
+</html>
