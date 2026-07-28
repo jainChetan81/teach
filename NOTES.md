@@ -24,5 +24,8 @@ exist to serve this.
 - Progress checkboxes use browser localStorage — per-device. If cross-device progress matters, commit progress snapshots to git instead (discuss before building).
 
 ## Observations for future sessions
+- herdr **0.7.5** is installed and in real use (`~/.config/herdr` has a live `session.json`,
+  sockets and server logs). Ground herdr lessons in commands he can run on his own machine
+  rather than in hypotheticals — see learning record 0003.
 - His three prior PDFs are well-structured (phases + verification checkpoints). Failure mode is starting, not planning. Keep momentum artifacts visible.
 - He types fast and informally; don't over-index on typos — confirm tool identities before building lessons around them (done for herdr/t3code).

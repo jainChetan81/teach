@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 0002 — What actually survives — teach</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../../index.html">teach</a> / <a href="../plan.html">herdr</a> / lessons / 0002-what-actually-survives</nav>
+
+<h1>What actually survives</h1>
+<p class="subtitle">Lesson 0002 · ~25 min · completes
+<a href="../plan.html">hdr-2</a> · feeds
+<a href="../../portable-sessions/plan.html">capstone ps-1</a></p>
+
+<div class="why">
+<h3>Why this lesson</h3>
+<p>Lesson 0001 gave you the wow: close the terminal, the agent keeps working. This lesson
+takes the wow apart. "Persistent" is not one thing in herdr — it's <strong>five different
+mechanisms</strong>, and each one survives a different kind of death. The capstone asks you
+to rebuild this for t3code, and you can't rebuild what you can't name. By the end you'll be
+able to answer, for any disaster: <em>what comes back, and what's gone forever?</em></p>
+</div>
+
+<h2>Phase 1 — Look at your own machine</h2>
+
+<p>You already have herdr running. Everything below is read-only. Run each line, look at
+the output, then read the note under it.</p>
+
+<ul class="actions">
+  <li><input type="checkbox" data-item="h2-1" id="h2-1"><label for="h2-1"><strong>Who's alive:</strong> <code>herdr status</code> — tells you whether a <em>server</em> is running and whether a <em>client</em> is attached. Two separate things. That separation is the whole architecture in one command <span class="tag">1 min</span></label></li>
+  <li><input type="checkbox" data-item="h2-2" id="h2-2"><label for="h2-2"><strong>The thing on disk:</strong> <code>cat ~/.config/herdr/session.json</code> — this is what herdr writes down. Read it carefully and notice what is <em>not</em> in it <span class="tag">4 min</span></label></li>
+  <li><input type="checkbox" data-item="h2-3" id="h2-3"><label for="h2-3"><strong>The thing in memory:</strong> <code>herdr api snapshot</code> — the live truth, straight from the running server over its socket. Compare it to the file <span class="tag">3 min</span></label></li>
+  <li><input type="checkbox" data-item="h2-4" id="h2-4"><label for="h2-4"><strong>The full contract:</strong> <code>herdr api schema --json | head -40</code> — every method, request, response, and event herdr speaks. You'll live in here during ps-3 <span class="tag">2 min</span></label></li>
+</ul>
+
+<div class="note">
+<strong>What you should have noticed in <code>session.json</code>:</strong> workspaces,
+tabs, panes, working directories, layout, focus. That's <em>furniture</em>. There is no
+terminal output in there, no process, no agent memory. The file describes the
+<strong>shape</strong> of your session, never its <strong>life</strong>.
+</div>
+
+<h2>Phase 2 — The survival ladder</h2>
+
+<p>Five rungs. Each one survives a bigger disaster than the last, and each one gives you
+back <em>less</em>. Read top to bottom.</p>
+
+<ol class="ladder">
+
+  <li class="strong">
+    <span class="rung-title">Client dies <span class="rung-verdict keeps">keeps everything</span></span>
+    <p>You close the terminal window, your SSH drops, your laptop lid shuts. The client was
+    only a view. The server never noticed. Nothing is restored because nothing stopped.
+    This is <code>ctrl+b q</code> done rudely.</p>
+  </li>
+
+  <li class="strong">
+    <span class="rung-title">Detach on purpose <span class="rung-verdict keeps">keeps everything</span></span>
+    <p><code>ctrl+b q</code>. Same mechanism as rung 1, done politely. Panes, shells,
+    agents and processes keep running. Herdr calls this <em>live persistence</em>, and it
+    is the only rung where the word "persist" means "never stopped".</p>
+  </li>
+
+  <li class="weak">
+    <span class="rung-title">Server restarts <span class="rung-verdict loses">keeps the furniture only</span></span>
+    <p>You reboot, or run <code>herdr server stop</code>. Now herdr rebuilds from
+    <code>session.json</code>: your workspaces, tabs, panes, working directories, layout
+    and focus all come back. But every pane is a <strong>brand new shell</strong> sitting
+    in the old folder. Your build, your agent, your half-finished command: gone. This is
+    <em>snapshot restore</em>, and it is reconstruction, not survival.</p>
+  </li>
+
+  <li class="weak">
+    <span class="rung-title">Screen history replay <span class="rung-verdict loses">keeps the text, not the process</span></span>
+    <p>An <strong>experimental, off-by-default</strong> feature that also restores recent
+    terminal <em>contents</em> after a server restart, stored in
+    <code>session-history.json</code>. It's off by default on purpose: your scrollback is
+    full of secrets, tokens and keys, and this writes them to a plain file. You get a
+    photograph of what the pane said, not the thing that was saying it.</p>
+  </li>
+
+  <li class="strong">
+    <span class="rung-title">Native agent resume <span class="rung-verdict keeps">keeps the conversation</span></span>
+    <p>The clever one. Supported agents (Claude Code, Copilot and friends, via
+    <code>herdr integration install &lt;agent&gt;</code>) hand herdr an official
+    <em>session reference</em> — the agent's own id for your conversation. After a restart
+    herdr asks the agent to resume that conversation. Herdr isn't preserving the agent's
+    memory; it's remembering the receipt and asking the agent to fetch its own. Needs a
+    minimum integration version per agent.</p>
+  </li>
+
+</ol>
+
+<p>And one special case that doesn't fit the ladder: <strong>live handoff</strong>
+(<code>herdr update --handoff</code>, also experimental). When herdr updates itself, it
+tries to pass the running panes to the replacement server so the processes keep running
+<em>through</em> the swap. It's the only path where a server dies and rung-2 survival still
+holds.</p>
+
+<div class="diagram">DISASTER                    WHAT COMES BACK
+─────────────────────────────────────────────────────
+client closes         →     everything (nothing stopped)
+detach ctrl+b q       →     everything (nothing stopped)
+server restart        →     shape only      ← session.json
+  + history replay    →     shape + old text ← session-history.json (off)
+  + agent integration →     shape + the conversation ← agent's own store
+herdr self-update     →     everything, if --handoff works</div>
+
+<div class="note">
+<strong>Optional experiment (only when nothing important is running):</strong> run
+<code>herdr server stop</code>, then <code>herdr</code>. Watch your layout come back
+perfectly and your processes not come back at all. Feeling rung 3 once is worth more than
+reading it five times.
+</div>
+
+<h2>Phase 3 — The one sentence, and the capstone question</h2>
+
+<p><strong>Herdr keeps processes alive by never stopping them. Everything else it offers is
+reconstruction from notes.</strong> That one sentence is the finding you carry into the
+capstone.</p>
+
+<p>Now hold this next to t3code. t3code has no long-lived PTY to protect — it stores the
+<em>session</em> (messages, events) in SQLite and re-renders it in a browser. In ladder
+terms, t3code is permanently living at rungs 4 and 5: it always has the transcript, it
+always resumes the conversation, and it never has your running shell.</p>
+
+<div class="why">
+<h3>The question to hold, unanswered, until ps-1</h3>
+<p>For <em>your</em> portable session — the one you carry from Mac to phone to VPS — do you
+need the running process to survive, or only the conversation? Herdr's answer is "the
+process, obviously". t3code's answer is "the conversation, obviously". They are both right
+about different jobs. Write your answer down when you get to
+<a href="../../portable-sessions/plan.html">ps-1</a>; it decides your whole design.</p>
+</div>
+
+<h2>Check yourself (instant feedback)</h2>
+
+<div class="quiz" data-answer="c">
+  <p class="quiz-q">1. Your Mac reboots overnight. You open herdr. What do you get?</p>
+  <div class="quiz-opts">
+    <button data-k="a">Everything exactly as it was, agents still mid-task</button>
+    <button data-k="b">Nothing — herdr starts empty after any reboot</button>
+    <button data-k="c">Your layout and folders back, but every pane is a fresh shell</button>
+    <button data-k="d">A prompt asking which panes you would like to resume</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="b">
+  <p class="quiz-q">2. Why is pane screen history replay off by default?</p>
+  <div class="quiz-opts">
+    <button data-k="a">It slows the server down badly on large sessions</button>
+    <button data-k="b">Scrollback holds secrets and tokens, and it writes them to a file</button>
+    <button data-k="c">It only works on macOS, so it ships disabled elsewhere</button>
+    <button data-k="d">It conflicts with the native agent resume integrations</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="d">
+  <p class="quiz-q">3. Native agent resume works because herdr stores…</p>
+  <div class="quiz-opts">
+    <button data-k="a">A full copy of the agent's context window on disk</button>
+    <button data-k="b">The raw terminal output, which it replays into the new agent</button>
+    <button data-k="c">A checkpoint of the agent process, which it restarts from</button>
+    <button data-k="d">The agent's own session id, then asks the agent to resume it</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="verify">
+<h3>Done with this lesson when</h3>
+<p>You've run all four commands in Phase 1, you can name the five rungs without looking,
+and you can say the one sentence: <em>"herdr keeps processes alive by never stopping them;
+everything else is reconstruction."</em> Then tick <strong>hdr-2</strong> on the
+<a href="../plan.html">herdr plan</a>.</p>
+</div>
+
+<h2>Go deeper (primary sources)</h2>
+<ul>
+  <li><a href="https://herdr.dev/docs/session-state">herdr.dev/docs — session state</a> — the ladder, in the maintainers' own words, including the per-agent minimum integration versions.</li>
+  <li><a href="https://herdr.dev/docs/concepts">herdr.dev/docs — concepts</a> — workspace / tab / pane / agent / session, precisely defined. Worth ten minutes.</li>
+  <li><a href="https://herdr.dev/docs/socket-api">herdr.dev/docs — socket API</a> — newline-delimited JSON over <code>~/.config/herdr/herdr.sock</code>. This is lesson 0003.</li>
+</ul>
+
+<div class="note">
+<strong>Next up:</strong> lesson 0003 makes you <em>talk</em> to the socket by hand — one
+JSON line in, one JSON line out, no herdr TUI involved. That's the moment herdr stops being
+an app and becomes a system you can drive.
+</div>
+
+<footer>teach / herdr / lessons / 0002 · <a href="0001-herdr-sessions-that-never-die.html">← lesson 0001</a> · <a href="../reference/herdr-cheatsheet.html">cheat sheet</a> · <a href="../../index.html">dashboard</a></footer>
+
+<script src="../../assets/app.js"></script>
+<script>
+document.querySelectorAll('.quiz').forEach(function (q) {
+  var answer = q.getAttribute('data-answer');
+  var fb = q.querySelector('.quiz-fb');
+  q.querySelectorAll('button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var right = btn.getAttribute('data-k') === answer;
+      q.querySelectorAll('button').forEach(function (b) { b.classList.remove('correct','wrong'); });
+      btn.classList.add(right ? 'correct' : 'wrong');
+      fb.textContent = right
+        ? 'Yes. That distinction is exactly what the capstone turns on.'
+        : 'Not quite — re-read the ladder above and try another.';
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -33,7 +33,33 @@
   <tr><td>Survive Wi-Fi → cellular</td><td>use <code>mosh</code> instead of <code>ssh</code> as the transport</td></tr>
 </table>
 
+<h2>What survives what (lesson 0002)</h2>
+<table>
+  <tr><th>Disaster</th><th>What you get back</th></tr>
+  <tr><td>Client closes / SSH drops</td><td>Everything. The server never stopped.</td></tr>
+  <tr><td>Detach <code>ctrl+b q</code></td><td>Everything. Same mechanism, done politely.</td></tr>
+  <tr><td>Server restart / reboot</td><td>Shape only — workspaces, tabs, panes, cwd, layout, focus (from <code>session.json</code>). Fresh shells.</td></tr>
+  <tr><td>…+ screen history replay</td><td>Shape + recent pane text (<code>session-history.json</code>). <strong>Off by default</strong>: scrollback leaks secrets.</td></tr>
+  <tr><td>…+ agent integration</td><td>Shape + the conversation. Herdr stores the agent's own session id and asks it to resume.</td></tr>
+  <tr><td><code>herdr update --handoff</code></td><td>Running panes move to the replacement server. Experimental.</td></tr>
+</table>
+<p><strong>One sentence:</strong> herdr keeps processes alive by never stopping them; everything else is reconstruction from notes.</p>
+
+<h2>Inspect &amp; debug</h2>
+<table>
+  <tr><th>Do this</th><th>How</th></tr>
+  <tr><td>Is a server / client alive?</td><td><code>herdr status</code></td></tr>
+  <tr><td>Live session state from the server</td><td><code>herdr api snapshot</code></td></tr>
+  <tr><td>The full protocol contract</td><td><code>herdr api schema --json</code></td></tr>
+  <tr><td>What's on disk</td><td><code>~/.config/herdr/session.json</code> (shape), <code>herdr-server.log</code>, <code>herdr.sock</code></td></tr>
+  <tr><td>Stop the server (kills panes)</td><td><code>herdr server stop</code></td></tr>
+  <tr><td>Named, fully separate session</td><td><code>herdr --session &lt;name&gt;</code> · socket at <code>~/.config/herdr/sessions/&lt;name&gt;/herdr.sock</code></td></tr>
+</table>
+
 <h2>Socket API (agents driving herdr)</h2>
+<p>Newline-delimited JSON over <code>~/.config/herdr/herdr.sock</code>. Send
+<code>{"id":"req_1","method":"ping","params":{}}</code>, get
+<code>{"id":"req_1","result":{"type":"pong"}}</code>. The CLI below is just a wrapper over it.</p>
 <pre><code>herdr workspace create --cwd ~/project --label api
 herdr tab create --label logs
 herdr pane split 1-1 --direction right
@@ -54,6 +80,6 @@ Mosh keeps the <em>connection</em> alive; herdr keeps the <em>work</em> alive.</
   <tr><td><em>idle</em></td><td>pane exists, no agent activity</td></tr>
 </table>
 
-<footer>teach / reference · <a href="../lessons/0001-herdr-sessions-that-never-die.html">lesson 0001</a> · <a href="../../index.html">dashboard</a></footer>
+<footer>teach / herdr / reference · <a href="../lessons/0001-herdr-sessions-that-never-die.html">lesson 0001</a> · <a href="../lessons/0002-what-actually-survives.html">lesson 0002</a> · <a href="../../index.html">dashboard</a></footer>
 </body>
 </html>

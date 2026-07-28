@@ -186,6 +186,56 @@ footer {
   color: var(--ink-faint);
 }
 
+/* ---------- lessons: quizzes, diagrams, ladders ---------- */
+
+.quiz { margin: 1.2rem 0; }
+.quiz-q { font-weight: 600; margin-bottom: .4rem; }
+.quiz-opts { display: grid; gap: .4rem; }
+.quiz-opts button {
+  text-align: left; font: inherit; padding: .55rem .8rem;
+  background: #fff; border: 1px solid var(--line); border-radius: 8px; cursor: pointer;
+}
+.quiz-opts button:hover { border-color: var(--accent); }
+.quiz-opts button.correct { background: #e9efe9; border-color: var(--ok); }
+.quiz-opts button.wrong { background: #f6e4df; border-color: var(--accent); }
+.quiz-fb { font-size: .88rem; min-height: 1.4em; margin-top: .35rem; color: var(--ink-soft); }
+
+.diagram {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1.1rem 1.3rem; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: .82rem; line-height: 1.8; overflow-x: auto; white-space: pre;
+}
+
+/* a ladder: ordered rungs where each rung survives less than the one above */
+ol.ladder { list-style: none; counter-reset: rung; padding: 0; margin: 1.1rem 0; }
+ol.ladder > li {
+  counter-increment: rung;
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: var(--radius);
+  padding: .8rem 1rem .8rem 3.1rem;
+  margin: .5rem 0;
+}
+ol.ladder > li::before {
+  content: counter(rung);
+  position: absolute; left: 1rem; top: .8rem;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: .82rem; font-weight: 700; color: var(--ink-faint);
+}
+ol.ladder > li.strong { border-left-color: var(--ok); }
+ol.ladder > li.weak   { border-left-color: var(--accent); }
+ol.ladder .rung-title { font-weight: 650; display: block; }
+ol.ladder .rung-verdict {
+  display: inline-block; font-size: .74rem; text-transform: uppercase;
+  letter-spacing: .04em; margin-left: .5em; padding: .1em .5em;
+  border-radius: 999px; vertical-align: .1em;
+}
+ol.ladder .rung-verdict.keeps { background: #e9efe9; color: var(--ok); }
+ol.ladder .rung-verdict.loses { background: var(--accent-soft); color: var(--accent); }
+ol.ladder p { margin: .35rem 0 0; font-size: .92rem; color: var(--ink-soft); }
+
 /* ---------- print ---------- */
 
 @media print {
