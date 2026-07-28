@@ -48,8 +48,8 @@ and what would t3code need for that?</p>
 
 <h2>Phase 3 — Prove the network hops</h2>
 <ul class="actions">
-  <li><input type="checkbox" data-item="ps-5" id="ps-5"><label for="ps-5">Run herdr on device A, attach from device B over plain SSH — the basic hop works end-to-end <span class="tag">build</span></label></li>
-  <li><input type="checkbox" data-item="ps-6" id="ps-6"><label for="ps-6">Same attach over Tailscale instead; note what changes (no port forwarding, NAT traversal,MagicDNS names) <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="ps-5" id="ps-5"><label for="ps-5">Run herdr on device A, attach from device B over plain SSH — the basic hop works end-to-end <span class="tag">build</span> <strong>&#10003; done 28 Jul 2026</strong> — <code>herdr --remote</code> works mini&#8596;macbook both directions over plain SSH keys.</label></li>
+  <li><input type="checkbox" data-item="ps-6" id="ps-6"><label for="ps-6">Same attach over Tailscale instead; note what changes (no port forwarding, NAT traversal,MagicDNS names) <span class="tag">build</span> <strong>&#10003; done 28 Jul 2026</strong> — MagicDNS names, zero port forwarding, direct path measured at 6&nbsp;ms. Caveat: both machines were on the same LAN, so NAT traversal is still untested.</label></li>
 </ul>
 
 <h2>Phase 4 — Port the formula to t3code</h2>

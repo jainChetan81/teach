@@ -183,13 +183,14 @@ everything else is reconstruction."</em> Then tick <strong>hdr-2</strong> on the
 <ul>
   <li><a href="https://herdr.dev/docs/session-state">herdr.dev/docs — session state</a> — the ladder, in the maintainers' own words, including the per-agent minimum integration versions.</li>
   <li><a href="https://herdr.dev/docs/concepts">herdr.dev/docs — concepts</a> — workspace / tab / pane / agent / session, precisely defined. Worth ten minutes.</li>
-  <li><a href="https://herdr.dev/docs/socket-api">herdr.dev/docs — socket API</a> — newline-delimited JSON over <code>~/.config/herdr/herdr.sock</code>. This is lesson 0003.</li>
+  <li><a href="https://herdr.dev/docs/socket-api">herdr.dev/docs — socket API</a> — newline-delimited JSON over <code>~/.config/herdr/herdr.sock</code>. This is lesson 0004.</li>
 </ul>
 
 <div class="note">
-<strong>Next up:</strong> lesson 0003 makes you <em>talk</em> to the socket by hand — one
-JSON line in, one JSON line out, no herdr TUI involved. That's the moment herdr stops being
-an app and becomes a system you can drive.
+<strong>Next up:</strong> lesson 0003 is the operating layer — which server commands are
+safe with agents running, why the server does not restart itself, and the PATH trap that
+breaks <code>herdr --remote</code>. Lesson 0004 then makes you <em>talk</em> to the socket by
+hand, one JSON line in, one JSON line out.
 </div>
 
 <footer>teach / herdr / lessons / 0002 · <a href="0001-herdr-sessions-that-never-die.html">← lesson 0001</a> · <a href="../reference/herdr-cheatsheet.html">cheat sheet</a> · <a href="../../index.html">dashboard</a></footer>

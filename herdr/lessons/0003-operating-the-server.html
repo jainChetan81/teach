@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 0003 — Operating the server — teach</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../../index.html">teach</a> / <a href="../plan.html">herdr</a> / lessons / 0003-operating-the-server</nav>
+
+<h1>Operating the server</h1>
+<p class="subtitle">Lesson 0003 · ~30 min · completes
+<a href="../plan.html">hdr-5</a> · feeds
+<a href="../../portable-sessions/plan.html">capstone ps-5, ps-6</a></p>
+
+<div class="why">
+<h3>Why this lesson</h3>
+<p>Lessons 0001 and 0002 were about what herdr <em>is</em>. This one is about not breaking
+it. Every fact below was measured on your own Mac mini on 28 Jul 2026, and four of them
+contradict what a reasonable person would assume. One of them silently kills every running
+agent. Another one is the single most likely thing to break your capstone, and it bit you
+on <em>both</em> machines in one evening.</p>
+<p>The capstone asks you to move a live session between devices. You cannot do that if you
+don't know which commands are safe, whether the server comes back on its own, and whose
+config wins when two machines disagree.</p>
+</div>
+
+<h2>Phase 1 — The three server verbs, and the one that doesn't exist</h2>
+
+<p>Run this first and read the output before anything else:</p>
+
+<ul class="actions">
+  <li><input type="checkbox" data-item="h3-1" id="h3-1"><label for="h3-1"><strong>Ask for a command that isn't real:</strong> <code>herdr server restart</code> — it prints the usage list instead of restarting. There is no restart verb <span class="tag">1 min</span></label></li>
+  <li><input type="checkbox" data-item="h3-2" id="h3-2"><label for="h3-2"><strong>Read what actually exists:</strong> <code>herdr server --help</code> — three real verbs. Learn which is which before you need them <span class="tag">2 min</span></label></li>
+</ul>
+
+<table>
+<thead><tr><th>Verb</th><th>What it does to your live panes</th><th>When</th></tr></thead>
+<tbody>
+<tr><td><code>server stop</code></td><td><strong>Kills every one of them.</strong> Agents included.</td><td>Almost never. Last resort.</td></tr>
+<tr><td><code>server reload-config</code></td><td><strong>Nothing. They keep running.</strong> Applies <code>config.toml</code> in place.</td><td>Every config change.</td></tr>
+<tr><td><code>server live-handoff</code></td><td>Moves live panes to a new local server.</td><td>Upgrades, without losing work.</td></tr>
+</tbody>
+</table>
+
+<div class="note">
+<strong>The trap:</strong> you change <code>config.toml</code>, you want it applied, you
+reach for "restart", it doesn't exist — so you reach for <code>server stop</code> instead.
+That is the wrong instinct and it costs you every running agent. Measured on the mini:
+<code>reload-config</code> returned <code>{"diagnostics":[],"status":"applied"}</code> and
+all three panes were still alive afterwards. Use it.
+</div>
+
+<h2>Phase 2 — The server does not come back by itself</h2>
+
+<p>This is the assumption worth destroying. It feels like a background service that
+respawns on demand. It does not.</p>
+
+<ul class="actions">
+  <li><input type="checkbox" data-item="h3-3" id="h3-3"><label for="h3-3"><strong>Prove it (only when no agent is working):</strong> <code>herdr server stop</code>, then <code>ls ~/.config/herdr/herdr.sock</code> — no socket <span class="tag">2 min</span></label></li>
+  <li><input type="checkbox" data-item="h3-4" id="h3-4"><label for="h3-4"><strong>Try to wake it with a client command:</strong> <code>herdr session list</code> — reports <code>stopped</code>, and <em>still</em> no socket appears <span class="tag">1 min</span></label></li>
+  <li><input type="checkbox" data-item="h3-5" id="h3-5"><label for="h3-5"><strong>See who owns yours now:</strong> <code>launchctl list | grep herdr</code> and <code>ls ~/Library/LaunchAgents/com.chetan.herdr-server.plist</code> <span class="tag">2 min</span></label></li>
+</ul>
+
+<p>A client command reports the truth and walks away. If nothing starts the server, nothing
+starts the server. On the mini this is now handled by a LaunchAgent with two settings worth
+understanding:</p>
+
+<ul>
+  <li><code>RunAtLoad = true</code> — starts it when you log in.</li>
+  <li><code>KeepAlive → SuccessfulExit = false</code> — restarts it if it <em>crashes</em>, but leaves it down after a deliberate <code>server stop</code>. Without that second part you could never stop it to test anything.</li>
+</ul>
+
+<div class="note">
+<strong>Why this matters for the capstone:</strong> a LaunchAgent is a <em>user</em> agent.
+It waits for a login. If the host reboots and nobody logs in, there is no server, no
+socket, and nothing to attach to from your other device. On the mini, FileVault makes that
+worse — the machine sits at the disk-password screen and not even Tailscale starts. Remote
+access holds while the host stays powered and logged in, and not one second past a reboot.
+</div>
+
+<h2>Phase 3 — Reading a pane without fooling yourself</h2>
+
+<p><code>herdr pane read</code> takes a <code>--source</code> flag, and the default is not
+what you want when you're checking whether something was restored.</p>
+
+<ul class="actions">
+  <li><input type="checkbox" data-item="h3-6" id="h3-6"><label for="h3-6"><strong>Same pane, two answers:</strong> run <code>herdr pane read w1:p1 --source visible</code> then <code>herdr pane read w1:p1 --source recent --lines 400</code> and compare the line counts <span class="tag">4 min</span></label></li>
+</ul>
+
+<p><code>visible</code> returns only the current viewport — one screen. <code>recent</code>
+returns the buffer. On the mini this exact confusion made a working feature look broken:
+<code>visible</code> reported 0, 18 and 19 lines across three panes, while <code>recent</code>
+found 127 and 378. Nothing was wrong. The question was wrong.</p>
+
+<div class="note">
+<strong>Correction to lesson 0002:</strong> <code>pane_history</code> does <em>not</em> save
+one screenful, and its restore half is no longer unproven. Measured across two clean
+shutdowns: panes saved 110 and 308 lines against a 40-row viewport, and after a full
+stop/start cycle 59/90 and 201/286 of those lines came back <em>verbatim</em>. It saves up
+to the available scrollback. One caveat: a pane running an agent restores the
+<strong>agent</strong>, not the screen — <code>resume_agents_on_restore</code> relaunches it
+and the agent clears its own display on start.
+</div>
+
+<h2>Phase 4 — The PATH trap that kills <code>herdr --remote</code></h2>
+
+<p>This is the one that matters most, because it breaks the exact thing the capstone is
+built on, and the error message tells you nothing useful.</p>
+
+<p>Homebrew installs a line into <code>~/.zprofile</code>. <strong><code>.zprofile</code>
+only runs for login shells.</strong> When you run <code>ssh host 'some-command'</code>, zsh
+starts <em>non-interactive and non-login</em> — so it reads <code>~/.zshenv</code> and
+nothing else. <code>/opt/homebrew/bin</code> never lands on PATH, and <code>herdr</code> and
+<code>mosh-server</code> simply do not exist as far as that shell is concerned.</p>
+
+<ul class="actions">
+  <li><input type="checkbox" data-item="h3-7" id="h3-7"><label for="h3-7"><strong>Test it honestly:</strong> <code>env -i HOME="$HOME" /bin/zsh -c 'echo $PATH; command -v herdr; command -v mosh-server'</code> <span class="tag">3 min</span></label></li>
+  <li><input type="checkbox" data-item="h3-8" id="h3-8"><label for="h3-8"><strong>Compare the three shell kinds:</strong> run <code>command -v herdr</code> under <code>zsh -c</code>, <code>zsh -lc</code> and <code>zsh -ic</code>. Note which ones find it <span class="tag">3 min</span></label></li>
+</ul>
+
+<div class="note">
+<strong>Why <code>env -i</code> and not just <code>zsh -c</code>:</strong> because you are
+almost certainly already inside a shell that has the fixed PATH. Your test inherits it and
+passes while the underlying config is still broken. This wasted real time on the mini —
+the "proof" commands passed <em>before</em> anything was fixed. <code>env -i</code> throws
+the environment away and asks the question properly.
+</div>
+
+<p>The fix is to move the Homebrew line to <code>~/.zshenv</code>, which every zsh reads,
+with a guard so nested shells don't stack PATH entries:</p>
+
+<pre><code>if [ -z "${HOMEBREW_PREFIX:-}" ] &amp;&amp; [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi</code></pre>
+
+<p>Check your work with <code>zsh -lc 'echo $PATH' | tr : '\n' | sort | uniq -d</code>. It
+should print nothing.</p>
+
+<h2>Phase 5 — Whose config wins when you attach from another device</h2>
+
+<p>herdr renders the UI <strong>server-side</strong>. Sit at your MacBook, run
+<code>herdr --remote mini</code>, and the pixels are decided by the <em>mini's</em>
+<code>config.toml</code>. This surprises people constantly.</p>
+
+<table>
+<thead><tr><th>Setting</th><th>Which machine decides</th></tr></thead>
+<tbody>
+<tr><td>Theme, sidebar rows, toasts, sound, accent</td><td><strong>Host</strong> (the one running the server)</td></tr>
+<tr><td><code>experimental.kitty_graphics</code></td><td><strong>Client</strong> — it needs your local terminal's support</td></tr>
+<tr><td><code>[keys]</code> bindings</td><td><strong>Client only.</strong> They do not reach a remote session</td></tr>
+<tr><td>Plugins</td><td><strong>Client.</strong> A binding for a plugin the host lacks just no-ops</td></tr>
+</tbody>
+</table>
+
+<div class="note">
+<strong>A real consequence:</strong> the mini used to set <code>theme.auto_switch = true</code>
+with a light theme name. Attaching from the MacBook let the <em>mini</em> flip the MacBook's
+display to light, and the MacBook's own dark-forcing could not stop it — because the MacBook
+was never the one deciding. Fixed by pinning <code>auto_switch = false</code> on the host.
+Never fix this by copying one config over the other; they are different roles.
+</div>
+
+<h2>Check yourself (instant feedback)</h2>
+
+<div class="quiz" data-answer="b">
+  <p class="quiz-q">1. You edited <code>config.toml</code> and want it live. Two agents are mid-task. What do you run?</p>
+  <div class="quiz-opts">
+    <button data-k="a">herdr server restart</button>
+    <button data-k="b">herdr server reload-config</button>
+    <button data-k="c">herdr server stop, then herdr</button>
+    <button data-k="d">Nothing — config.toml is watched and applied automatically</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="c">
+  <p class="quiz-q">2. The server is stopped. You run <code>herdr session list</code>. What happens?</p>
+  <div class="quiz-opts">
+    <button data-k="a">The server starts on demand and lists your sessions</button>
+    <button data-k="b">The command hangs waiting for the socket</button>
+    <button data-k="c">It reports the session as stopped and starts nothing</button>
+    <button data-k="d">It errors out because the socket file is missing</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="d">
+  <p class="quiz-q">3. <code>ssh mini 'herdr --version'</code> says command not found, but it works when you SSH in and type it. Why?</p>
+  <div class="quiz-opts">
+    <button data-k="a">herdr refuses to run without a TTY attached</button>
+    <button data-k="b">sshd strips PATH from non-interactive commands for safety</button>
+    <button data-k="c">The herdr binary is only readable by an interactive login</button>
+    <button data-k="d">Homebrew's PATH line lives in .zprofile, which only login shells read</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="a">
+  <p class="quiz-q">4. You attach from your MacBook to the mini. Which machine's theme do you see?</p>
+  <div class="quiz-opts">
+    <button data-k="a">The mini's — herdr renders the UI server-side</button>
+    <button data-k="b">The MacBook's — the client draws its own interface</button>
+    <button data-k="c">Whichever config file was edited most recently</button>
+    <button data-k="d">Neither; remote sessions fall back to a default theme</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="verify">
+<h3>Done with this lesson when</h3>
+<p>You can name the three real <code>server</code> verbs and say which one is safe with
+agents running; you can explain why <code>env -i</code> is the only honest PATH test; and
+you can answer, without looking: <em>"I attached from my laptop and the theme is wrong —
+which machine do I fix?"</em> Then tick <strong>hdr-5</strong> on the
+<a href="../plan.html">herdr plan</a>.</p>
+</div>
+
+<h2>Go deeper (primary sources)</h2>
+<ul>
+  <li><a href="https://herdr.dev/docs/configuration">herdr.dev/docs — configuration</a> — every key, and which ones are client-side.</li>
+  <li><a href="https://herdr.dev/docs/remote">herdr.dev/docs — remote</a> — what <code>--remote</code> bridges and what it deliberately does not.</li>
+  <li><code>man zsh</code>, STARTUP/SHUTDOWN FILES — the definitive order of <code>.zshenv</code>, <code>.zprofile</code>, <code>.zshrc</code>, and which shell kinds read which. Ten minutes that will save you hours forever.</li>
+  <li><code>man launchd.plist</code> — <code>RunAtLoad</code> and the <code>KeepAlive</code> dictionary.</li>
+</ul>
+
+<div class="note">
+<strong>Next up:</strong> lesson 0004 makes you <em>talk</em> to the socket by hand — one
+JSON line in, one JSON line out, no herdr TUI involved. That's the moment herdr stops being
+an app and becomes a system you can drive.
+</div>
+
+<footer>teach / herdr / lessons / 0003 · <a href="0002-what-actually-survives.html">← lesson 0002</a> · <a href="../reference/herdr-cheatsheet.html">cheat sheet</a> · <a href="../../index.html">dashboard</a></footer>
+
+<script src="../../assets/app.js"></script>
+<script>
+document.querySelectorAll('.quiz').forEach(function (q) {
+  var answer = q.getAttribute('data-answer');
+  var fb = q.querySelector('.quiz-fb');
+  q.querySelectorAll('button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var right = btn.getAttribute('data-k') === answer;
+      q.querySelectorAll('button').forEach(function (b) { b.classList.remove('correct','wrong'); });
+      btn.classList.add(right ? 'correct' : 'wrong');
+      fb.textContent = right
+        ? 'Yes. Every one of these was measured, not assumed.'
+        : 'Not quite — reread the phase above, then try again.';
+    });
+  });
+});
+</script>
+
+</body>
+</html>
