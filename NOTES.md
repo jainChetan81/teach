@@ -52,4 +52,9 @@ exist to serve this.
   sockets and server logs). Ground herdr lessons in commands he can run on his own machine
   rather than in hypotheticals — see learning record 0003.
 - His three prior PDFs are well-structured (phases + verification checkpoints). Failure mode is starting, not planning. Keep momentum artifacts visible.
+- **2026-07-30 — the pattern showed up here.** Four lessons written, zero read. He noticed
+  it himself: "I have not even started on lesson 01, now just everything but adding stuff
+  to it." **Do not write lesson 0005 until 0001 is ticked.** When he asks a good question
+  mid-session, answer it in chat and log it in a learning record — resist turning every
+  answer into new material. Building the course is the comfortable substitute for taking it.
 - He types fast and informally; don't over-index on typos — confirm tool identities before building lessons around them (done for herdr/t3code).
