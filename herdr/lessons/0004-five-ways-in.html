@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 0004 — Five ways in — teach</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../../index.html">teach</a> / <a href="../plan.html">herdr</a> / lessons / 0004-five-ways-in</nav>
+
+<h1>Five ways in</h1>
+<p class="subtitle">Lesson 0004 · ~30 min · completes
+<a href="../plan.html">hdr-6</a> · feeds
+<a href="../../portable-sessions/plan.html">capstone ps-5, ps-6</a></p>
+
+<div class="why">
+<h3>Why this lesson</h3>
+<p>You have five commands that all appear to do the same thing — get you onto the mini:</p>
+<pre><code>ssh chetanjain@192.168.68.101
+ssh chetanjain@mini.bullhead-mine.ts.net
+ssh chetanjain@mini
+mosh chetanjain@mini
+herdr --remote mini</code></pre>
+<p>They are <strong>not</strong> five alternatives. They are three different questions
+stacked on top of each other, and every one of those commands quietly answers all three.
+Once you see the three layers you will never again guess which one to type, and when one
+breaks you will know which layer to go and look at.</p>
+<p>This matters for the capstone directly. "Move a live session between devices" is a
+sentence about all three layers at once.</p>
+</div>
+
+<h2>Phase 1 — The whole idea in one table</h2>
+
+<table>
+<thead><tr><th>Layer</th><th>The question it answers</th><th>Your options</th></tr></thead>
+<tbody>
+<tr><td><strong>1. Address</strong></td><td>Which machine, and how do I name it?</td><td><code>192.168.68.101</code> · <code>mini.bullhead-mine.ts.net</code> · <code>mini</code></td></tr>
+<tr><td><strong>2. Transport</strong></td><td>How do the bytes actually travel?</td><td><code>ssh</code> (TCP) · <code>mosh</code> (UDP)</td></tr>
+<tr><td><strong>3. Attachment</strong></td><td>What do I land in — a shell, or a session?</td><td>a plain shell · <code>herdr</code></td></tr>
+</tbody>
+</table>
+
+<p>Read your five commands again with that in hand. <code>ssh chetanjain@192.168.68.101</code>
+is <em>LAN address + SSH transport + plain shell</em>. <code>herdr --remote mini</code> is
+<em>alias address + SSH transport + herdr session</em>. Nothing else is going on.</p>
+
+<div class="note">
+<strong>The one sentence to keep:</strong> the layers do not compete, they stack. Picking
+Tailscale does not mean giving up mosh. Picking mosh does not mean giving up herdr. The
+best setup uses one from each row.
+</div>
+
+<h2>Phase 2 — Addressing: three names, one machine</h2>
+
+<ul class="actions">
+  <li><input type="checkbox" data-item="h4-1" id="h4-1"><label for="h4-1"><strong>See the LAN address change nature of things:</strong> on the mini run <code>ipconfig getifaddr en0</code>. That is the <code>192.168.68.x</code> number, and your router chose it <span class="tag">1 min</span></label></li>
+  <li><input type="checkbox" data-item="h4-2" id="h4-2"><label for="h4-2"><strong>See the tailnet:</strong> run <code>tailscale status</code>. Note that the mini is also <code>100.68.119.127</code> — a second address it has at the same time <span class="tag">2 min</span></label></li>
+  <li><input type="checkbox" data-item="h4-3" id="h4-3"><label for="h4-3"><strong>Find out what <code>mini</code> really means:</strong> run <code>ssh -G mini | head -5</code> on the MacBook. It prints the <em>resolved</em> settings — the real hostname and user SSH will use <span class="tag">3 min</span></label></li>
+</ul>
+
+<h3><code>192.168.68.101</code> — the LAN address</h3>
+<p>Handed out by your home router, by DHCP. Two consequences that bite:</p>
+<ul>
+  <li><strong>It only works on your home Wi-Fi.</strong> Step outside, it is meaningless.</li>
+  <li><strong>It can change.</strong> Reboot the router, add devices, and the mini may come back as <code>.104</code>. Your muscle memory is then wrong and the error looks like the machine is down.</li>
+</ul>
+
+<h3><code>mini.bullhead-mine.ts.net</code> — the MagicDNS name</h3>
+<p><code>bullhead-mine.ts.net</code> is <em>your</em> tailnet. Every device you have joined
+gets a name inside it — you currently have <code>mini</code>, <code>macbook</code>,
+<code>contabo-vps</code> and <code>iphone</code>. The name resolves to a
+<code>100.x.x.x</code> address, which is not a public internet address and not a LAN
+address: it exists only inside your Tailscale network.</p>
+<p>This is the one that works from a café, from cellular, from anywhere both machines are
+logged into Tailscale. It is the address layer the capstone depends on.</p>
+
+<h3><code>mini</code> — the short name</h3>
+<p>This is the interesting one, because it can be true for <strong>two completely different
+reasons</strong>, and you should know which one you are relying on:</p>
+<ol>
+  <li>A <code>Host mini</code> block in <code>~/.ssh/config</code> on the MacBook, which rewrites it to the full name.</li>
+  <li>MagicDNS adding <code>bullhead-mine.ts.net</code> as a DNS search domain, so a bare <code>mini</code> resolves on its own.</li>
+</ol>
+<p>Reason 1 only helps <code>ssh</code>-family tools. Reason 2 helps everything on the
+machine. <code>ssh -G mini</code> tells you which is in play. On this mini,
+<code>~/.ssh/config</code> already does exactly this for the other direction:</p>
+
+<pre><code>Host macbook
+    HostName macbook.bullhead-mine.ts.net
+    User hackerearth467
+    IdentityFile ~/.ssh/id_ed25519_tailscale
+    IdentitiesOnly yes
+    ServerAliveInterval 30
+    ServerAliveCountMax 6</code></pre>
+
+<div class="note">
+<strong>Note the <code>User</code> line, and note that it is not your name.</strong> The
+MacBook's account is <code>hackerearth467</code>; the mini's is <code>chetanjain</code>; the
+VPS is <code>chetan</code>. This is exactly why a typo'd <code>mosh chetjain@mini</code>
+fails with a confusing permission error rather than a helpful one. A <code>Host</code> block
+with <code>User</code> set means you can stop typing the username at all — just
+<code>ssh mini</code>. Deleting the habit of typing usernames and IPs is literally an
+objective on your <a href="../../networking/plan.html">networking track</a>.
+</div>
+
+<h2>Phase 3 — Transport: what mosh actually is</h2>
+
+<p>This is the layer you said you don't understand, and it is the one with the most
+surprising design.</p>
+
+<h3>SSH is one TCP connection, and your session <em>is</em> that connection</h3>
+<p>Open it, and there is a socket between the two machines. Everything you type goes down
+it. If that socket dies — you change networks, the Wi-Fi drops, the laptop sleeps long
+enough — the session dies with it, and whatever was running in it usually dies too.
+<code>ServerAliveInterval 30</code> in the config above does not prevent that; it just makes
+the death happen promptly and visibly rather than leaving you staring at a frozen terminal.</p>
+
+<h3>Mosh uses SSH once, then throws it away</h3>
+<p>Here is the part almost nobody knows. When you run <code>mosh mini</code>:</p>
+<ol>
+  <li>It <strong>SSHes in normally</strong>, using your keys and your <code>~/.ssh/config</code>. That is the whole authentication story — mosh has no login system of its own.</li>
+  <li>Over that SSH connection it runs <code>mosh-server</code> on the mini, which prints a session key and a UDP port.</li>
+  <li>It <strong>closes the SSH connection entirely.</strong></li>
+  <li>From then on your terminal talks to <code>mosh-server</code> over <strong>UDP</strong> (typically ports 60000–61000), using mosh's own protocol.</li>
+</ol>
+
+<p>That design buys three things:</p>
+<ul>
+  <li><strong>It survives your IP changing.</strong> The session is identified by a key, not by an address. Walk from Wi-Fi to cellular mid-command and it just carries on. TCP cannot do this.</li>
+  <li><strong>It survives sleep.</strong> Shut the lid, open it hours later, it reconnects.</li>
+  <li><strong>Typing feels instant.</strong> Mosh predicts and echoes your keystrokes locally, showing unconfirmed ones underlined. On a laggy connection this is the difference between usable and miserable.</li>
+</ul>
+
+<p>And it costs you real things:</p>
+<ul>
+  <li><strong>No port forwarding.</strong> <code>-L</code> and <code>-R</code> do not exist in mosh. If you need a tunnel, you need SSH.</li>
+  <li><strong>No agent forwarding, no X11, no <code>scp</code>.</strong> Mosh is for interactive terminals only.</li>
+  <li><strong>UDP must get through.</strong> Some hotel and corporate networks block it. SSH's single TCP port is far more likely to survive a hostile network.</li>
+  <li><strong>Its scrollback is not yours.</strong> Mosh keeps only a screen; scrollback belongs to your terminal app.</li>
+  <li><strong><code>mosh-server</code> must be findable on the remote machine's PATH</strong> — in a <em>non-interactive</em> shell. That is the <code>.zprofile</code> trap from <a href="0003-operating-the-server.html">lesson 0003</a>, and it breaks mosh for exactly the same reason it breaks <code>herdr --remote</code>.</li>
+</ul>
+
+<ul class="actions">
+  <li><input type="checkbox" data-item="h4-4" id="h4-4"><label for="h4-4"><strong>Test the PATH honestly, for mosh this time:</strong> <code>env -i HOME="$HOME" /bin/zsh -c 'command -v mosh-server'</code> <span class="tag">2 min</span></label></li>
+  <li><input type="checkbox" data-item="h4-5" id="h4-5"><label for="h4-5"><strong>Feel the roam:</strong> <code>mosh mini</code>, run <code>watch -n1 date</code>, then turn Wi-Fi off and cellular on (or switch to a different Wi-Fi). Watch it pick straight back up <span class="tag">5 min</span></label></li>
+  <li><input type="checkbox" data-item="h4-6" id="h4-6"><label for="h4-6"><strong>Feel the difference:</strong> do the same over plain <code>ssh mini</code> and watch it die instead <span class="tag">3 min</span></label></li>
+</ul>
+
+<div class="note">
+<strong>Mosh itself is free and open source.</strong> It is installed here at
+<code>/opt/homebrew/bin/mosh</code> via Homebrew, no licence, no account. If something in
+your setup is asking you to pay, that is the <em>terminal app</em> you run mosh inside — not
+mosh. Worth separating those two before you blame the wrong thing.
+</div>
+
+<h2>Phase 4 — Attachment: a shell is not a session</h2>
+
+<p>The first four commands all drop you into a <strong>shell</strong>. A shell is a child of
+the connection. When the connection goes, the shell goes, and its children usually go with
+it.</p>
+
+<p><code>herdr --remote mini</code> is a different kind of thing. It uses SSH underneath —
+which is exactly why the PATH trap killed it — but what it hands you is not a fresh shell.
+It is a <strong>view onto the session the mini's herdr server is already holding</strong>.
+The PTYs live on the mini and belong to the server. Your client is disposable. That is the
+whole thesis of <a href="0001-herdr-sessions-that-never-die.html">lesson 0001</a>, and this
+is where it becomes a command you type.</p>
+
+<h3>What survives what</h3>
+<table>
+<thead><tr><th>What happens</th><th><code>ssh</code> alone</th><th><code>mosh</code> alone</th><th><code>ssh</code> + herdr</th><th><code>mosh</code> + herdr</th></tr></thead>
+<tbody>
+<tr><td>You close the terminal window</td><td>work lost</td><td>work lost</td><td><strong>work safe</strong></td><td><strong>work safe</strong></td></tr>
+<tr><td>Wi-Fi → cellular mid-task</td><td>dies</td><td><strong>survives</strong></td><td>client dies, work safe</td><td><strong>nothing even blinks</strong></td></tr>
+<tr><td>Laptop sleeps for an hour</td><td>dies</td><td><strong>survives</strong></td><td>client dies, work safe</td><td><strong>survives</strong></td></tr>
+<tr><td>The mini reboots</td><td>dies</td><td>dies</td><td>dies</td><td>dies</td></tr>
+</tbody>
+</table>
+
+<p>Two things fall straight out of that table. First: <strong>mosh and herdr solve different
+halves of the same problem.</strong> Mosh keeps the <em>connection</em> alive across a
+network change; herdr keeps the <em>work</em> alive across a client death. Neither one does
+the other's job. Together they cover everything in the first three rows.</p>
+
+<p>Second: <strong>nothing saves you from the last row</strong>, and you already know why
+from lesson 0003 — the herdr server is a LaunchAgent that needs a login, and FileVault
+parks the mini at a password screen after any reboot. That is a genuine hole in the
+capstone, not an oversight, and it is the reason a VPS keeps looking attractive.</p>
+
+<h2>Phase 5 — So which one do I type?</h2>
+
+<table>
+<thead><tr><th>Situation</th><th>Command</th></tr></thead>
+<tbody>
+<tr><td>At home, quick look at a file</td><td><code>ssh mini</code></td></tr>
+<tr><td>Anywhere, want your agent session back</td><td><code>herdr --remote mini</code></td></tr>
+<tr><td>Bad, slow or changing network — train, café, phone</td><td><code>mosh mini</code>, then <code>herdr</code></td></tr>
+<tr><td>You need a tunnel (<code>-L</code>, <code>-R</code>) or to copy files</td><td><code>ssh</code>. Mosh cannot do it</td></tr>
+<tr><td>Nothing works and you want the truth</td><td><code>ssh -v mini</code>, then the <code>env -i</code> PATH test</td></tr>
+</tbody>
+</table>
+
+<p>Retire <code>ssh chetanjain@192.168.68.101</code> from your fingers. It is the only one of
+the five that stops working the moment you leave the house, and it is the only one that can
+silently start pointing at a different machine.</p>
+
+<h2>Check yourself (instant feedback)</h2>
+
+<div class="quiz" data-answer="c">
+  <p class="quiz-q">1. Mosh survives you switching from Wi-Fi to cellular. Why can't SSH do that?</p>
+  <div class="quiz-opts">
+    <button data-k="a">SSH could, but Apple's firewall kills it on network change</button>
+    <button data-k="b">Mosh reconnects by silently running ssh again in the background</button>
+    <button data-k="c">The SSH session <em>is</em> a TCP connection, which is tied to the IP addresses; mosh's session is keyed by a session key over UDP</button>
+    <button data-k="d">Mosh keeps a second standby connection open at all times</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="b">
+  <p class="quiz-q">2. What does mosh use SSH for?</p>
+  <div class="quiz-opts">
+    <button data-k="a">Nothing — it has its own login system with its own keys</button>
+    <button data-k="b">Logging in once and starting <code>mosh-server</code>, then it drops the SSH connection</button>
+    <button data-k="c">All traffic — mosh is a wrapper that keeps the SSH connection alive</button>
+    <button data-k="d">Only the first connection ever; later ones go straight to UDP</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="a">
+  <p class="quiz-q">3. You're on mosh, running an agent in a plain shell (no herdr). You close the terminal window by accident. What happened to the agent?</p>
+  <div class="quiz-opts">
+    <button data-k="a">Gone — mosh protects the connection, not the work</button>
+    <button data-k="b">Safe — mosh keeps the session on the server for you to rejoin</button>
+    <button data-k="c">Safe — UDP sessions have no concept of closing</button>
+    <button data-k="d">Gone, but mosh replays it automatically next login</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="d">
+  <p class="quiz-q">4. <code>ssh mini</code> works from your MacBook. Which layer is doing the work of turning <code>mini</code> into a real address?</p>
+  <div class="quiz-opts">
+    <button data-k="a">herdr, which registers short names for its known hosts</button>
+    <button data-k="b">Your router's local DNS, the same thing that gave out 192.168.68.101</button>
+    <button data-k="c">Nothing — <code>mini</code> is the machine's real hostname on the internet</button>
+    <button data-k="d">Either a <code>Host</code> block in <code>~/.ssh/config</code> or MagicDNS's search domain — and <code>ssh -G mini</code> tells you which</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="verify">
+<h3>Done with this lesson when</h3>
+<p>You can name the three layers without notes; you can explain in one sentence what mosh
+uses SSH for and why it then stops using it; and you can say what mosh protects that herdr
+does not, and what herdr protects that mosh does not. Then tick <strong>hdr-6</strong> on the
+<a href="../plan.html">herdr plan</a>.</p>
+</div>
+
+<h2>Open questions to settle on your own machine</h2>
+<ul>
+  <li><strong>Which terminal app on the phone, and what exactly goes wrong with it?</strong> Write it down here once you know — "it has issues" is not something a future you can debug.</li>
+  <li><strong>Does mosh reach the mini from outside your home network?</strong> Everything measured so far was same-LAN. Mosh over a Tailscale address across real NAT is untested, and it is the same untested path as capstone ps-6.</li>
+</ul>
+
+<h2>Go deeper (primary sources)</h2>
+<ul>
+  <li><a href="https://mosh.org/">mosh.org</a> — the front page explains roaming and local echo; the linked USENIX paper explains the State Synchronisation Protocol properly.</li>
+  <li><a href="https://tailscale.com/kb/1081/magicdns">Tailscale KB — MagicDNS</a> — where the short names and the search domain come from.</li>
+  <li><code>man ssh_config</code> — <code>Host</code>, <code>HostName</code>, <code>User</code>, <code>IdentityFile</code>, <code>ServerAliveInterval</code>. The five directives that cover almost everything you do.</li>
+  <li><a href="https://herdr.dev/docs/remote">herdr.dev/docs — remote</a> — what <code>--remote</code> bridges and what it deliberately does not.</li>
+</ul>
+
+<div class="note">
+<strong>Next up:</strong> lesson 0005 makes you <em>talk</em> to the herdr socket by hand —
+one JSON line in, one JSON line out, no TUI involved. That's the moment herdr stops being an
+app and becomes a system you can drive.
+</div>
+
+<footer>teach / herdr / lessons / 0004 · <a href="0003-operating-the-server.html">← lesson 0003</a> · <a href="../reference/herdr-cheatsheet.html">cheat sheet</a> · <a href="../../index.html">dashboard</a></footer>
+
+<script src="../../assets/app.js"></script>
+<script>
+document.querySelectorAll('.quiz').forEach(function (q) {
+  var answer = q.getAttribute('data-answer');
+  var fb = q.querySelector('.quiz-fb');
+  q.querySelectorAll('button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var right = btn.getAttribute('data-k') === answer;
+      q.querySelectorAll('button').forEach(function (b) { b.classList.remove('correct','wrong'); });
+      btn.classList.add(right ? 'correct' : 'wrong');
+      fb.textContent = right
+        ? 'Yes — three layers, stacked. Not five alternatives.'
+        : 'Not quite — reread the phase above, then try again.';
+    });
+  });
+});
+</script>
+
+</body>
+</html>
