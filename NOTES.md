@@ -24,13 +24,14 @@ exist to serve this.
   User's call, deliberately deferred: "who knows what we will break." Renaming a macOS
   account touches the home dir path, keys, LaunchAgents and herdr's `~/.config` — do not
   do this casually, and not while the capstone depends on the mini working.
-- **RESOLVED (2026-07-30): he is using plain `mosh`, not Moshi.** User checked. So the
-  "it's paid and has issues" premise was wrong on the paid half — the mosh CLI on the
-  MacBook is free and open source, no account, no subscription. Nothing to cancel, nothing
-  to migrate off. Whatever "issues" he hit are mosh issues (most likely the `mosh-server`
-  PATH trap from record 0004) and still undescribed. **The phone leg does not exist yet** —
-  there is no way to run mosh on iOS without some app, so if he ever wants the iPhone in
-  the loop, that is a new decision. Reference for that day, not a current tool:
+- **RESOLVED, in two steps (2026-07-30).** First he said "just checked it is mosh", then
+  clarified he *does* use an iOS app, on its **free tier**, whose limit is **2 saved remote
+  connections** — "a latter problem for sure". So the real picture: `mosh` the free OSS CLI
+  on the MacBook, **plus** a free-tier iOS app (almost certainly Moshi, below) on the phone.
+  **He is paying nothing today.** The only live constraint is 2 saved connections, and he
+  has 4 tailnet nodes — so this bites the day he wants mini + macbook + vps + anything else
+  saved at once. Whatever "issues" he mentioned are still undescribed; first suspect remains
+  the `mosh-server` PATH trap from record 0004. App details:
 - *Moshi: SSH & MOSH Terminal*, FrontierOne Software,
   App Store id `6757859949`, v3.10.1, iOS 18+. Free download, subscription for Pro. India
   tiers seen: Founder ₹399/mo, Pioneer ₹499/mo, Pro ₹699–799/mo, Pro Yearly ₹5,900–6,900,
