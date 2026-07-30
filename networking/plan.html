@@ -28,6 +28,8 @@ so that moving a session between devices stops being magic and starts being engi
   <li>Use SSH fluently: keys, config, agent, port forwarding — no copy-pasting from old notes.</li>
   <li>Explain WireGuard/Tailscale: key pairs, NAT traversal, DERP relays — then build a toy tunnel.</li>
   <li>Run and harden a VPS you actually use for something (an always-on herdr server is the obvious candidate).</li>
+  <li>Explain why a terminal session normally dies when your IP changes, and how mosh's
+  UDP design gets around it — then build a toy version of that idea yourself.</li>
 </ul>
 
 <h2>Module 1 — SSH until it's boring</h2>
@@ -47,6 +49,18 @@ so that moving a session between devices stops being magic and starts being engi
 <ul class="actions">
   <li><input type="checkbox" data-item="net-9" id="net-9"><label for="net-9">Rent the cheapest VPS (Linode/Hetzner); harden it: key-only auth, ufw, fail2ban, non-root user <span class="tag">skill</span></label></li>
   <li><input type="checkbox" data-item="net-10" id="net-10"><label for="net-10">Run one thing on it you'll actually use — an always-on herdr server you can attach to from any device is the obvious candidate <span class="tag">build</span></label></li>
+</ul>
+
+<h2>Module 4 — Mosh, and building your own roaming terminal</h2>
+<p>The practical half of this already lives in
+<a href="../herdr/lessons/0004-five-ways-in.html">herdr lesson 0004</a> — which command to
+type, and what mosh buys you. This module is the <em>why</em>, and it ends with you writing
+a small one.</p>
+<ul class="actions">
+  <li><input type="checkbox" data-item="net-11" id="net-11"><label for="net-11">Explain why TCP cannot survive an IP change and UDP can: a TCP connection is identified by the four-tuple (src ip, src port, dst ip, dst port), so changing networks changes its identity <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="net-12" id="net-12"><label for="net-12">Read the mosh USENIX paper on the State Synchronisation Protocol: mosh syncs <em>screen state</em>, not keystrokes, which is what makes local echo and roaming both work <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="net-13" id="net-13"><label for="net-13">Build the toy version: a UDP client/server that keeps a session alive by session-id across a deliberate network change — "just to see" counts as the goal <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="net-14" id="net-14"><label for="net-14">Prove mosh works to the mini from <em>outside</em> the home network (the same untested path as capstone ps-6) <span class="tag">skill</span></label></li>
 </ul>
 
 <div class="verify">

@@ -20,6 +20,15 @@ user's goal: move a live session between devices over SSH/Tailscale and port her
 exist to serve this.
 
 ## Open items
+- **Rename the mini's account `chetanjain` → `chetan`** so all three machines match.
+  User's call, deliberately deferred: "who knows what we will break." Renaming a macOS
+  account touches the home dir path, keys, LaunchAgents and herdr's `~/.config` — do not
+  do this casually, and not while the capstone depends on the mini working.
+- **Which iOS terminal app is "moshi"?** User says it's paid and has issues. Asked twice,
+  not yet answered. Blocks any real help with the phone leg. Mosh itself is free/OSS.
+- **hark parked.** It's a webhook→iPhone-notification SaaS (see record 0005), not a
+  harness. User: "cannot see its usecase, I will pick this up later." Revisit only if an
+  agent ever needs to ping the phone for approval.
 - kharcha go/no-go deferred to a learning record per llm-5.
 - Progress checkboxes use browser localStorage — per-device. If cross-device progress matters, commit progress snapshots to git instead (discuss before building).
 

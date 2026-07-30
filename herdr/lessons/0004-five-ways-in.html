@@ -33,6 +33,24 @@ sentence about all three layers at once.</p>
 
 <h2>Phase 1 — The whole idea in one table</h2>
 
+<div class="note">
+<strong>In plain words first.</strong> Think of going to someone's house.
+<br><br>
+<strong>Address</strong> is <em>which house</em>. You can say "number 101 on my street", or
+"the Sharma house", or just "home" — three names, one building. Some names only work if
+you're already standing on that street.
+<br><br>
+<strong>Transport</strong> is <em>which road you take</em>, and roads behave differently. One
+of them collapses if you step off it for a second. The other lets you stop, change vehicles,
+and carry on.
+<br><br>
+<strong>Attachment</strong> is <em>what's waiting when the door opens</em>. Either an empty
+room, or your own desk with your work still spread out exactly as you left it.
+<br><br>
+Every one of your five commands picks one from each of those three. That's all this lesson
+is.
+</div>
+
 <table>
 <thead><tr><th>Layer</th><th>The question it answers</th><th>Your options</th></tr></thead>
 <tbody>
@@ -109,6 +127,23 @@ objective on your <a href="../../networking/plan.html">networking track</a>.
 
 <p>This is the layer you said you don't understand, and it is the one with the most
 surprising design.</p>
+
+<div class="note">
+<strong>In plain words first.</strong>
+<br><br>
+<strong>SSH is a phone call.</strong> One line, held open the whole time. Everything you say
+goes down that one line. Walk out of range and the call drops — and the conversation is
+simply over. You don't get it back, you start again.
+<br><br>
+<strong>Mosh is texting.</strong> Nothing is held open. Each little message stands on its
+own, and the thread is remembered by <em>who you are</em>, not by which tower you were near.
+So you can go from Wi-Fi to phone data mid-sentence and the thread just carries on.
+<br><br>
+<strong>And here is the bit that surprises everyone:</strong> mosh still uses SSH — but only
+to unlock the door. It calls once, lets its own program in, then <em>hangs up the phone</em>
+and switches to texting. That's why mosh needs your SSH keys to work, and also why it stops
+caring about the SSH connection a second later.
+</div>
 
 <h3>SSH is one TCP connection, and your session <em>is</em> that connection</h3>
 <p>Open it, and there is a socket between the two machines. Everything you type goes down
