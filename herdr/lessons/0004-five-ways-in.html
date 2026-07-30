@@ -297,7 +297,8 @@ does not, and what herdr protects that mosh does not. Then tick <strong>hdr-6</s
 
 <h2>Open questions to settle on your own machine</h2>
 <ul>
-  <li><strong>Which terminal app on the phone, and what exactly goes wrong with it?</strong> Write it down here once you know — "it has issues" is not something a future you can debug.</li>
+  <li><strong>Settled 30 Jul 2026: you use plain <code>mosh</code>, not the paid iOS app.</strong> There is a separate App Store product called <em>Moshi</em> that speaks the mosh protocol and charges for it. You are not using it. Your <code>mosh</code> is free, open source, and already on the MacBook — so if something misbehaves, it is a mosh problem, not a licence problem. Write down <em>what</em> misbehaves; "it has issues" is not something a future you can debug. First suspect: <code>mosh-server</code> not on the non-interactive PATH.</li>
+  <li><strong>The phone leg does not exist yet.</strong> You cannot run <code>mosh</code> on iOS without some app in between. Reaching the mini from the iPhone is a separate decision, not a thing you already have.</li>
   <li><strong>Does mosh reach the mini from outside your home network?</strong> Everything measured so far was same-LAN. Mosh over a Tailscale address across real NAT is untested, and it is the same untested path as capstone ps-6.</li>
 </ul>
 

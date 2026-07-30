@@ -24,8 +24,23 @@ exist to serve this.
   User's call, deliberately deferred: "who knows what we will break." Renaming a macOS
   account touches the home dir path, keys, LaunchAgents and herdr's `~/.config` — do not
   do this casually, and not while the capstone depends on the mini working.
-- **Which iOS terminal app is "moshi"?** User says it's paid and has issues. Asked twice,
-  not yet answered. Blocks any real help with the phone leg. Mosh itself is free/OSS.
+- **RESOLVED (2026-07-30): he is using plain `mosh`, not Moshi.** User checked. So the
+  "it's paid and has issues" premise was wrong on the paid half — the mosh CLI on the
+  MacBook is free and open source, no account, no subscription. Nothing to cancel, nothing
+  to migrate off. Whatever "issues" he hit are mosh issues (most likely the `mosh-server`
+  PATH trap from record 0004) and still undescribed. **The phone leg does not exist yet** —
+  there is no way to run mosh on iOS without some app, so if he ever wants the iPhone in
+  the loop, that is a new decision. Reference for that day, not a current tool:
+- *Moshi: SSH & MOSH Terminal*, FrontierOne Software,
+  App Store id `6757859949`, v3.10.1, iOS 18+. Free download, subscription for Pro. India
+  tiers seen: Founder ₹399/mo, Pioneer ₹499/mo, Pro ₹699–799/mo, Pro Yearly ₹5,900–6,900,
+  **Pro Lifetime ₹12,400**. Rated 5.0 from only **7** raters — too few to mean anything.
+  Explicitly built for Claude Code / Codex; bundles voice-to-terminal (on-device Whisper),
+  Face ID for SSH keys, and *webhook push alerts* — i.e. it already does the hark job.
+  Alternatives if it disappoints: Blink Shell, Echo (SSH + Mosh), Secure ShellFish, Prompt 3.
+  **Still unknown: what its "issues" actually are.** User has not described them.
+  Key distinction to keep repeating: `mosh` (free, OSS, on the Mac) ≠ Moshi (paid iOS app
+  that speaks mosh). There is no way to run mosh on iOS *without* some app.
 - **hark parked.** It's a webhook→iPhone-notification SaaS (see record 0005), not a
   harness. User: "cannot see its usecase, I will pick this up later." Revisit only if an
   agent ever needs to ping the phone for approval.
