@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NotchTap idea log — teach</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../index.html">teach</a> / <a href="plan.html">notchtap-tauri</a> / ideas</nav>
+
+<h1>NotchTap idea log</h1>
+<p class="subtitle">Every thought, suggestion, and "we should probably…" about the app.
+Captured when you say it, not when we act on it. Nothing here is a commitment.</p>
+
+<div class="why">
+<h3>How this page works</h3>
+<p>You say it, I write it down here with a short honest take and a status. Status means:
+<strong>open</strong> = not judged yet, <strong>ready</strong> = we know what it would take,
+<strong>blocked</strong> = something must happen first, <strong>done</strong> = shipped,
+<strong>parked</strong> = deliberately not doing it. Nothing gets built from this page
+without you choosing it.</p>
+</div>
+
+<h2>Open ideas</h2>
+
+<h3>1. One source of truth for the types on both sides <span class="badge suggested">ready</span></h3>
+<p><em>Your words: "a way to unify types between events, Rust and TS."</em></p>
+<ul>
+  <li><strong>The problem is real and already hurting.</strong> The tab identity set is
+  hand-written in <strong>six</strong> places across two languages. <code>useSlotState.ts</code>
+  hand-mirrors four Rust enums with a comment on each saying "keep in sync by hand."</li>
+  <li><strong>Today's answer is tests, not generation.</strong> <code>tabWireParity.test.ts</code>
+  and <code>settings/hookEventParity.test.ts</code> read both files as text and fail CI on
+  drift. That catches the bug; it does not delete the duplication.</li>
+  <li><strong>The real fix has a name:</strong> generate the TypeScript from the Rust.
+  <code>tauri-specta</code> (built on <code>specta</code>) is the Tauri-native option and
+  types commands and events, not just structs. <code>ts-rs</code> is the smaller, simpler one
+  that does structs only.</li>
+  <li><strong>My take:</strong> the highest-value idea of the four. But it rewrites the top of
+  all seven hooks, so do it once you can navigate them, not before. It also pairs with idea 3,
+  so decide them together.</li>
+</ul>
+
+<h3>2. A state manager for queue, timers, priority <span class="badge queued">open</span></h3>
+<p><em>Your words: "a state manager to handle queue, timer priority notification etc."</em></p>
+<ul>
+  <li><strong>Careful here.</strong> The queue, priority ranking, TTL, and preemption already
+  live in Rust (<code>queue.rs</code>, <code>engine.rs</code>). A frontend store holding the
+  same things would create a second source of truth, and disagreements between two owners is
+  exactly how animation bugs breed.</li>
+  <li><strong>But there is a real gap.</strong> The frontend <em>choreography</em> state, which
+  Rust does not own, is spread across <code>useDelayedSwap.ts</code>,
+  <code>useExitChoreography.ts</code>, and several one-off timers and refs inside
+  <code>StatusRailCard.tsx</code>. That is genuinely hard to reason about and it is where your
+  animation bugs live.</li>
+  <li><strong>My take:</strong> no Redux or Zustand for wire data. Yes to eventually
+  consolidating the choreography into one explicit state machine, so "which visual state am I
+  in, and what is allowed next" has one answer instead of six booleans. Revisit after we have
+  fixed two real bugs by hand, so the machine is designed from evidence.</li>
+</ul>
+
+<h3>3. Zod for payload validation <span class="badge queued">open</span></h3>
+<p><em>Your words: "zod for validation."</em></p>
+<ul>
+  <li><strong>Fair target.</strong> <code>useSlotState.ts</code> spends roughly 100 lines on
+  hand-written type guards. A schema would say the same thing in a fraction of that and give
+  you the inferred type for free.</li>
+  <li><strong>Zod is not currently a dependency</strong> of the app.</li>
+  <li><strong>The trap:</strong> if idea 1 lands first, the schemas could be generated from
+  Rust too, and writing them by hand now means writing them twice.</li>
+  <li><strong>My take:</strong> good idea, wrong order. Bundle it into the idea 1 decision.</li>
+</ul>
+
+<h3>4. Own click and UI state in the UI, not Rust <span class="badge backlog">blocked</span></h3>
+<p><em>Your words: "click and UI state through UI itself not rust."</em></p>
+<ul>
+  <li><strong>This is the deepest of the four.</strong> Hover, tab selection, and the viewed
+  agent session are Rust-owned today for a physical reason: the overlay window is largely
+  click-through, so the webview never receives real pointer events. That is why hover arrives
+  as a message from a native tracking area instead of a CSS <code>:hover</code> rule.</li>
+  <li><strong>So this is not a preference change.</strong> Moving it means changing the
+  window's click-through behaviour and hit testing in Rust, then deleting the tracking area.
+  Real work, with a real payoff: interaction state would become instant and local instead of
+  a round trip.</li>
+  <li><strong>My take:</strong> keep it. It is the single best motivation for module 3 of the
+  plan, because it is the exact place where "just fix it in React" stops being possible. We
+  should not touch it until you have crossed the boundary once on something smaller.</li>
+</ul>
+
+<h2>Your animation focus (stated 2026-08-03)</h2>
+<p>Not one bug. The whole shape of the card, and how it moves between shapes:</p>
+<ol>
+  <li>The idle, minimal, compact, and expanded states.</li>
+  <li>How every section animates between them, and the variants of each.</li>
+  <li>The settings panel, mostly plain UI fixes.</li>
+</ol>
+
+<div class="note">
+<h3>Your four words already exist in the code, under other names</h3>
+<table>
+  <tr><th>You say</th><th>The code calls it</th><th>Set by</th></tr>
+  <tr><td>minimal</td><td><code>bare</code></td><td>notch resting mode, nothing showing, not exiting</td></tr>
+  <tr><td>idle</td><td>no state class</td><td>rail resting mode, nothing showing</td></tr>
+  <tr><td>compact</td><td>showing, no <code>expanded</code></td><td>a notification holds the slot</td></tr>
+  <tr><td>expanded</td><td><code>expanded</code></td><td>the slot's own flag, or hover on a showing card</td></tr>
+</table>
+<p>Plus four states you have not named, which is where the trouble usually is:
+<code>promoting</code> (the arrival window), <code>exiting</code>, <code>exit-to-bare</code>
+(exiting <em>and</em> landing on minimal), and <code>hovered</code>. Nine visual states, all
+assembled as a class list in <code>StatusRailCard.tsx</code> and decided by
+<code>useExitChoreography.ts</code>.</p>
+</div>
+
+<h2>Settled</h2>
+<p>Nothing yet.</p>
+
+<footer>teach / notchtap-tauri · <a href="plan.html">plan</a> · <a href="reference/wire-table.html">wire table</a> · <a href="../index.html">dashboard</a></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>

@@ -67,6 +67,16 @@ exist to serve this.
   write lesson 0002 until he has named at least one real UI defect (`nt-4`).** The next
   lesson must be built on his own bug, otherwise it is generic material and repeats the
   four-lessons-zero-read failure.
+- **Idea capture is a standing job (2026-08-03).** He thinks out loud constantly and asked
+  for his thoughts to be recorded. NotchTap thoughts go to `notchtap-tauri/ideas.html`
+  (status + honest take per idea). Write them down the moment he says them; never silently
+  turn one into work. If another subject starts collecting thoughts, give it its own
+  `ideas.html` rather than a shared file.
+- **His animation focus is the state ladder, not one bug:** idle / minimal / compact /
+  expanded, how each section moves between them, plus settings-panel UI fixes. His four
+  words map to real code as `bare`, no-class idle, showing-not-expanded, and `expanded` —
+  with four unnamed extras (`promoting`, `exiting`, `exit-to-bare`, `hovered`). That
+  mapping is the spine of lesson 0002.
 - Shared quiz widget now lives at `assets/quiz.js` (markup contract documented in the file).
   New lessons link it instead of inlining the handler; the four herdr lessons still inline
   their own copy and can be migrated whenever one is next edited.
