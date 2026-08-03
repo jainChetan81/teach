@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NotchTap frontend map — teach</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../../index.html">teach</a> / <a href="../plan.html">notchtap-tauri</a> / reference / frontend-map</nav>
+
+<h1>NotchTap frontend map</h1>
+<p class="subtitle">The smallest useful model of the real application.</p>
+
+<div class="why">
+<h3>The main idea</h3>
+<p>The frontend renders a state machine owned mostly by Rust. React receives state,
+chooses a surface, and turns that surface into HTML, CSS, and motion.</p>
+</div>
+
+<h2>The complete path</h2>
+<div class="diagram">external input
+    ↓
+Rust core
+    ↓  Tauri event carrying JSON
+React custom hook
+    ↓
+App.tsx and components
+    ↓
+CSS and Motion
+    ↓
+macOS webview pixels</div>
+
+<p>You do not need all of Rust to fix the frontend. Start at the custom hook. Move one box
+left only when the value arriving there is wrong.</p>
+
+<h2>Two frontends live in one app</h2>
+<table>
+  <tr><th>Window</th><th>Entry path</th><th>Direction</th></tr>
+  <tr><td>Overlay</td><td><code>index.html → src/main.tsx → App.tsx</code></td><td>Rust events enter. The UI renders them.</td></tr>
+  <tr><td>Settings</td><td><code>settings.html → src/settings/main.tsx → SettingsApp.tsx</code></td><td>The UI invokes approved Rust commands.</td></tr>
+</table>
+
+<p>Vite builds both entries. Tauri places each build inside a separate webview. The
+overlay stays receive-only. The settings window can invoke a fixed command list.</p>
+
+<h2>The overlay by responsibility</h2>
+<table>
+  <tr><th>Responsibility</th><th>Start with</th></tr>
+  <tr><td>Receive the current notification</td><td><code>src/useSlotState.ts</code></td></tr>
+  <tr><td>Receive idle source status</td><td><code>src/useStatusState.ts</code></td></tr>
+  <tr><td>Receive agent sessions</td><td><code>src/useAgentState.ts</code></td></tr>
+  <tr><td>Choose the top-level surface</td><td><code>src/App.tsx</code></td></tr>
+  <tr><td>Render the notch or HUD card</td><td><code>src/components/StatusRailCard.tsx</code></td></tr>
+  <tr><td>Render the agent surface</td><td><code>src/components/AgentBoard.tsx</code></td></tr>
+  <tr><td>Control delayed exits</td><td><code>src/useExitChoreography.ts</code></td></tr>
+  <tr><td>Control shared motion clocks</td><td><code>src/animationTiming.ts</code></td></tr>
+  <tr><td>Paint shape and layout</td><td><code>src/overlay/*.css</code> and <code>src/styles.css</code></td></tr>
+</table>
+
+<h2>One event, end to end</h2>
+<p>Use <code>slot-state</code> as the first trace.</p>
+
+<ol>
+  <li>The Rust engine decides whether the slot is empty or showing a notification.</li>
+  <li>Rust emits a JSON payload named <code>slot-state</code>.</li>
+  <li><code>useSlotState.ts</code> listens for that event.</li>
+  <li>The hook validates every field before it updates React state.</li>
+  <li><code>App.tsx</code> reads the state and passes it to <code>StatusRailCard</code>.</li>
+  <li><code>StatusRailCard</code> derives classes, content, and the active below-block.</li>
+  <li>CSS and Motion turn those classes and elements into the visible card.</li>
+</ol>
+
+<div class="note">
+<h3>Why the validator matters</h3>
+<p>Tauri events carry JSON and have no shared TypeScript type at runtime. The hook treats
+the payload as <code>unknown</code>. A malformed payload becomes a safe empty state.</p>
+</div>
+
+<h2>Who owns each kind of state?</h2>
+<table>
+  <tr><th>State</th><th>Owner</th><th>Frontend job</th></tr>
+  <tr><td>Visible notification and queue order</td><td>Rust engine</td><td>Render the received slot.</td></tr>
+  <tr><td>Paused state and live sources</td><td>Rust engine</td><td>Choose the matching idle display.</td></tr>
+  <tr><td>Selected tab and viewed agent session</td><td>Rust input logic</td><td>Render the selected content.</td></tr>
+  <tr><td>Exit staging and frozen outgoing content</td><td>React</td><td>Keep the outgoing card stable during animation.</td></tr>
+  <tr><td>Size, spacing, colour, and motion</td><td>CSS and Motion</td><td>Paint the chosen state.</td></tr>
+  <tr><td>Saved settings</td><td>Rust configuration</td><td>Collect input and invoke approved commands.</td></tr>
+</table>
+
+<h2>How to locate a UI defect</h2>
+<ol>
+  <li>Write the expected and actual visual states.</li>
+  <li>Find the final DOM element in the web inspector.</li>
+  <li>Find the component that produced that element.</li>
+  <li>Find the prop or hook value that chose its state.</li>
+  <li>Stop when you find the first wrong value.</li>
+  <li>Write a failing test at that boundary.</li>
+  <li>Change the smallest owner and verify on hardware.</li>
+</ol>
+
+<p>A CSS symptom can start in Rust. A missing card can start in a TypeScript validator. A
+jumping animation can start with two React children mounted at once. Follow the value.</p>
+
+<h2>The first retrieval check</h2>
+<p>A notification has the correct text in <code>useSlotState</code>, but its manifest opens
+at the wrong time. Where do you look next?</p>
+<details>
+  <summary>Show the answer</summary>
+  <p>Inspect the component prop and render condition. The wire value is already correct,
+  so follow it forward into rendering.</p>
+</details>
+
+<div class="verify">
+<h3>Stop after this</h3>
+<p>Close the page. Draw the six boxes under “The complete path” from memory. Then tick
+<code>nt-1</code> on the plan.</p>
+</div>
+
+<h2>Sources</h2>
+<ul>
+  <li><a href="https://v2.tauri.app/concept/architecture/">Tauri architecture</a></li>
+  <li><a href="https://v2.tauri.app/develop/calling-rust/">Tauri commands and events</a></li>
+  <li><a href="https://react.dev/learn/reusing-logic-with-custom-hooks">React custom hooks</a></li>
+  <li><a href="https://react.dev/learn/synchronizing-with-effects">React effects</a></li>
+  <li><a href="https://motion.dev/docs/react-animate-presence">Motion AnimatePresence</a></li>
+</ul>
+
+<footer>teach / notchtap-tauri / reference · <a href="../plan.html">back to plan</a></footer>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

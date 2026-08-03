@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NotchTap frontend and Tauri — teach</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../index.html">teach</a> / tracks / notchtap-tauri</nav>
+
+<h1>NotchTap frontend and Tauri <span class="badge active">active</span></h1>
+<p class="subtitle">Learn the desktop stack through the app you already use. Start with
+React, state, CSS, and motion. Cross into Tauri and Rust only when a real UI issue needs it.</p>
+
+<div class="why">
+<h3>Why this track exists</h3>
+<p>NotchTap has UI problems you have noticed for weeks. Fixing those problems is the
+course. Each sitting pairs one frontend idea with one visible part of the app. Tauri and
+Rust arrive later, at the exact boundary where the frontend stops owning the answer.</p>
+</div>
+
+<h2>The working rule</h2>
+<table>
+  <tr><th>Concept</th><th>NotchTap question</th></tr>
+  <tr><td>React state</td><td>Which value decides the surface that appears?</td></tr>
+  <tr><td>Custom hooks</td><td>How does a Rust event become a React value?</td></tr>
+  <tr><td>CSS and Motion</td><td>Why does the card jump, clip, or animate incorrectly?</td></tr>
+  <tr><td>Component tests</td><td>How do we keep a fixed visual rule from returning?</td></tr>
+  <tr><td>Tauri events</td><td>How does Rust push state into the overlay?</td></tr>
+  <tr><td>Tauri commands</td><td>How does the settings window ask Rust to act?</td></tr>
+</table>
+
+<h2>Objectives</h2>
+<ul>
+  <li>Trace one pixel from Rust-owned state to a React component and its CSS rule.</li>
+  <li>Explain the overlay and settings frontends without reading every file.</li>
+  <li>Reproduce each chosen UI issue before changing code.</li>
+  <li>Fix at least three user-visible issues with regression tests.</li>
+  <li>Explain when a fix belongs in React, CSS, Tauri IPC, or Rust.</li>
+</ul>
+
+<div class="note">
+<h3>Start here</h3>
+<p>Open the <a href="reference/frontend-map.html">frontend map</a>. Stop after its first
+trace. The first sitting is 20 minutes and changes no app code.</p>
+</div>
+
+<h2>Module 1: map the frontend</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="nt-1" id="nt-1"><label for="nt-1">Read the frontend map through “one event, end to end”. Draw the six boxes from memory <span class="tag">20 min</span></label></li>
+  <li><input type="checkbox" data-item="nt-2" id="nt-2"><label for="nt-2">Open <code>vite.config.ts</code>, <code>src/main.tsx</code>, and <code>src/settings/main.tsx</code>. Name the two webview entries and their root components <span class="tag">15 min</span></label></li>
+  <li><input type="checkbox" data-item="nt-3" id="nt-3"><label for="nt-3">Trace <code>slot-state</code> through <code>useSlotState.ts</code>, <code>App.tsx</code>, and <code>StatusRailCard.tsx</code>. Write one sentence per file <span class="tag">25 min</span></label></li>
+</ul>
+
+<h2>Module 2: use the frontend repair loop</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="nt-4" id="nt-4"><label for="nt-4">Record the UI issues that bother you. Give each one a screen recording, expected result, actual result, and repeatable trigger <span class="tag">25 min</span></label></li>
+  <li><input type="checkbox" data-item="nt-5" id="nt-5"><label for="nt-5">Choose the smallest frontend-only issue. Find its deciding prop, component, and final CSS rule without editing them <span class="tag">25 min</span></label></li>
+  <li><input type="checkbox" data-item="nt-6" id="nt-6"><label for="nt-6">Add one failing Vitest case that describes the expected UI state. Run only that test and see the intended failure <span class="tag">30 min</span></label></li>
+  <li><input type="checkbox" data-item="nt-7" id="nt-7"><label for="nt-7">Make the smallest fix. Run the focused test, frontend suite, type check, lint, and a hardware check <span class="tag">45 min</span></label></li>
+</ul>
+
+<h2>Module 3: cross the Tauri boundary</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="nt-8" id="nt-8"><label for="nt-8">Read the official Tauri architecture page. Explain the Rust process, webview, and message boundary using NotchTap files <span class="tag">20 min</span></label></li>
+  <li><input type="checkbox" data-item="nt-9" id="nt-9"><label for="nt-9">Compare an overlay listener in <code>useSlotState.ts</code> with a settings command in <code>src/settings/ipc.ts</code>. State why their directions differ <span class="tag">25 min</span></label></li>
+  <li><input type="checkbox" data-item="nt-10" id="nt-10"><label for="nt-10">Trace one settings command through <code>ipc.ts</code>, the Tauri capability, <code>build.rs</code>, and its Rust handler <span class="tag">30 min</span></label></li>
+</ul>
+
+<h2>Module 4: close the UI backlog</h2>
+<ul class="actions">
+  <li><input type="checkbox" data-item="nt-11" id="nt-11"><label for="nt-11">Fix a second issue that crosses the event boundary. Test the TypeScript payload and the Rust publisher <span class="tag">60 min</span></label></li>
+  <li><input type="checkbox" data-item="nt-12" id="nt-12"><label for="nt-12">Fix a third issue involving layout or motion. Verify reduced motion and both HUD and notch modes <span class="tag">60 min</span></label></li>
+  <li><input type="checkbox" data-item="nt-13" id="nt-13"><label for="nt-13">Write the learning record. Draw the final event path, list the three fixes, and name which layer owned each one <span class="tag">25 min</span></label></li>
+</ul>
+
+<h2>Commands used during the track</h2>
+<pre><code>cd ~/Desktop/code/mac-notification-nudge
+npm run tauri dev
+npx vitest run
+npx tsc --noEmit
+npx biome ci .
+
+cd src-tauri
+cargo test --locked
+cargo clippy --locked --all-targets -- -D warnings</code></pre>
+
+<div class="verify">
+<h3>You have finished this track when</h3>
+<p>Three UI issues are fixed and verified on hardware. You can draw the path from a Rust
+event to the rendered card. You can also explain why the overlay listens while the
+settings window invokes.</p>
+</div>
+
+<h2>Primary sources</h2>
+<ul>
+  <li><a href="https://v2.tauri.app/concept/architecture/">Tauri architecture</a></li>
+  <li><a href="https://v2.tauri.app/develop/calling-rust/">Tauri commands and events</a></li>
+  <li><a href="https://react.dev/learn/reusing-logic-with-custom-hooks">React custom hooks</a></li>
+  <li><a href="https://motion.dev/docs/react-animate-presence">Motion AnimatePresence</a></li>
+</ul>
+
+<footer>teach / notchtap-tauri · app repo: <code>~/Desktop/code/mac-notification-nudge</code> · <a href="../index.html">dashboard</a></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>

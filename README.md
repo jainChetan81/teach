@@ -29,10 +29,11 @@ and a hard rule — **at most two active subjects at any time.**
 | Folder | Subject | Status |
 |---|---|---|
 | [`herdr/`](herdr/plan.html) | The agent multiplexer with sessions that never die — use it, then understand its internals | **active** |
-| [`ai-tooling/`](ai-tooling/plan.html) | How coding agents work (agent loop, tokens, context) · MCP · PAL MCP · t3code fork with a Kimi provider | **active** |
+| [`notchtap-tauri/`](notchtap-tauri/plan.html) | Learn the frontend and Tauri boundary by fixing NotchTap UI issues | **active** |
+| [`ai-tooling/`](ai-tooling/plan.html) | How coding agents work (agent loop, tokens, context) · MCP · PAL MCP · t3code fork with a Kimi provider | queued |
 | [`portable-sessions/`](portable-sessions/plan.html) | 🏁 **Capstone**: move a live agent session between devices | capstone |
 | [`networking/`](networking/plan.html) | SSH to muscle memory · WireGuard/Tailscale/NAT traversal · my own VPS | queued |
-| [`rust-tauri/`](rust-tauri/plan.html) | Rust from zero → read herdr's source, modify my own Tauri apps | queued |
+| [`rust-tauri/`](rust-tauri/plan.html) | Deeper Rust foundations after the practical NotchTap track | queued |
 | [`llm-internals/`](llm-internals/plan.html) | Build a GPT with Karpathy → fine-tune a tiny SMS parser for kharcha | queued |
 | [`js-internals/`](js-internals/plan.html) | esbuild → fastify → node → bun (from my existing study plans) | backlog |
 | [`ffmpeg/`](ffmpeg/plan.html) | Containers vs codecs, ten commands from memory, one automation | backlog |

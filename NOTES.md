@@ -6,7 +6,7 @@
 - Folder must be `~/Desktop/teach` (iCloud-synced Desktop, available on all his devices).
 - Structure he asked for (revised 2026-07-27): general goals at the top level (index.html), **one folder per subject at the root** (`teach/<subject>/` with plan + lessons + reference inside), growing over time. New subject → new root folder.
 - Motivation is the historical failure point → single-sitting wins; when he stalls, shrink the step, never grow the plan.
-- Enforce the two-active-subjects rule gently but firmly. Current active: **herdr, ai-tooling** (rust-tauri moved to queued when herdr became the first subject).
+- Enforce the two-active-subjects rule gently but firmly. Current active: **herdr, notchtap-tauri**. The user explicitly replaced ai-tooling on 2026-08-03.
 
 ## Confirmed identities (resolved 2026-07-26)
 - **herdr** = ogulcancelik/herdr — Rust agent multiplexer; background session server holds PTYs, thin clients attach via Unix socket or SSH (`herdr --remote`). Docs: herdr.dev/docs (concepts, session state, remote).
@@ -59,3 +59,5 @@ exist to serve this.
   mid-session, answer it in chat and log it in a learning record — resist turning every
   answer into new material. Building the course is the comfortable substitute for taking it.
 - He types fast and informally; don't over-index on typos — confirm tool identities before building lessons around them (done for herdr/t3code).
+- **NotchTap identity confirmed.** The app repo is `~/Desktop/code/mac-notification-nudge`, with remote `jainChetan81/notchtap`. Do not create a duplicate app repo inside `teach`.
+- **NotchTap teaching order:** frontend map, one frontend-only UI fix, Tauri events and commands, then cross-boundary UI fixes. Use the user's visible problems as the syllabus.

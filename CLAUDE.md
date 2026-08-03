@@ -29,8 +29,8 @@ its folder:
   reference/       cheat sheets, glossaries for that subject
 ```
 
-Current subjects: `herdr/` (active), `ai-tooling/` (active), `portable-sessions/`
-(capstone), `networking/`, `rust-tauri/`, `llm-internals/` (queued),
+Current subjects: `herdr/` (active), `notchtap-tauri/` (active), `portable-sessions/`
+(capstone), `ai-tooling/`, `networking/`, `rust-tauri/`, `llm-internals/` (queued),
 `js-internals/`, `ffmpeg/` (backlog).
 
 ## Rules
@@ -42,7 +42,7 @@ Current subjects: `herdr/` (active), `ai-tooling/` (active), `portable-sessions/
   subject root, `../../assets/` from lessons/reference) so everything reads as one course.
 - Learning records are cross-subject and stay at the root: `learning-records/NNNN-slug.md`,
   incrementing the number.
-- Active subjects: **herdr** and **ai-tooling**. Do not activate others without the user
+- Active subjects: **herdr** and **notchtap-tauri**. Do not activate others without the user
   explicitly choosing to swap.
 - Commit meaningful changes to git as you go; remote is github.com/jainChetan81/teach.
 

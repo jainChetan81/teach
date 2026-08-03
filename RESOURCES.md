@@ -22,12 +22,18 @@ parametric guesses. Prune ruthlessly; annotate every entry.
   Provider-abstraction MCP server. Use for: multi-provider routing; trace one call.
 
 ### Rust & Tauri
+- `~/Desktop/code/mac-notification-nudge` (`jainChetan81/notchtap`)
+  The live course codebase. React/TypeScript renders two Vite entries; Rust owns the engine, native input, event wires, and window behaviour. Use for every NotchTap exercise.
 - [rustlings](https://github.com/rust-lang/rustlings)
   Small compile-fix exercises. Use for: Module 1 drills, in track-page order.
 - [The Rust Book](https://doc.rust-lang.org/book/)
   Ch. 4 (ownership) is load-bearing. Use for: retrieval exercises on ownership/borrowing.
 - [Tauri v2 docs](https://v2.tauri.app/)
   Commands, state, events, plugins. Use for: mapping and modifying his existing apps.
+- [React documentation](https://react.dev/learn)
+  State, effects, and custom hooks. Use for: tracing NotchTap's event hooks and render state.
+- [Motion for React](https://motion.dev/docs/react)
+  AnimatePresence, transitions, and reduced motion. Use for: NotchTap's surface swaps and exit choreography.
 - herdr's own source (above) — real-world Rust to read once rustlings basics land.
 
 ### Networking
