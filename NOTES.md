@@ -61,3 +61,12 @@ exist to serve this.
 - He types fast and informally; don't over-index on typos — confirm tool identities before building lessons around them (done for herdr/t3code).
 - **NotchTap identity confirmed.** The app repo is `~/Desktop/code/mac-notification-nudge`, with remote `jainChetan81/notchtap`. Do not create a duplicate app repo inside `teach`.
 - **NotchTap teaching order:** frontend map, one frontend-only UI fix, Tauri events and commands, then cross-boundary UI fixes. Use the user's visible problems as the syllabus.
+- **2026-08-03 — the NotchTap goal is sharper than "learn Tauri."** He wants to stop
+  handing animation bugs to AI and fix them himself (record 0007). Lesson 0001 (the seven
+  wires) is written and delivers the data path plus the three animation triggers. **Do not
+  write lesson 0002 until he has named at least one real UI defect (`nt-4`).** The next
+  lesson must be built on his own bug, otherwise it is generic material and repeats the
+  four-lessons-zero-read failure.
+- Shared quiz widget now lives at `assets/quiz.js` (markup contract documented in the file).
+  New lessons link it instead of inlining the handler; the four herdr lessons still inline
+  their own copy and can be migrated whenever one is next edited.
