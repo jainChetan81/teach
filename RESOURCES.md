@@ -6,10 +6,10 @@ parametric guesses. Prune ruthlessly; annotate every entry.
 ## Knowledge
 
 ### Portable Sessions capstone
-- [herdr — ogulcancelik/herdr](https://github.com/ogulcancelik/herdr) · docs at [herdr.dev/docs](https://herdr.dev/docs)
+- [herdr — herdrdev/herdr](https://github.com/herdrdev/herdr) · docs at [herdr.dev/docs](https://herdr.dev/docs)
   Rust agent multiplexer. Client-server: a background session server owns persistent PTYs; thin clients attach over a Unix socket or SSH (`herdr --remote`). Read the *concepts*, *session state*, and *remote* doc pages first. Use for: capstone Phase 1, networking Module 2.
 - [t3code — pingdotgg/t3code](https://github.com/pingdotgg/t3code)
-  Minimal web GUI for coding agents (Codex, Claude, Cursor, OpenCode). Effect/TS monorepo, provider-adapter pattern, SQLite session persistence. Docs live in `docs/` in-repo: *architecture overview*, *remote access*, *keeping T3 Code in sync*. No Kimi provider yet — that's the user's spike. Use for: capstone Phase 2, ai-tooling Module 4.
+  Minimal web GUI for coding agents (Codex, Claude, Cursor, OpenCode, Grok Build). Effect/TS monorepo, provider-adapter pattern, event-sourced session store (SQL transaction per event — confirm engine from source before repeating "SQLite" as fact). Docs live in `docs/` in-repo: *architecture overview*, *remote access* (`docs/user/remote-access.md` — already documents a Tailscale pairing/QR flow and an SSH-launch mode, this is not an open design question), *keeping T3 Code in sync*. No Kimi provider yet — that's the user's spike. Use for: capstone Phase 2, ai-tooling Module 4.
 
 ### AI Tooling & Coding Agents
 - [aihero.dev — Matt Pocock](https://www.aihero.dev/)
@@ -18,7 +18,7 @@ parametric guesses. Prune ruthlessly; annotate every entry.
   Skills, hooks, subagents, memory, MCP configuration. Use for: workflow-level features.
 - [Model Context Protocol spec](https://modelcontextprotocol.io)
   Primary source for hosts/clients/servers and tools/resources/prompts. Use for: MCP module, toy server build.
-- [PAL MCP — BeehiveInnovations](https://github.com/BeehiveInnovations/pal-mcp)
+- [PAL MCP — BeehiveInnovations](https://github.com/BeehiveInnovations/pal-mcp-server)
   Provider-abstraction MCP server. Use for: multi-provider routing; trace one call.
 
 ### Rust & Tauri
@@ -38,11 +38,15 @@ parametric guesses. Prune ruthlessly; annotate every entry.
 
 ### Networking
 - [RFC 4253 (SSH transport layer)](https://www.rfc-editor.org/rfc/rfc4253)
-  Primary source for the SSH handshake. Use for: verifying the from-memory handshake diagram.
+  Primary source for the SSH handshake up through host-key verification (TCP → version exchange → key exchange → host-key verify). Use for: verifying the from-memory handshake diagram.
+- [RFC 4252 (SSH authentication protocol)](https://www.rfc-editor.org/rfc/rfc4252)
+  Covers the "auth" step 4253 doesn't — password/pubkey/keyboard-interactive auth methods. Use for: net-2, the second half of the handshake.
 - [Tailscale blog — "How Tailscale works"](https://tailscale.com/blog/how-tailscale-works)
   WireGuard, control plane, DERP relays, NAT traversal. Use for: Module 3.
 - [WireGuard whitepaper](https://www.wireguard.com/papers/wireguard.pdf)
   Dense but primary. Use for: the toy-tunnel build.
+- [Winstein & Balakrishnan — "Mosh: An Interactive Remote Shell for Mobile Clients" (USENIX ATC 2012)](https://mosh.org/mosh-paper.pdf)
+  Primary source on the State Synchronisation Protocol — mosh syncs *screen state*, not keystrokes. Use for: net-12, Module 4.
 
 ### LLM Internals + kharcha
 - [Karpathy — "Let's build GPT: from scratch, in code"](https://www.youtube.com/watch?v=kCc8FmEb1nY)

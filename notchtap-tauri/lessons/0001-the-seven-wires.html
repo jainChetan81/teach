@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 0001 — The seven wires</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../../index.html">teach</a> / <a href="../plan.html">notchtap-tauri</a> / lessons / 0001</nav>
+
+<h1>The seven wires</h1>
+<p class="subtitle">Where NotchTap's data comes from, where it sits, and what makes an
+animation start. One sitting, about 20 minutes, no code changes.</p>
+
+<div class="why">
+<h3>Why this is the first thing</h3>
+<p>You want to fix animations yourself. Nearly every animation bug in this app is really a
+question about <em>a value that changed at the wrong moment</em>. So before you can fix
+motion, you need to know which values exist, who sends them, and when. That is this lesson.
+After it you can read any bug report and say which of three triggers is involved.</p>
+</div>
+
+<h2>1. The rule that makes the app small</h2>
+
+<p>The overlay window does not fetch. It does not poll. It does not read files. It holds no
+database and no store. Rust decides everything and pushes it in.</p>
+
+<p>That means the entire input surface of the UI is a short list of named messages. Seven of
+them. You can hold seven in your head.</p>
+
+<div class="diagram">the outside world
+    ↓
+Rust decides
+    ↓  one of 7 named events, carrying JSON
+one React hook per event
+    ↓  useState
+App.tsx
+    ↓  plain props
+components → CSS and Motion → pixels</div>
+
+<h2>2. The seven</h2>
+
+<table>
+<tr><th>Event</th><th>Answers the question</th><th>Lands in</th></tr>
+<tr><td><code>slot-state</code></td><td>Which notification is showing?</td><td><code>useSlotState.ts</code></td></tr>
+<tr><td><code>status-state</code></td><td>Are we paused? What is live?</td><td><code>useStatusState.ts</code></td></tr>
+<tr><td><code>agent-state</code></td><td>Which agents need me?</td><td><code>useAgentState.ts</code></td></tr>
+<tr><td><code>tab-selection-changed</code></td><td>Which tab is selected?</td><td><code>useTabSelection.ts</code></td></tr>
+<tr><td><code>agent-viewed-session-changed</code></td><td>Which session am I looking at?</td><td><code>useAgentViewedSession.ts</code></td></tr>
+<tr><td><code>appearance-changed</code></td><td>How big, how round, how solid?</td><td><code>App.tsx</code></td></tr>
+<tr><td><code>hover-changed</code></td><td>Is the cursor on the card?</td><td><code>App.tsx</code></td></tr>
+</table>
+
+<p>The full table, with the exact Rust line that sends each one, lives in the
+<a href="../reference/wire-table.html">wire table</a>. Keep that page open while you debug;
+do not memorise it.</p>
+
+<p>Two things worth noticing now:</p>
+<ul>
+  <li><strong>Every wire runs one way.</strong> Rust to overlay. The overlay never asks for
+  anything. Only the <em>settings</em> window is allowed to call into Rust.</li>
+  <li><strong>Hover is a wire too.</strong> That surprises most React developers. The cursor
+  position is decided by a native tracking area in Rust, not by a CSS <code>:hover</code>
+  rule, because the window is mostly click-through.</li>
+</ul>
+
+<h2>3. Where the data sits</h2>
+
+<p>There is no clever state layer. Each hook does the same three things:</p>
+
+<pre><code>const [slot, setSlot] = useState&lt;SlotState&gt;(initialSlotState);   // 1. one useState
+useEffect(() =&gt; {
+  listen&lt;unknown&gt;("slot-state", ({ payload }) =&gt;                 // 2. one listener
+    setSlot(isValidSlotState(payload) ? payload : { state: "empty" }));  // 3. validate
+}, []);</code></pre>
+
+<p>That is <code>useSlotState.ts</code>, compressed. All seven hooks are the same shape.
+<code>App.tsx</code> calls them, and from there everything travels down as ordinary props.</p>
+
+<div class="note">
+<h3>Why the validator is not paranoia</h3>
+<p>A Tauri event arrives as JSON. TypeScript types vanish at runtime, so the payload is
+typed <code>unknown</code> and checked field by field. A payload that fails any check becomes
+an <strong>empty</strong> state, not a half-drawn card. Practical consequence: if Rust adds a
+new value to an enum and the TypeScript list is not updated, the card silently disappears
+instead of throwing. When a notification vanishes for no reason, suspect the validator first.</p>
+</div>
+
+<h2>4. When a wire fires</h2>
+
+<p>On change only. Rust compares the new value with the last one and stays quiet if they
+match. There is no per-frame stream and no heartbeat.</p>
+
+<p>So a stuck screen is usually a wire that never fired, not a component that failed to
+re-render. That single habit will save you hours: before you inspect React, ask whether the
+event was sent at all.</p>
+
+<h2>5. What actually starts an animation</h2>
+
+<p>This is the part you came for. In this app, exactly three things start motion.</p>
+
+<table>
+<tr><th>#</th><th>Trigger</th><th>What it looks like in code</th></tr>
+<tr><td>1</td><td><strong>A surface swaps.</strong> The whole top-level card is replaced.</td><td>A child mounts or unmounts inside <code>AnimatePresence</code> in <code>App.tsx</code>.</td></tr>
+<tr><td>2</td><td><strong>The content swaps.</strong> Same card, different item inside it.</td><td>A React <code>key</code> changes. <code>swapKey</code> is <code>slot.id</code> while showing, and the string <code>"idle"</code> otherwise.</td></tr>
+<tr><td>3</td><td><strong>A class flips.</strong> Same elements, new look.</td><td>A boolean like <code>hovered</code> or <code>exiting</code> adds a class, and CSS transitions it.</td></tr>
+</table>
+
+<p>Trigger 1 is decided by one small pure function, <code>presentationMode()</code>:</p>
+
+<pre><code>if (slot.state === "showing") return "notification";
+if (paused) return "idle";
+return sessionCount &gt; 0 ? "board" : "idle";</code></pre>
+
+<p>Three lines decide which surface you see. A notification always wins. Pause quiets
+everything, the Agent Board included.</p>
+
+<p>Trigger 2 is the one that bites. React unmounts a node when its <code>key</code> changes,
+so an exit plus an entrance play. If two different notifications share an id, no swap
+animates. If an id changes when it should not have, the card replays its entrance for no
+visible reason.</p>
+
+<p>Trigger 3 is where CSS finally does the work, and where durations must match numbers
+declared in JavaScript.</p>
+
+<div class="note">
+<h3>All the clocks live in one file</h3>
+<p><code>src/animationTiming.ts</code> holds every duration and the house easing curve.
+Some of those constants are locked to a CSS value by a test, so editing one side alone fails
+the suite deliberately. When an animation feels wrong, retuning a number in that file changes
+every consumer at once. That is the intended repair, not editing a duration in a stylesheet.</p>
+</div>
+
+<h2>6. Do this now (5 minutes, changes nothing)</h2>
+
+<ol>
+  <li>
+    <p>Count the input surface yourself:</p>
+    <pre><code>cd ~/Desktop/code/mac-notification-nudge
+rg -n 'listen&lt;' src --glob '!*.test.*'</code></pre>
+    <p>Seven lines. Confirm each one against the table above.</p>
+  </li>
+  <li>
+    <p>Find the one file where the wires meet:</p>
+    <pre><code>rg -n 'use[A-Z][A-Za-z]*State|useTabSelection|useAgentViewedSession' src/App.tsx</code></pre>
+  </li>
+  <li>
+    <p>Read the three lines of <code>presentationMode</code>:</p>
+    <pre><code>rg -n 'export function presentationMode' -A 12 src/lib/presentation.ts</code></pre>
+  </li>
+  <li>
+    <p>Now say out loud, without looking: the seven wires, and the three animation triggers.
+    Getting five of seven is fine. The point is the retrieval, not the score.</p>
+  </li>
+</ol>
+
+<h2>Check yourself</h2>
+
+<div class="quiz" data-answer="c"
+     data-right="Right. Rust owns the decision; React only renders it."
+     data-wrong="Not quite. Reread section 5 and try again.">
+  <p class="quiz-q">1. The Agent Board appears while the app is paused. Where is the bug?</p>
+  <div class="quiz-opts">
+    <button data-k="a">In the CSS that paints the board surface</button>
+    <button data-k="b">In the exit timing of the status rail</button>
+    <button data-k="c">In the paused value or the mode rule</button>
+    <button data-k="d">In the motion library's presence handling</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="b"
+     data-right="Right. A same key means React keeps the node, so nothing exits."
+     data-wrong="Not quite. Reread trigger 2 and try again.">
+  <p class="quiz-q">2. A new notification replaces an old one with no animation at all. First suspect?</p>
+  <div class="quiz-opts">
+    <button data-k="a">The easing curve is set to a linear value</button>
+    <button data-k="b">The two items are arriving with the same id</button>
+    <button data-k="c">The window has reduced motion turned on</button>
+    <button data-k="d">The below block is mounted twice at once</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="a"
+     data-right="Right. A failed field check turns the whole payload into empty."
+     data-wrong="Not quite. Reread the validator note in section 3.">
+  <p class="quiz-q">3. Rust adds a new source kind. Cards from it never appear. Why?</p>
+  <div class="quiz-opts">
+    <button data-k="a">The hook rejects the payload and falls back to empty</button>
+    <button data-k="b">The card renders but sits behind the notch cutout</button>
+    <button data-k="c">The event name no longer matches on the Rust side</button>
+    <button data-k="d">The queue drops the item before it reaches the slot</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="quiz" data-answer="d"
+     data-right="Right. Ask whether the event fired before you inspect React."
+     data-wrong="Not quite. Reread section 4 and try again.">
+  <p class="quiz-q">4. The card is frozen on stale content. What do you check first?</p>
+  <div class="quiz-opts">
+    <button data-k="a">Whether the component memoised its own props</button>
+    <button data-k="b">Whether the stylesheet loaded in the right order</button>
+    <button data-k="c">Whether the timing constants drifted out of sync</button>
+    <button data-k="d">Whether Rust emitted the event in the first place</button>
+  </div>
+  <p class="quiz-fb"></p>
+</div>
+
+<div class="verify">
+<h3>Done with this lesson when</h3>
+<p>You can name the three animation triggers from memory, and you can say which one is
+responsible for a card that replaces another with no motion. Then tick <strong>nt-1</strong>
+and <strong>nt-2</strong> on the <a href="../plan.html">plan</a>.</p>
+</div>
+
+<h2>Go deeper (primary sources)</h2>
+<ul>
+  <li><a href="https://v2.tauri.app/develop/calling-frontend/">Tauri — calling the frontend from Rust</a>. The exact mechanism behind all seven wires. Read this one first; it is short.</li>
+  <li><a href="https://motion.dev/docs/react-animate-presence">Motion — AnimatePresence</a>. Why an unmount can animate at all, and what <code>mode="wait"</code> changes.</li>
+  <li><a href="https://react.dev/learn/preserving-and-resetting-state">React — preserving and resetting state</a>. The <code>key</code> rule behind trigger 2, from the source.</li>
+</ul>
+
+<div class="note">
+<strong>Ask me things.</strong> I am your teacher for this track. If a wire, a trigger, or a
+line of that repo is unclear, ask in chat rather than guessing. Good next question to bring
+me: the name of one UI issue in NotchTap that annoys you, and which of the three triggers you
+think owns it.
+</div>
+
+<footer>teach / notchtap-tauri / lessons / 0001 · <a href="../reference/wire-table.html">wire table</a> · <a href="../reference/frontend-map.html">frontend map</a> · <a href="../plan.html">plan</a> · <a href="../../index.html">dashboard</a></footer>
+
+<script src="../../assets/app.js"></script>
+<script src="../../assets/quiz.js"></script>
+</body>
+</html>

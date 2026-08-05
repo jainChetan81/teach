@@ -27,13 +27,13 @@ don't know which commands are safe, whether the server comes back on its own, an
 config wins when two machines disagree.</p>
 </div>
 
-<h2>Phase 1 — The three server verbs, and the one that doesn't exist</h2>
+<h2>Phase 1 — The server verbs, and the one that doesn't exist</h2>
 
 <p>Run this first and read the output before anything else:</p>
 
 <ul class="actions">
   <li><input type="checkbox" data-item="h3-1" id="h3-1"><label for="h3-1"><strong>Ask for a command that isn't real:</strong> <code>herdr server restart</code> — it prints the usage list instead of restarting. There is no restart verb <span class="tag">1 min</span></label></li>
-  <li><input type="checkbox" data-item="h3-2" id="h3-2"><label for="h3-2"><strong>Read what actually exists:</strong> <code>herdr server --help</code> — three real verbs. Learn which is which before you need them <span class="tag">2 min</span></label></li>
+  <li><input type="checkbox" data-item="h3-2" id="h3-2"><label for="h3-2"><strong>Read what actually exists:</strong> <code>herdr server --help</code> — the two verbs you'll reach for day to day. Learn which is which before you need them <span class="tag">2 min</span></label></li>
 </ul>
 
 <table>
@@ -41,9 +41,17 @@ config wins when two machines disagree.</p>
 <tbody>
 <tr><td><code>server stop</code></td><td><strong>Kills every one of them.</strong> Agents included.</td><td>Almost never. Last resort.</td></tr>
 <tr><td><code>server reload-config</code></td><td><strong>Nothing. They keep running.</strong> Applies <code>config.toml</code> in place.</td><td>Every config change.</td></tr>
-<tr><td><code>server live-handoff</code></td><td>Moves live panes to a new local server.</td><td>Upgrades, without losing work.</td></tr>
 </tbody>
 </table>
+
+<div class="note">
+<strong>Not a <code>server</code> verb:</strong> moving live panes to a replacement
+server for an upgrade is real, but it's <code>herdr update --handoff</code>, not
+<code>herdr server live-handoff</code> — there is no such subcommand. <code>herdr
+server --help</code> also lists agent-manifest verbs
+(<code>agent-manifests</code>, <code>update-agent-manifests</code>,
+<code>reload-agent-manifests</code>) that this lesson doesn't cover.
+</div>
 
 <div class="note">
 <strong>The trap:</strong> you change <code>config.toml</code>, you want it applied, you
@@ -211,7 +219,7 @@ Never fix this by copying one config over the other; they are different roles.
 
 <div class="verify">
 <h3>Done with this lesson when</h3>
-<p>You can name the three real <code>server</code> verbs and say which one is safe with
+<p>You can name the two real <code>server</code> verbs and say which one is safe with
 agents running; you can explain why <code>env -i</code> is the only honest PATH test; and
 you can answer, without looking: <em>"I attached from my laptop and the theme is wrong —
 which machine do I fix?"</em> Then tick <strong>hdr-5</strong> on the
