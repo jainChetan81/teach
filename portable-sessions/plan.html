@@ -28,16 +28,16 @@ and what would t3code need for that?</p>
 <h2>The two session models you're comparing</h2>
 <table>
   <tr><th></th><th>herdr</th><th>t3code</th></tr>
-  <tr><td>What is "the session"</td><td>A live PTY owned by a background server process</td><td>Rows in a SQLite store: threads, turns, events</td></tr>
+  <tr><td>What is "the session"</td><td>A live PTY owned by a background server process</td><td>Event-sourced store: threads, turns, events, one SQL transaction per write (confirm engine — public docs don't name it)</td></tr>
   <tr><td>Survives disconnect because</td><td>The server never dies; clients are disposable views</td><td>State is on disk, event-sourced; UI reconnects and re-projects</td></tr>
-  <tr><td>Remote access today</td><td><code>herdr --remote</code> over SSH (thin client)</td><td>Web GUI; docs have a remote-access page</td></tr>
+  <tr><td>Remote access today</td><td><code>herdr --remote</code> over SSH (thin client)</td><td>Already shipped: Tailscale pairing/QR flow and an SSH-launch mode (<code>docs/user/remote-access.md</code>)</td></tr>
   <tr><td>Language</td><td>Rust (single binary)</td><td>TypeScript (Effect, adapter pattern)</td></tr>
 </table>
 
 <h2>Phase 1 — Understand herdr's session model</h2>
 <ul class="actions">
-  <li><input type="checkbox" data-item="ps-1" id="ps-1"><label for="ps-1">Read herdr docs: <em>session state</em> and <em>remote</em> pages at herdr.dev/docs; note where state lives on disk and what survives a server restart <span class="tag">knowledge</span></label></li>
-  <li><input type="checkbox" data-item="ps-2" id="ps-2"><label for="ps-2">In the source (<code>ogulcancelik/herdr</code>, Rust): find how the session server keeps PTYs alive while clients come and go — socket protocol, reattach handshake <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="ps-1" id="ps-1"><label for="ps-1">Read herdr docs: <em>session state</em> and <em>persistence-remote</em> pages at herdr.dev/docs; note where state lives on disk and what survives a server restart <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="ps-2" id="ps-2"><label for="ps-2">In the source (<code>herdrdev/herdr</code>, Rust): find how the session server keeps PTYs alive while clients come and go — socket protocol, reattach handshake <span class="tag">knowledge</span></label></li>
 </ul>
 
 <h2>Phase 2 — Understand t3code's session model</h2>
@@ -53,9 +53,14 @@ and what would t3code need for that?</p>
 </ul>
 
 <h2>Phase 4 — Port the formula to t3code</h2>
+<p class="subtitle">Correction: t3code already ships remote/pairing (<code>t3 pair
+--tailscale</code>, <code>t3 serve --tailscale-serve</code>, a QR pairing flow, and an
+SSH-launch mode — see <code>docs/user/remote-access.md</code> and the
+<code>packages/tailscale</code> / <code>packages/ssh</code> folders in the repo). The
+open question is not "what would this require," it's "set it up and demo it."</p>
 <ul class="actions">
-  <li><input type="checkbox" data-item="ps-7" id="ps-7"><label for="ps-7">Design doc (one page in this folder): what "resume this session on my other machine" requires for t3code — remote backend? db sync? both? <span class="tag">record</span></label></li>
-  <li><input type="checkbox" data-item="ps-8" id="ps-8"><label for="ps-8">Build the thinnest working version, demo it moving a real session between devices, write the learning record <span class="tag">build</span></label></li>
+  <li><input type="checkbox" data-item="ps-7" id="ps-7"><label for="ps-7">Design doc (one page in this folder): read t3code's existing remote-access implementation and write down which layer (pairing, Tailscale Serve, SSH launch) does which job — not a from-scratch design <span class="tag">record</span></label></li>
+  <li><input type="checkbox" data-item="ps-8" id="ps-8"><label for="ps-8">Set up and demo t3code's existing remote path moving a real session between your own devices; write the learning record — build custom code only where the existing path falls short <span class="tag">build</span></label></li>
 </ul>
 
 <div class="verify">

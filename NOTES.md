@@ -9,8 +9,8 @@
 - Enforce the two-active-subjects rule gently but firmly. Current active: **herdr, notchtap-tauri**. The user explicitly replaced ai-tooling on 2026-08-03.
 
 ## Confirmed identities (resolved 2026-07-26)
-- **herdr** = ogulcancelik/herdr — Rust agent multiplexer; background session server holds PTYs, thin clients attach via Unix socket or SSH (`herdr --remote`). Docs: herdr.dev/docs (concepts, session state, remote).
-- **t3code** = pingdotgg/t3code — minimal web GUI for coding agents; Effect/TS monorepo, provider-adapter pattern, SQLite session persistence. No Kimi provider yet → that's his spike (ai-11).
+- **herdr** = herdrdev/herdr — Rust agent multiplexer; background session server holds PTYs, thin clients attach via Unix socket or SSH (`herdr --remote`). Docs: herdr.dev/docs (concepts, session state, remote).
+- **t3code** = pingdotgg/t3code — minimal web GUI for coding agents; Effect/TS monorepo, provider-adapter pattern, event-sourced session store (SQL transaction per event — confirm "SQLite" specifically from source, public docs don't name the engine). No Kimi provider yet → that's his spike (ai-11). Already ships Tailscale pairing + SSH-launch remote access — not an open design question.
 
 ## The through-line
 Capstone: portable agent sessions (`portable-sessions/`). herdr's model (server-owned

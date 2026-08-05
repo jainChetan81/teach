@@ -53,7 +53,6 @@
   <tr><td>The full protocol contract</td><td><code>herdr api schema --json</code></td></tr>
   <tr><td>What's on disk</td><td><code>~/.config/herdr/session.json</code> (shape), <code>herdr-server.log</code>, <code>herdr.sock</code></td></tr>
   <tr><td><strong>Apply config, keep panes alive</strong></td><td><code>herdr server reload-config</code> &mdash; returns <code>status: applied</code>. <strong>Use this, not stop.</strong></td></tr>
-  <tr><td>Move live panes to a new server</td><td><code>herdr server live-handoff</code> &mdash; for upgrades without losing work</td></tr>
   <tr><td>Stop the server &mdash; <strong>kills every pane and agent</strong></td><td><code>herdr server stop</code> &mdash; last resort. There is <strong>no</strong> <code>herdr server restart</code>. The server does <strong>not</strong> restart itself; a client command reports <code>stopped</code> and starts nothing</td></tr>
   <tr><td>Read a pane's output</td><td><code>herdr pane read &lt;id&gt; --source recent --lines 400</code> &mdash; <code>--source visible</code> returns only the current screen and will make a restored pane look empty</td></tr>
   <tr><td>Named, fully separate session</td><td><code>herdr --session &lt;name&gt;</code> · socket at <code>~/.config/herdr/sessions/&lt;name&gt;/herdr.sock</code></td></tr>
@@ -65,10 +64,10 @@
 <code>{"id":"req_1","result":{"type":"pong"}}</code>. The CLI below is just a wrapper over it.</p>
 <pre><code>herdr workspace create --cwd ~/project --label api
 herdr tab create --label logs
-herdr pane split 1-1 --direction right
-herdr pane run 1-2 "just test"
-herdr wait agent-status 1-1 --status done
-herdr pane read 1-2 --source recent-unwrapped</code></pre>
+herdr pane split w1:p1 --direction right
+herdr pane run w1:p2 "just test"
+herdr agent wait w1:p1 --until done
+herdr pane read w1:p2 --source recent-unwrapped</code></pre>
 
 <h2>Mental model (one line)</h2>
 <p><strong>The server holds the PTYs; every terminal — Mac, phone, VPS — is a disposable view onto them.</strong>
@@ -81,6 +80,7 @@ Mosh keeps the <em>connection</em> alive; herdr keeps the <em>work</em> alive.</
   <tr><td><em>blocked</em></td><td>waiting on you (prompt, permission)</td></tr>
   <tr><td><em>done</em></td><td>task finished</td></tr>
   <tr><td><em>idle</em></td><td>pane exists, no agent activity</td></tr>
+  <tr><td><em>unknown</em></td><td>herdr cannot confidently classify the state</td></tr>
 </table>
 
 <footer>teach / herdr / reference · <a href="../lessons/0001-herdr-sessions-that-never-die.html">lesson 0001</a> · <a href="../lessons/0002-what-actually-survives.html">lesson 0002</a> · <a href="../../index.html">dashboard</a></footer>

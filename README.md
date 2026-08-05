@@ -15,7 +15,7 @@ Synced via iCloud, versioned here, and designed to be driven by an AI teacher
 **Own the tools I use every day — from the inside.**
 
 The concrete goal tying most of this together: **carry a live coding-agent session from
-one device to another.** Understand how [herdr](https://github.com/ogulcancelik/herdr)
+one device to another.** Understand how [herdr](https://github.com/herdrdev/herdr)
 preserves sessions, apply the same model to [t3code](https://github.com/pingdotgg/t3code),
 and move sessions over SSH/Tailscale. That capstone deliberately pulls on every other
 subject: Rust (herdr's source), TS (t3code), SSH and VPN internals (the transport).

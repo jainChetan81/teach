@@ -110,6 +110,14 @@ server restart        →     shape only      ← session.json
 herdr self-update     →     everything, if --handoff works</div>
 
 <div class="note">
+<strong>Caveat on the ladder:</strong> the "+" rungs stack across <em>different</em>
+panes, not within the <em>same</em> pane. For any one pane, if native agent-session
+resume applies, herdr resumes the agent instead of replaying its saved scrollback — it
+doesn't do both. Think of it as: pick the highest rung that pane qualifies for, not
+"add every rung below it."
+</div>
+
+<div class="note">
 <strong>Optional experiment (only when nothing important is running):</strong> run
 <code>herdr server stop</code>, then <code>herdr</code>. Watch your layout come back
 perfectly and your processes not come back at all. Feeling rung 3 once is worth more than
