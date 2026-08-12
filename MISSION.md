@@ -4,7 +4,7 @@
 Chetan is a strong frontend engineer (React/TS) who uses coding agents, Tauri apps, SSH,
 and LLM-powered tools daily — but mostly from the outside. The concrete goal that ties
 most of this workspace together: **carry a live coding-agent session from one device to
-another.** Understand how herdr (ogulcancelik/herdr — a Rust agent multiplexer with a
+another.** Understand how herdr (herdrdev/herdr — a Rust agent multiplexer with a
 persistent PTY session server) preserves sessions, apply the same model to t3code
 (pingdotgg/t3code — SQLite-backed web GUI for agents), and move sessions across devices
 over SSH and Tailscale. That capstone deliberately pulls on every other track: Rust to

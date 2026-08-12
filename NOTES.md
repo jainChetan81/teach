@@ -9,8 +9,8 @@
 - Enforce the two-active-subjects rule gently but firmly. Current active: **herdr, notchtap-tauri**. The user explicitly replaced ai-tooling on 2026-08-03.
 
 ## Confirmed identities (resolved 2026-07-26)
-- **herdr** = ogulcancelik/herdr — Rust agent multiplexer; background session server holds PTYs, thin clients attach via Unix socket or SSH (`herdr --remote`). Docs: herdr.dev/docs (concepts, session state, remote).
-- **t3code** = pingdotgg/t3code — minimal web GUI for coding agents; Effect/TS monorepo, provider-adapter pattern, SQLite session persistence. No Kimi provider yet → that's his spike (ai-11).
+- **herdr** = herdrdev/herdr — Rust agent multiplexer; background session server holds PTYs, thin clients attach via Unix socket or SSH (`herdr --remote`). Docs: herdr.dev/docs (concepts, session state, remote).
+- **t3code** = pingdotgg/t3code — minimal web GUI for coding agents; Effect/TS monorepo, provider-adapter pattern, event-sourced session store (SQL transaction per event — confirm "SQLite" specifically from source, public docs don't name the engine). No Kimi provider yet → that's his spike (ai-11). Already ships Tailscale pairing + SSH-launch remote access — not an open design question.
 
 ## The through-line
 Capstone: portable agent sessions (`portable-sessions/`). herdr's model (server-owned
@@ -61,3 +61,22 @@ exist to serve this.
 - He types fast and informally; don't over-index on typos — confirm tool identities before building lessons around them (done for herdr/t3code).
 - **NotchTap identity confirmed.** The app repo is `~/Desktop/code/mac-notification-nudge`, with remote `jainChetan81/notchtap`. Do not create a duplicate app repo inside `teach`.
 - **NotchTap teaching order:** frontend map, one frontend-only UI fix, Tauri events and commands, then cross-boundary UI fixes. Use the user's visible problems as the syllabus.
+- **2026-08-03 — the NotchTap goal is sharper than "learn Tauri."** He wants to stop
+  handing animation bugs to AI and fix them himself (record 0007). Lesson 0001 (the seven
+  wires) is written and delivers the data path plus the three animation triggers. **Do not
+  write lesson 0002 until he has named at least one real UI defect (`nt-4`).** The next
+  lesson must be built on his own bug, otherwise it is generic material and repeats the
+  four-lessons-zero-read failure.
+- **Idea capture is a standing job (2026-08-03).** He thinks out loud constantly and asked
+  for his thoughts to be recorded. NotchTap thoughts go to `notchtap-tauri/ideas.html`
+  (status + honest take per idea). Write them down the moment he says them; never silently
+  turn one into work. If another subject starts collecting thoughts, give it its own
+  `ideas.html` rather than a shared file.
+- **His animation focus is the state ladder, not one bug:** idle / minimal / compact /
+  expanded, how each section moves between them, plus settings-panel UI fixes. His four
+  words map to real code as `bare`, no-class idle, showing-not-expanded, and `expanded` —
+  with four unnamed extras (`promoting`, `exiting`, `exit-to-bare`, `hovered`). That
+  mapping is the spine of lesson 0002.
+- Shared quiz widget now lives at `assets/quiz.js` (markup contract documented in the file).
+  New lessons link it instead of inlining the handler; the four herdr lessons still inline
+  their own copy and can be migrated whenever one is next edited.

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NotchTap wire table — teach</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../../index.html">teach</a> / <a href="../plan.html">notchtap-tauri</a> / reference / wire-table</nav>
+
+<h1>NotchTap wire table</h1>
+<p class="subtitle">Every piece of data that enters the overlay, and the one file that
+receives it. Verified against the repo on 2026-08-03.</p>
+
+<div class="why">
+<h3>The rule this table encodes</h3>
+<p>The overlay window fetches nothing, polls nothing, and stores nothing on disk. Rust
+decides, Rust emits, React renders. There are exactly <strong>seven</strong> named event
+channels. If a value on screen is wrong, it came through one of these seven rows.</p>
+</div>
+
+<h2>The seven wires</h2>
+<table>
+<tr><th>Event name</th><th>Emitted by (Rust)</th><th>Received by (React)</th><th>Decides</th></tr>
+
+<tr>
+  <td><code>slot-state</code></td>
+  <td><code>event.rs:461</code> <span class="tag">emit_slot_state</span><br>called from <code>engine.rs</code> ×5, <code>lib.rs:1168</code></td>
+  <td><code>src/useSlotState.ts:261</code></td>
+  <td>Which notification is visible, or none.</td>
+</tr>
+
+<tr>
+  <td><code>status-state</code></td>
+  <td><code>status.rs:329</code> <span class="tag">emit_status_state</span><br>called from <code>engine.rs:486, 609</code>, <code>lib.rs:1183</code></td>
+  <td><code>src/useStatusState.ts:252</code></td>
+  <td>Paused or not, live sources, idle content.</td>
+</tr>
+
+<tr>
+  <td><code>agent-state</code></td>
+  <td><code>agents/board.rs:495</code> <span class="tag">publish_if_changed</span></td>
+  <td><code>src/useAgentState.ts:290</code></td>
+  <td>Agent sessions, and whether the Board appears.</td>
+</tr>
+
+<tr>
+  <td><code>tab-selection-changed</code></td>
+  <td><code>status.rs:324</code> <span class="tag">emit_tab_selection_if_transitioned</span></td>
+  <td><code>src/useTabSelection.ts:55</code></td>
+  <td>Which tab Rust currently has selected.</td>
+</tr>
+
+<tr>
+  <td><code>agent-viewed-session-changed</code></td>
+  <td><code>lib.rs:1041</code> (auto-advance timer)<br><code>lib.rs:2353</code> (manual key cycling)</td>
+  <td><code>src/useAgentViewedSession.ts:27</code></td>
+  <td>Which agent session the Agent tab shows.</td>
+</tr>
+
+<tr>
+  <td><code>appearance-changed</code></td>
+  <td><code>settings.rs:666</code> (a setting was saved)<br><code>lib.rs:1202</code> (boot)</td>
+  <td><code>src/App.tsx:216</code></td>
+  <td>Scale, radius, opacity, resting state.</td>
+</tr>
+
+<tr>
+  <td><code>hover-changed</code></td>
+  <td><code>lib.rs:1617</code> (native tracking area)</td>
+  <td><code>src/App.tsx:250</code></td>
+  <td>Is the cursor over the card.</td>
+</tr>
+</table>
+
+<div class="note">
+<h3>Prove the list is complete</h3>
+<pre><code>cd ~/Desktop/code/mac-notification-nudge
+rg -n 'listen&lt;' src --glob '!*.test.*'</code></pre>
+<p>Seven lines. That is the whole input surface of the overlay.</p>
+</div>
+
+<h2>The boot seeds</h2>
+<p>A React app can mount before or after Rust's first emit. NotchTap covers both by also
+planting globals into the page at load time (<code>lib.rs</code>, <code>on_page_load</code>),
+then emitting anyway. Whichever arrives second wins, and both paths run the same validator.</p>
+
+<table>
+<tr><th>Global</th><th>Planted at</th><th>Read by</th></tr>
+<tr><td><code>window.__NOTCHTAP_SLOT_STATE__</code></td><td><code>lib.rs:1167</code></td><td><code>useSlotState.ts:251</code></td></tr>
+<tr><td><code>window.__NOTCHTAP_STATUS_STATE__</code></td><td><code>lib.rs:1182</code></td><td><code>useStatusState.ts</code></td></tr>
+<tr><td><code>window.__NOTCHTAP_APPEARANCE__</code></td><td><code>lib.rs:1201</code></td><td><code>App.tsx:161, 209</code></td></tr>
+<tr><td><code>window.__NOTCHTAP_MODE__</code><br><code>__NOTCHTAP_CUTOUT_WIDTH__</code><br><code>__NOTCHTAP_CUTOUT_HEIGHT__</code></td><td><code>lib.rs:1215</code></td><td><code>lib/presentationFacts.ts</code></td></tr>
+</table>
+
+<h2>Where the data then lives</h2>
+<table>
+<tr><th>Value</th><th>Storage</th></tr>
+<tr><td>Each wire's payload</td><td>One <code>useState</code> inside its own hook. Nothing else.</td></tr>
+<tr><td>Everything combined</td><td><code>App.tsx</code>, the only file that calls all the hooks.</td></tr>
+<tr><td>Everything below <code>App</code></td><td>Plain props. No context, no store, no cache.</td></tr>
+<tr><td>Frozen exiting content</td><td><code>useDelayedSwap.ts</code>, a React-only holding pen.</td></tr>
+<tr><td>Durable settings</td><td>Rust config on disk. The overlay never reads it directly.</td></tr>
+</table>
+
+<h2>When a wire fires</h2>
+<p>On change, never on a clock. Three examples of that discipline in the Rust source:</p>
+<ul>
+  <li><code>emit_slot_state</code> runs only where the displayed slot actually changed (<code>event.rs:457</code> doc).</li>
+  <li><code>status_state_if_changed</code> returns nothing when the status is identical.</li>
+  <li><code>emit_tab_selection_if_transitioned</code> returns early when the selection matches the last one (<code>status.rs:315</code>).</li>
+</ul>
+<p>Consequence for debugging: a screen that never updates is usually a wire that never
+fired, not a React component that failed to re-render.</p>
+
+<h2>The three animation triggers</h2>
+<table>
+<tr><th>Trigger</th><th>Mechanism</th><th>Where</th></tr>
+<tr><td>Surface swap</td><td>A child mounts or unmounts inside <code>AnimatePresence</code></td><td><code>App.tsx:300</code>, driven by <code>presentationMode()</code></td></tr>
+<tr><td>Content swap</td><td>A React <code>key</code> changes, so the old node exits and a new one enters</td><td><code>StatusRailCard.tsx:439</code>, <code>swapKey = slot.id</code></td></tr>
+<tr><td>Class flip</td><td>A boolean adds or removes a class, and CSS transitions the difference</td><td><code>hovered</code>, <code>exiting</code>, plus <code>overlay/*.css</code></td></tr>
+</table>
+<p>Durations for all three come from one file, <code>src/animationTiming.ts</code>. Several of
+those constants are locked to a CSS value by a test, so changing one number without the
+other fails CI on purpose.</p>
+
+<h2>Sources</h2>
+<ul>
+  <li><a href="https://v2.tauri.app/develop/calling-frontend/">Tauri — calling the frontend from Rust</a></li>
+  <li><a href="https://v2.tauri.app/concept/architecture/">Tauri architecture</a></li>
+  <li><a href="https://motion.dev/docs/react-animate-presence">Motion — AnimatePresence</a></li>
+</ul>
+
+<footer>teach / notchtap-tauri / reference · <a href="frontend-map.html">frontend map</a> · <a href="../plan.html">back to plan</a></footer>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

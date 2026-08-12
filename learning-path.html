@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning path — teach</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="index.html">teach</a> / learning-path</nav>
+
+<h1>Learning path</h1>
+<p class="subtitle">Every file, every claim, every lesson across all 9 subjects was
+cross-checked against its own sources (RESOURCES.md, live docs, and — where it exists —
+real code on this machine). This page is the result: what got fixed, and the order that
+gets you to the capstone with the least wasted motion.</p>
+
+<div class="why">
+<h3>How to read this page</h3>
+<p>Ordered top to bottom. Do the top block first. Nothing below it should start until
+its listed condition is met — that's the whole point of a sequence.</p>
+</div>
+
+<h2>Fixed during this audit</h2>
+<p>These were real errors sitting in material you were about to trust. All fixed in this
+same change:</p>
+<table>
+<tr><th>File</th><th>What was wrong</th></tr>
+<tr><td><code>herdr/lessons/0003</code> + cheat sheet</td><td>Taught a command that doesn't exist — <code>herdr server live-handoff</code>. The real command is <code>herdr update --handoff</code>, which the cheat sheet already had correctly elsewhere.</td></tr>
+<tr><td><code>herdr/reference/herdr-cheatsheet.html</code></td><td>The socket-API example used dead syntax from an old herdr version (<code>1-1</code> pane IDs, <code>herdr wait agent-status</code>). Updated to the current <code>w1:p1</code> format and <code>herdr agent wait</code>.</td></tr>
+<tr><td>same file</td><td>Agent states table listed 4 states, missing the real 5th one (<code>unknown</code>). Added.</td></tr>
+<tr><td><code>herdr/lessons/0002</code></td><td>The "survival ladder" diagram implied its rungs stack additively within one pane. Corrected: they stack across different panes, not within the same one.</td></tr>
+<tr><td>RESOURCES.md, MISSION.md, README.md, NOTES.md, herdr/plan.html, herdr lesson 0001, portable-sessions/plan.html</td><td>herdr's GitHub owner was cited everywhere as <code>ogulcancelik/herdr</code>. That redirects — the real org is <code>herdrdev/herdr</code>. Fixed in all seven files.</td></tr>
+<tr><td>RESOURCES.md</td><td>PAL MCP link was dead (<code>pal-mcp</code> → 404). Real repo is <code>pal-mcp-server</code>. Fixed.</td></tr>
+<tr><td>RESOURCES.md, NOTES.md, portable-sessions/plan.html</td><td>t3code was called "SQLite-backed" with more certainty than public docs support (docs only say "one SQL transaction," never name the engine). Softened to "confirm from source, don't repeat as fact."</td></tr>
+<tr><td>portable-sessions/plan.html</td><td>Phase 4 treated "what would t3code need for portability" as an open design question. It isn't — t3code already ships Tailscale pairing and an SSH-launch mode. Rewrote Phase 4 to be "set it up and demo it," not "invent it."</td></tr>
+<tr><td>networking/plan.html, RESOURCES.md</td><td>net-2 asked you to verify the whole SSH handshake including auth against RFC 4253 — but 4253 stops at host-key verification; auth is RFC 4252. Added the second RFC.</td></tr>
+<tr><td>RESOURCES.md</td><td>net-12 asks you to read "the mosh USENIX paper" but RESOURCES.md never listed it. Added the real citation.</td></tr>
+<tr><td>llm-internals/plan.html</td><td>nanoGPT is now frozen/deprecated by Karpathy himself (superseded by <code>nanochat</code>). Noted — the Shakespeare exercise still works, just flagging it so it's not a surprise.</td></tr>
+<tr><td>rust-tauri/plan.html, ai-tooling/plan.html</td><td>Added sequencing/overlap notes (detailed below) so these plans stop contradicting the rest of the workspace.</td></tr>
+</table>
+<p>Everything else — all four herdr lessons' core claims, every notchtap-tauri file
+(checked line-for-line against the real app repo), and every other resource link — held
+up. That's most of what exists. The workspace's knowledge is trustworthy; it had a
+handful of specific bugs, not a systemic problem.</p>
+
+<h2>Why the order below is the order</h2>
+<p>Three constraints do all the work here, and they're already written into this
+workspace — this page just makes them concrete:</p>
+<ul>
+  <li><strong>Two active subjects, max</strong> (MISSION.md). Right now that's herdr and
+  notchtap-tauri. A third doesn't start until one of those two finishes.</li>
+  <li><strong>The capstone (portable-sessions) depends on four other subjects</strong>,
+  not just herdr. It cannot really start until herdr is finished, rust-tauri's Module 1
+  is done, networking's SSH/Tailscale modules are done, and someone has decided who owns
+  the Kimi-provider spike.</li>
+  <li><strong>One dependency cuts across the "two active" rule</strong>: herdr's own
+  <code>hdr-4</code> is explicitly gated on rust-tauri's Module 1 (rustlings basics).
+  herdr is active <em>now</em>. So Module 1 — just Module 1, not the whole rust-tauri
+  subject — is worth pulling forward as a small exception, not waiting for
+  notchtap-tauri to fully finish.</li>
+</ul>
+
+<h2>The sequence</h2>
+
+<div class="note">
+<strong>Step 0 — right now, no new subject, just two small actions:</strong>
+<ul>
+  <li>Read herdr lessons 0001–0004 in order (they're written; NOTES.md flagged that
+  four lessons exist and none had been read — that's still the biggest single thing
+  blocking progress here). They're now fact-checked and fixed.</li>
+  <li>Open NotchTap and name <strong>one specific broken animation</strong> — not "the
+  whole state ladder," one reproducible thing ("X doesn't exit when Y happens"). Lesson
+  0002 cannot be written until this exists, per this workspace's own rule.</li>
+</ul>
+</div>
+
+<table>
+<tr><th>#</th><th>Subject / step</th><th>Why now</th></tr>
+<tr>
+  <td>1</td>
+  <td><strong>herdr</strong> — finish lessons 0001→0004 (in that order), then the
+  from-memory architecture retrieval exercise (<code>hdr-3</code>), then lesson 0005
+  (socket by hand) once 0001 is actually ticked, not before.</td>
+  <td>Already active. Reference implementation the whole capstone is named after.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><strong>notchtap-tauri</strong> — lesson 0001 (done) → name a real defect → lesson
+  0002 (state-ladder, built on that defect) → first frontend-only fix → Module 3
+  (Tauri boundary) → cross-boundary fixes.</td>
+  <td>Already active. Nothing here blocks or is blocked by herdr, so they run in
+  parallel exactly as now.</td>
+</tr>
+<tr>
+  <td>2b</td>
+  <td><strong>rust-tauri — Module 1 only</strong> (rustlings basics + Rust Book ch. 4).
+  Treat as a small side-quest, not a full subject activation.</td>
+  <td>Unlocks herdr's own <code>hdr-4</code>, which is stuck otherwise — herdr is active
+  now and this is small enough to fit alongside it.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><strong>Decide the kharcha go/no-go</strong> (llm-internals <code>llm-5</code>) —
+  a conversation, not a subject activation. It's been sitting undecided since this was
+  first deferred; resolving it now costs nothing and prevents an accidental 8-week
+  drift later.</td>
+  <td>Cheap to do at any time; expensive to leave open indefinitely per MISSION.md's own
+  warning about drifting instead of deciding.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>Whichever of <strong>herdr / notchtap-tauri finishes first</strong> frees a slot.
+  Fill it with <strong>networking Module 1</strong> (SSH from memory, verified against
+  RFC 4253 + 4252) — the smallest, most self-contained queued item.</td>
+  <td>Portable-sessions needs SSH/Tailscale internals substantially done. This is also
+  the only queued subject with zero overlap risk against anything else.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><strong>Networking Modules 2–4</strong> (Tailscale/WireGuard, VPS, mosh) —
+  Module 4's practical half already lives inside herdr lesson 0004, so it should move
+  fast.</td>
+  <td>Directly required for portable-sessions Phase 3, parts of which are already true
+  in real life (mini↔MacBook over Tailscale) but never formally taught.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td>The <strong>second of herdr/notchtap-tauri finishes</strong>, freeing the last
+  slot. Before filling it, resolve one open question: <strong>does ai-tooling's
+  Kimi-provider spike (<code>ai-11</code>) or portable-sessions Phase 4 own that work?</strong>
+  Pick one file, delete the duplicate task from the other.</td>
+  <td>Both plans currently claim the same deliverable. Building it twice wastes the exact
+  motivation the workspace is designed to protect.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><strong>ai-tooling</strong>, starting at <strong>Module 4</strong> (t3code +
+  Kimi spike), not Module 1. Pull Modules 1–3 (agent loop, MCP, PAL MCP) in
+  opportunistically, only when Module 4 hits a wall that needs that theory.</td>
+  <td>Module 4 is the actual capstone-feeding deliverable; the rest is prerequisite
+  theory that's more useful earned than front-loaded.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><strong>rust-tauri Module 2</strong> — but only after rewriting it so it doesn't
+  repeat notchtap-tauri's Module 3–4 boundary-crossing work. Point it at a second app or
+  at concepts NotchTap didn't need (generics/traits/lifetimes), not the same
+  <code>src-tauri</code> walk twice.</td>
+  <td>As currently written it duplicates notchtap-tauri almost line for line. Fix the
+  plan before spending time in it.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><strong>portable-sessions capstone.</strong> By now: herdr finished, rust-tauri
+  Module 1 done, networking's SSH/Tailscale modules done, ai-tooling's Kimi spike
+  resolved one way or another. Phase 4 is now "set up and demo t3code's existing remote
+  path," not "design one from scratch."</td>
+  <td>This is the point of the whole workspace, per MISSION.md. Everything above exists
+  to make this phase quick instead of theoretical.</td>
+</tr>
+<tr>
+  <td>—</td>
+  <td><strong>llm-internals Module 1</strong> (Karpathy build) can run any time as a
+  side interest once the go/no-go (step 3) happened — it doesn't block or get blocked by
+  anything above. Module 2 (kharcha itself) only starts if that decision was "go," and
+  it pauses everything else per the two-active-tracks rule when it does.</td>
+  <td>Explicitly optional and decision-gated — not part of the capstone's critical path.</td>
+</tr>
+<tr>
+  <td>backlog</td>
+  <td><strong>js-internals</strong> before <strong>ffmpeg</strong>, whenever a slot
+  is free and nothing above is waiting. js-internals has two existing detailed study
+  plans and closer ties to daily frontend work; ffmpeg has no dependency link to the
+  capstone at all — it's a standalone nice-to-have.</td>
+  <td>Both are explicitly parked by MISSION.md until an active track finishes with
+  nothing queued left to take the slot.</td>
+</tr>
+</table>
+
+<h2>Per-subject detail</h2>
+<p>The full audit for each subject — every file read, every claim checked against a
+live source, and the internal lesson order within that subject — is preserved as a
+learning record: <a href="learning-records/0008-workspace-wide-audit-and-sequence.md">learning-records/0008-workspace-wide-audit-and-sequence.md</a>.</p>
+
+<div class="verify">
+<h3>What "done" looks like for this page</h3>
+<p>This sequence is right if, at every point, you know exactly one next action, it's
+small enough for one sitting, and it's never blocked by a subject that hasn't earned its
+slot yet. If a step here ever feels vague, that's the bug — shrink it, don't skip it.</p>
+</div>
+
+<footer>teach / learning-path · <a href="index.html">back to dashboard</a></footer>
+</body>
+</html>
