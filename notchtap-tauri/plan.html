@@ -49,37 +49,6 @@ animation. 20 minutes, no app code changes. Keep the
 <a href="reference/wire-table.html">wire table</a> open beside it.</p>
 </div>
 
-<div class="note">
-<h3>What changed in the repo — 2026-08-15</h3>
-<p>The app repo moved under you today. Six things to know before trusting your mental
-model. Each one names the files to go read.</p>
-<ul>
-  <li><strong>The seventh wire vanished, then came back.</strong> <code>src/useSlotState.ts</code>
-  — the listener for <code>slot-state</code>, emitted from <code>src-tauri/src/engine.rs</code>
-  via <code>emit_slot_state</code> — was accidentally deleted while ~15 files still imported
-  it. One missing file, a cascade of TypeScript errors across the import graph, build dead.
-  It has been restored unchanged with <code>git restore</code>, so the
-  <a href="reference/wire-table.html">wire table</a> is correct again. Good case study:
-  when the compiler screams from fifteen places at once, suspect one missing module, not
-  fifteen bugs.</li>
-  <li><strong>New app-only token file.</strong> <code>src/notchtap-tokens.css</code> holds
-  tokens that belong to NotchTap alone (currently just <code>--media-mint</code>, which
-  moved out of <code>vendor/shared-ui/design/tokens.css</code>). It loads right after the
-  shared tokens in both entries: <code>src/main.tsx</code> for the overlay,
-  <code>src/settings/base.css</code> for settings. <code>src/entryImportOrder.test.ts</code>
-  now fails CI if that order drifts.</li>
-  <li><strong>OpenCode adapter export changed.</strong> <code>adapters/opencode/notchtap.ts</code>
-  now exports <code>server</code> plus a default <code>{ id: "notchtap", server }</code>,
-  the shape OpenCode 1.18 expects.</li>
-  <li><strong>Root <code>CLAUDE.md</code> was condensed.</strong> Same facts, telegraphic
-  style. If a sentence there reads clipped, that is deliberate.</li>
-  <li><strong>New <code>docs/FIGMA_DESIGN_SYSTEM.md</code>.</strong> Two Figma files mirror
-  the code tokens. Code is the authority; Figma is downstream.</li>
-  <li><strong>New <code>unified.html</code> at the repo root.</strong> A large unified
-  control/prototype/research reference. Not wired into the build.</li>
-</ul>
-</div>
-
 <h2>Lessons</h2>
 <ul>
   <li><a href="lessons/0001-the-seven-wires.html">0001 — The seven wires</a>: data in, state, and the three animation triggers.</li>

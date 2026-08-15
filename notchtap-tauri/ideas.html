@@ -25,6 +25,41 @@ without you choosing it.</p>
 
 <h2>Open ideas</h2>
 
+<h3>5. One persistent shell, plugins inside <span class="badge queued">open</span></h3>
+<p><em>Your words (2026-08-15): "a shield, and inside it multiple plugins that each work
+the way they work; the big structure never moves."</em></p>
+<ul>
+  <li><strong>The idea:</strong> instead of swapping whole top-level surfaces
+  (<code>notification</code> / <code>board</code> / <code>idle</code>), keep one stable shell
+  and let content plugins re-skin the inside. The frame stays put; only the content
+  changes.</li>
+  <li><strong>What exists today:</strong> the app swaps three surfaces via
+  <code>presentationMode()</code>. It is a design opinion this app evolved into, not a law.
+  Your model is how a lot of "one persistent widget" apps work.</li>
+  <li><strong>My take:</strong> valid restructure direction, and it would simplify the
+  trigger-1 surface-swap. But do not reshape until you understand the current three-surface
+  reality and the exit choreography. The plugin framing also connects to idea 4 and the
+  whole "one funnel out" architecture opinion (NOTES). Revisit after the map is done.</li>
+</ul>
+
+<h3>6. Split command-events from state-events <span class="badge queued">open</span></h3>
+<p><em>Your words (2026-08-15): "an event should come, happen, die. But weather and media
+player are permanent, remembered. Coding notifications fire and forget."</em></p>
+<ul>
+  <li><strong>The idea:</strong> two kinds of wires. Fire-and-forget ones (a notification
+  arrived → show → forget, maybe append to a history log) and persistent state ones
+  (weather, media player → the current truth, re-sent on change).</li>
+  <li><strong>What exists today:</strong> the repo is deliberately all state-sync — every
+  wire re-sends the current truth and dedups with compare-with-last. That is why the
+  weather/player wires re-emit periodically.</li>
+  <li><strong>My take:</strong> your split is the correct mental model for <em>how it should
+  feel</em>, and it maps onto real source kinds (news/agent = event-ish, weather/media =
+  state-ish). Worth encoding when we design a future restructure. Keep it parked; it will
+  inform how we read the plugin question, not something to change now.</li>
+</ul>
+
+<h2>Your animation focus (stated 2026-08-03)</h2>
+
 <h3>1. One source of truth for the types on both sides <span class="badge suggested">ready</span></h3>
 <p><em>Your words: "a way to unify types between events, Rust and TS."</em></p>
 <ul>
