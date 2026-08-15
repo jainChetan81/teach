@@ -36,14 +36,14 @@ and what would t3code need for that?</p>
 
 <h2>Phase 1 — Understand herdr's session model</h2>
 <ul class="actions">
-  <li><input type="checkbox" data-item="ps-1" id="ps-1"><label for="ps-1">Read herdr docs: <em>session state</em> and <em>persistence-remote</em> pages at herdr.dev/docs; note where state lives on disk and what survives a server restart <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="ps-1" id="ps-1"><label for="ps-1">Read herdr docs: <em>session state</em> page at herdr.dev/docs/session-state/ (covers detach, restart restore, pane replay, native agent resume, live handoff); note where state lives on disk and what survives a server restart <span class="tag">knowledge</span></label></li>
   <li><input type="checkbox" data-item="ps-2" id="ps-2"><label for="ps-2">In the source (<code>herdrdev/herdr</code>, Rust): find how the session server keeps PTYs alive while clients come and go — socket protocol, reattach handshake <span class="tag">knowledge</span></label></li>
 </ul>
 
 <h2>Phase 2 — Understand t3code's session model</h2>
 <ul class="actions">
-  <li><input type="checkbox" data-item="ps-3" id="ps-3"><label for="ps-3">Read t3code docs: architecture overview, <em>remote access</em>, <em>keeping T3 Code in sync</em>; find the SQLite session store and the provider-adapter seam <span class="tag">knowledge</span></label></li>
-  <li><input type="checkbox" data-item="ps-4" id="ps-4"><label for="ps-4">Write the side-by-side reference doc in <code>reference/</code>: PTY-server vs event-sourced SQLite — what each makes easy, what each makes impossible <span class="tag">record</span></label></li>
+  <li><input type="checkbox" data-item="ps-3" id="ps-3"><label for="ps-3">Read t3code docs: architecture overview, <em>remote access</em>, <em>keeping T3 Code in sync</em>; find the event-sourced session store (confirm the actual DB engine from source — public docs don't name it) and the provider-adapter seam <span class="tag">knowledge</span></label></li>
+  <li><input type="checkbox" data-item="ps-4" id="ps-4"><label for="ps-4">Write the side-by-side reference doc in <code>reference/</code>: PTY-server vs event-sourced store — what each makes easy, what each makes impossible <span class="tag">record</span></label></li>
 </ul>
 
 <h2>Phase 3 — Prove the network hops</h2>
