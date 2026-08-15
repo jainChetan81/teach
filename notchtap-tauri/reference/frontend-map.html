@@ -57,6 +57,7 @@ overlay stays receive-only. The settings window can invoke a fixed command list.
   <tr><td>Control delayed exits</td><td><code>src/useExitChoreography.ts</code></td></tr>
   <tr><td>Control shared motion clocks</td><td><code>src/animationTiming.ts</code></td></tr>
   <tr><td>Paint shape and layout</td><td><code>src/overlay/*.css</code> and <code>src/styles.css</code></td></tr>
+  <tr><td>App-only design tokens</td><td><code>src/notchtap-tokens.css</code>, loaded right after the shared <code>tokens.css</code> in both entries (order enforced by <code>src/entryImportOrder.test.ts</code>)</td></tr>
 </table>
 
 <h2>One event, end to end</h2>

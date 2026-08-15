@@ -80,3 +80,43 @@ exist to serve this.
 - Shared quiz widget now lives at `assets/quiz.js` (markup contract documented in the file).
   New lessons link it instead of inlining the handler; the four herdr lessons still inline
   their own copy and can be migrated whenever one is next edited.
+- **2026-08-15 — his NotchTap goal is broader than animations.** He stated it plainly: the
+  goal is to understand the **entire application** — high-level architecture first, what
+  happens when he opens the app or clicks a button, frontend AND backend (Rust side at a
+  high level, since the frontend is his home turf). Animations are one slice; the real
+  syllabus is whole-app mental model, then fixing. Keep each lesson in the zone between
+  whole-app overview and one concrete mechanism, and keep framing what each file does in
+  the whole.
+- **2026-08-15 — his actual gap is the WHOLE codebase, front included.** Correction to the
+  previous note: he is an "okay" frontend engineer, and the wipe of AI-generated code is
+  the problem — every line in this repo was written by AI, so he does not know how ANY of
+  it works, front or back. Animation is NOT a solved district; the animations are broken
+  and he still has to fix them, but the fixes only come after he understands how the
+  pieces work. So: the ZPD is the entire app-specific codebase, back-to-front. Lesson 0001
+  and the wire table are still the right entry (the message surface is the spine), but plan
+  for thorough exposition of the app's own code — the repo is more foreign territory than
+  "just the Tauri boundary". Order: understand how it all works first, fix things second,
+  no exceptions.
+- **2026-08-15 — plan chosen: A (whole-app understanding first).** He picked "understand
+  the whole app" as the first mode: sequence through how each layer works (boot → Rust →
+  wires → React render), fixes come later, and he'll read how he feels at each sitting to
+  decide when to switch modes. Don't push fixes until he asks.
+- **2026-08-15 — architecture opinions to respect (stated while reading lesson 0001):**
+  (a) he prefers one funnel in, everything fans out — everything should be an internal
+  plugin, forever scalable; note this for any future restructure discussion; (b) he leans
+  toward "an event fires, happens, dies" (command semantics) and distrusts the repo's
+  compare-with-last dedup (state-sync semantics) — but the two are different paradigms,
+  the app is deliberately state-sync, don't let him "fix" it into command semantics
+  without understanding the trade; (c) he'd rather use Zod than hand-rolled validators —
+  legitimate, but hand-rolled reject-or-empty exists to avoid a webview dependency; worth
+  discussing, not an automatic win.
+- **2026-08-15 — lesson 0001 staleness RESOLVED same day.** The `useSlotState.ts` deletion
+  turned out to be an accident, not a refactor: the file was restored unchanged via
+  `git restore`, all seven `listen<` calls are back, and every wire-table row was
+  re-verified against the live repo (`useSlotState.ts:261` listens for `slot-state`;
+  boot seed read at `:251`). Lesson 0001 and the wire table are accurate again. Real
+  intentional changes from the same day (new `src/notchtap-tokens.css`, OpenCode 1.18
+  adapter export shape, condensed CLAUDE.md, `docs/FIGMA_DESIGN_SYSTEM.md`, root
+  `unified.html`) are recorded in learning record 0009 and in a dated callout on
+  `notchtap-tauri/plan.html`. The lesson-0002 gate is unchanged: wait for a named defect
+  (`nt-4`), per the 0001-read note above.

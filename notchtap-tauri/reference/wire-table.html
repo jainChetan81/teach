@@ -12,7 +12,7 @@
 
 <h1>NotchTap wire table</h1>
 <p class="subtitle">Every piece of data that enters the overlay, and the one file that
-receives it. Verified against the repo on 2026-08-03.</p>
+receives it. Verified against the repo on 2026-08-03, re-verified 2026-08-15.</p>
 
 <div class="why">
 <h3>The rule this table encodes</h3>
@@ -80,6 +80,10 @@ channels. If a value on screen is wrong, it came through one of these seven rows
 <pre><code>cd ~/Desktop/code/mac-notification-nudge
 rg -n 'listen&lt;' src --glob '!*.test.*'</code></pre>
 <p>Seven lines. That is the whole input surface of the overlay.</p>
+<p>On 2026-08-15 this command briefly returned six: <code>useSlotState.ts</code> had been
+deleted by accident while ~15 files still imported it. It was restored unchanged with
+<code>git restore</code>, so every row above holds. See the dated callout on the
+<a href="../plan.html">plan</a> for the full story.</p>
 </div>
 
 <h2>The boot seeds</h2>
