@@ -25,6 +25,38 @@ without you choosing it.</p>
 
 <h2>Open ideas</h2>
 
+<h3>7. Status as one enum instead of parallel booleans <span class="badge queued">open</span></h3>
+<p><em>Your words (2026-08-16): "status should actually be an enum of strings... that alone
+will track what the current state is."</em></p>
+<ul>
+  <li><strong>The idea:</strong> replace flag-shaped status (<code>paused</code>,
+  playing, etc.) with one string enum naming the current state.</li>
+  <li><strong>What exists today:</strong> <code>StatusState</code> is not really booleans —
+  it is a bundle of independent facts (paused, waiting count, agent count, football,
+  news charge, weather, media). Several are true at once, so one enum cannot hold them.</li>
+  <li><strong>The twist:</strong> the enum you want already exists one step later:
+  <code>presentationMode()</code> collapses everything into
+  <code>"notification" | "board" | "idle"</code>. That IS the single decider.</li>
+  <li><strong>My take:</strong> right instinct, wrong layer. Keep status as parallel facts,
+  keep the enum at the mode layer. If anything, more decisions should flow through
+  <code>presentationMode</code>, which connects to idea 5.</li>
+</ul>
+
+<h3>8. Comment noise makes files unreadable <span class="badge queued">open</span></h3>
+<p><em>Your words (2026-08-16): "there are so many unnecessary comments and crap that I
+can't even understand what's going on."</em></p>
+<ul>
+  <li><strong>The idea:</strong> a cleanup pass that strips or relocates the wall-of-comment
+  blocks (plan numbers, review-wave notes) so the code reads as code.</li>
+  <li><strong>What exists today:</strong> nearly every comment is an AI provenance note
+  ("plan 084...", "review fix wave C...") written for a past reviewer, not for you. Some
+  encode real constraints (load order, animation invalidation rules); most are history.</li>
+  <li><strong>My take:</strong> legitimate, and it hurts you daily. But a blind strip would
+  delete the few load-bearing ones. Right move: as we touch each file for a real fix, keep
+  constraint comments, delete history comments. Cleanup rides along with fixes, not as its
+  own pass.</li>
+</ul>
+
 <h3>5. One persistent shell, plugins inside <span class="badge queued">open</span></h3>
 <p><em>Your words (2026-08-15): "a shield, and inside it multiple plugins that each work
 the way they work; the big structure never moves."</em></p>

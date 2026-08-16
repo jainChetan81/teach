@@ -97,6 +97,9 @@ exist to serve this.
   for thorough exposition of the app's own code — the repo is more foreign territory than
   "just the Tauri boundary". Order: understand how it all works first, fix things second,
   no exceptions.
+- **2026-08-16 — window names he chose:** call the overlay window "the Notch" and the
+  settings window "the settings panel". Use these names in lessons and chat instead of
+  index.html/settings.html or overlay/settings-webview.
 - **2026-08-16 — pace generic frontend tasks fast.** He cleared nt-2 (two Vite entries +
   root components) in ~3 minutes and said so: "I am a 5-year experienced front-end
   engineer. I can tell these things very easily." Generic React/Vite/tooling recognition
