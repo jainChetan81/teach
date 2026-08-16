@@ -40,6 +40,10 @@ will track what the current state is."</em></p>
   <li><strong>My take:</strong> right instinct, wrong layer. Keep status as parallel facts,
   keep the enum at the mode layer. If anything, more decisions should flow through
   <code>presentationMode</code>, which connects to idea 5.</li>
+  <li><strong>Refined 2026-08-16:</strong> he means it as a general principle for the whole
+  codebase ("in general we should have an enum" for any one-of-several state), not just
+  this spot. Treat it as a design preference to apply wherever a real one-of-several
+  state shows up.</li>
 </ul>
 
 <h3>8. Comment noise makes files unreadable <span class="badge queued">open</span></h3>
@@ -72,6 +76,10 @@ the way they work; the big structure never moves."</em></p>
   trigger-1 surface-swap. But do not reshape until you understand the current three-surface
   reality and the exit choreography. The plugin framing also connects to idea 4 and the
   whole "one funnel out" architecture opinion (NOTES). Revisit after the map is done.</li>
+  <li><strong>Raised again (2nd time), 2026-08-16, unprompted:</strong> after reading
+  StatusRailCard he re-derived it as "a rendering engine where we give it what to render
+  and it decides... multiple plugins inside it... any component can be slotted in."
+  Two independent derivations now. Signal is getting stronger.</li>
 </ul>
 
 <h3>6. Split command-events from state-events <span class="badge queued">open</span></h3>
