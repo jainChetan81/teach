@@ -97,6 +97,10 @@ exist to serve this.
   for thorough exposition of the app's own code — the repo is more foreign territory than
   "just the Tauri boundary". Order: understand how it all works first, fix things second,
   no exceptions.
+- **2026-08-16 — post-cleanup resequencing.** The Big Cleanup merged (see learning record
+  0010). He is NOT running the app for now and will bring the nt-4 issue list "later, when
+  in the mood" — do not push it. Module 3 (Tauri boundary, reading-only) runs first;
+  lesson 0002 written for it. When he brings issues, module 2 resumes.
 - **2026-08-16 — window names he chose:** call the overlay window "the Notch" and the
   settings window "the settings panel". Use these names in lessons and chat instead of
   index.html/settings.html or overlay/settings-webview.

@@ -11,7 +11,7 @@
 <nav class="crumbs"><a href="../../index.html">teach</a> / <a href="../plan.html">notchtap-tauri</a> / reference / frontend-map</nav>
 
 <h1>NotchTap frontend map</h1>
-<p class="subtitle">The smallest useful model of the real application.</p>
+<p class="subtitle">The smallest useful model of the real application. Updated 2026-08-16 after the Big Cleanup: hooks now live in <code>src/hooks/</code>, shared helpers in <code>src/lib/</code>; weather and media are gone.</p>
 
 <div class="why">
 <h3>The main idea</h3>
@@ -48,16 +48,16 @@ overlay stays receive-only. The settings window can invoke a fixed command list.
 <h2>The overlay by responsibility</h2>
 <table>
   <tr><th>Responsibility</th><th>Start with</th></tr>
-  <tr><td>Receive the current notification</td><td><code>src/useSlotState.ts</code></td></tr>
-  <tr><td>Receive idle source status</td><td><code>src/useStatusState.ts</code></td></tr>
-  <tr><td>Receive agent sessions</td><td><code>src/useAgentState.ts</code></td></tr>
+  <tr><td>Receive the current notification</td><td><code>src/hooks/useSlotState.ts</code></td></tr>
+  <tr><td>Receive idle source status</td><td><code>src/hooks/useStatusState.ts</code></td></tr>
+  <tr><td>Receive agent sessions</td><td><code>src/hooks/useAgentState.ts</code></td></tr>
   <tr><td>Choose the top-level surface</td><td><code>src/App.tsx</code></td></tr>
   <tr><td>Render the notch or HUD card</td><td><code>src/components/StatusRailCard.tsx</code></td></tr>
   <tr><td>Render the agent surface</td><td><code>src/components/AgentBoard.tsx</code></td></tr>
-  <tr><td>Control delayed exits</td><td><code>src/useExitChoreography.ts</code></td></tr>
+  <tr><td>Control delayed exits</td><td><code>src/hooks/useExitChoreography.ts</code></td></tr>
   <tr><td>Control shared motion clocks</td><td><code>src/animationTiming.ts</code></td></tr>
   <tr><td>Paint shape and layout</td><td><code>src/overlay/*.css</code> and <code>src/styles.css</code></td></tr>
-  <tr><td>App-only design tokens</td><td><code>src/notchtap-tokens.css</code>, loaded right after the shared <code>tokens.css</code> in both entries (order enforced by <code>src/entryImportOrder.test.ts</code>)</td></tr>
+  <tr><td>App-only design tokens</td><td><code>src/notchtap-tokens.css</code> — currently empty (the media accent left with the media feature); kept as the extension point, order still enforced by <code>src/entryImportOrder.test.ts</code></td></tr>
 </table>
 
 <h2>One event, end to end</h2>
@@ -66,7 +66,7 @@ overlay stays receive-only. The settings window can invoke a fixed command list.
 <ol>
   <li>The Rust engine decides whether the slot is empty or showing a notification.</li>
   <li>Rust emits a JSON payload named <code>slot-state</code>.</li>
-  <li><code>useSlotState.ts</code> listens for that event.</li>
+  <li><code>hooks/useSlotState.ts</code> listens for that event.</li>
   <li>The hook validates every field before it updates React state.</li>
   <li><code>App.tsx</code> reads the state and passes it to <code>StatusRailCard</code>.</li>
   <li><code>StatusRailCard</code> derives classes, content, and the active below-block.</li>
