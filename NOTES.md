@@ -97,6 +97,12 @@ exist to serve this.
   for thorough exposition of the app's own code — the repo is more foreign territory than
   "just the Tauri boundary". Order: understand how it all works first, fix things second,
   no exceptions.
+- **2026-08-16 — pace generic frontend tasks fast.** He cleared nt-2 (two Vite entries +
+  root components) in ~3 minutes and said so: "I am a 5-year experienced front-end
+  engineer. I can tell these things very easily." Generic React/Vite/tooling recognition
+  tasks are NOT his ZPD — compress or fold them into app-specific tracing. Time estimates
+  on plan items should assume senior-frontend speed for anything framework-shaped; keep
+  full sitting sizes only for app-specific wiring and the Rust/Tauri side.
 - **2026-08-15 — plan chosen: A (whole-app understanding first).** He picked "understand
   the whole app" as the first mode: sequence through how each layer works (boot → Rust →
   wires → React render), fixes come later, and he'll read how he feels at each sitting to
