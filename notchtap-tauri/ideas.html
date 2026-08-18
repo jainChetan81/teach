@@ -98,6 +98,14 @@ can't even understand what's going on."</em></p>
   delete the few load-bearing ones. Right move: as we touch each file for a real fix, keep
   constraint comments, delete history comments. Cleanup rides along with fixes, not as its
   own pass.</li>
+  <li><strong>Confirmed leftovers after the cleanup, found by you while tracing a
+  command.</strong> The comment purge missed prose outside <code>//</code> comments:
+  <code>src-tauri/capabilities/settings.json</code>'s <code>description</code> field still
+  narrates removals ("the telegram-connector removal dropped…", "the secrets-store removal
+  dropped…") and cites two spec docs that no longer exist, and
+  <code>src-tauri/build.rs</code> still opens with "v5 (V5_TECHNICAL_SPEC.md §2)". Both
+  break your own current-product-only rule. Real, small, worth a follow-up sweep of JSON
+  description fields and doc-comment spec citations.</li>
 </ul>
 
 <h3>5. One persistent shell, plugins inside <span class="badge queued">open</span></h3>
