@@ -102,6 +102,11 @@ exist to serve this.
   could just open the file in his editor wastes time. So: for "go read this code" tasks,
   give path + line + what to look for. Keep CLI where the command IS the point (counting,
   proving a list complete, running gates). Not a ban.
+- **2026-08-16 — his praise is anchored, not absolute.** He caught it himself: he called
+  the news surface good "like seven times" mainly because the idle state had just
+  disappointed him. Read enthusiasm as relative-to-last-thing-seen, not as a verdict. When
+  he says something looks good, ask what it should be compared against before logging it
+  as settled.
 - **2026-08-16 — first real defect candidate, unprompted: hover feels flaky.** He said the
   hover "was working a bit weird for me" and called the rust-side click/hover decision
   possibly wrong. This is the FIRST concrete nt-4 item — do not lose it. Not yet pinned

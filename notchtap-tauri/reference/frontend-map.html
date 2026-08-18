@@ -60,6 +60,27 @@ overlay stays receive-only. The settings window can invoke a fixed command list.
   <tr><td>App-only design tokens</td><td><code>src/notchtap-tokens.css</code> — empty; the extension point for app-only tokens, with load order enforced by <code>src/entryImportOrder.test.ts</code></td></tr>
 </table>
 
+<h2>Card anatomy: shape states versus attachments</h2>
+<p>Two different things get confused here. A <strong>shape state</strong> is how big the
+card is. An <strong>attachment</strong> is a piece that mounts onto it depending on what is
+showing. Four shape states does not mean four possible layouts.</p>
+
+<table>
+  <tr><th>Piece</th><th>What it is</th><th>Where it lives</th></tr>
+  <tr><td>The card body</td><td>The main surface. Its shape is the state: idle, bare, showing, expanded.</td><td><code>StatusRailCard.tsx</code></td></tr>
+  <tr><td>Below block</td><td>A whole extra panel that mounts under the card when a tab is summoned. Agent sessions get one, news stories get one.</td><td><code>TabBelowBlock.tsx</code>, which picks <code>AgentBelowBlock</code> or <code>NewsBelowBlock</code></td></tr>
+  <tr><td>Countdown strip</td><td>A thin bar at the floor of a showing notification. It counts down how long the card stays, and its segments double as the queue position.</td><td><code>TtlBar.tsx</code>, mounted by <code>NotificationBody.tsx</code></td></tr>
+  <tr><td>Position bar</td><td>The "item 2 of 5" strip at the floor of a below block.</td><td><code>PositionBar.tsx</code>, mounted by both below blocks</td></tr>
+  <tr><td>Icon strip</td><td>The row of source icons along the top.</td><td><code>IconStrip.tsx</code></td></tr>
+</table>
+
+<p>So a bar along the bottom is not a fifth mode. On a notification it is the countdown
+strip. On the agent board it is the position bar telling you which session you are looking
+at. Same place on screen, different component, different meaning.</p>
+
+<p>Worth noticing: the below block is already a slot. One shell, different content plugged
+in depending on the tab. That is the shape a bigger restructure would extend, not invent.</p>
+
 <h2>One event, end to end</h2>
 <p>Use <code>slot-state</code> as the first trace.</p>
 
