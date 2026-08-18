@@ -208,6 +208,35 @@ player are permanent, remembered. Coding notifications fire and forget."</em></p
   clicks, decides which icon was hit, and emits <code>tab-selection-changed</code>.
   The overlay stays receive-only and still responds to clicks. Your instinct about
   where the app is heading was right; the mechanism is native, not a permission change.</li>
+  <li><strong>Raised a 3rd time, now with evidence, and my take has changed.</strong>
+  You argued interaction state (a news slider, hover-to-expand) belongs in the UI, and
+  named the hover behaviour as feeling flaky. The repo backs you up. Two levels have
+  been conflated:
+    <ul>
+      <li><strong>Outer boundary</strong> (is the cursor over the card at all): Rust
+      <em>must</em> own it. The overlay window is click-through
+      (<code>set_ignore_cursor_events(true)</code>), so the webview receives no pointer
+      events at all. Physics, not preference.</li>
+      <li><strong>Inside the card</strong>: the webview does get real events once
+      cursor events are toggled on, and the app <em>already</em> relies on that.
+      <code>AgentBoard.tsx:341</code> opens its history popover with plain
+      <code>onMouseEnter</code>/<code>onMouseLeave</code> and React state. No Rust
+      round trip. It works.</li>
+    </ul>
+  The proof that the blanket rule hurts: your exact news-slider example is
+  <em>half-built and dead</em>. <code>NewsBatchHeader.tsx:59</code> renders real
+  prev/next buttons with real <code>onClick</code> handlers, and
+  <code>NewsBelowBlock.tsx:142</code> mounts them — but the handlers are
+  "presentational callbacks only" and the file's own comment admits click routing is
+  deferred and unbuilt. Same story for <code>IconStrip</code>'s
+  <code>onSelect={noopSelect}</code>. Buttons that look clickable and do nothing.</li>
+  <li><strong>Revised take:</strong> the <code>NSEvent</code> monitor was the right call
+  for the icon strip, which sits in the click-through zone. The mistake was promoting
+  "Rust decides" from a boundary rule to a blanket rule, so widgets <em>inside</em> the
+  card also wait on routing nobody built. Proposed split: Rust owns the window boundary
+  and anything that changes app state; React owns interaction inside the card
+  (slider position, hover-to-expand, press feedback). This is now the strongest
+  restructure candidate on this page.</li>
 </ul>
 
 <h2>Your animation focus (stated 2026-08-03)</h2>

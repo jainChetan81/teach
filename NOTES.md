@@ -97,6 +97,10 @@ exist to serve this.
   for thorough exposition of the app's own code — the repo is more foreign territory than
   "just the Tauri boundary". Order: understand how it all works first, fix things second,
   no exceptions.
+- **2026-08-16 — first real defect candidate, unprompted: hover feels flaky.** He said the
+  hover "was working a bit weird for me" and called the rust-side click/hover decision
+  possibly wrong. This is the FIRST concrete nt-4 item — do not lose it. Not yet pinned
+  down (no repro, no expected-vs-actual). When he opens the app, start here.
 - **2026-08-16 — no history in teaching pages.** Same rule he gave his repo now applies to
   this workspace: lessons, plans, and reference pages describe the CURRENT repo only — no
   "re-verified <date>" trails, no "after the Big Cleanup" framing, no what-changed
