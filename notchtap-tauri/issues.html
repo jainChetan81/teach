@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NotchTap issue log — teach</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../index.html">teach</a> / <a href="plan.html">notchtap-tauri</a> / issues</nav>
+
+<h1>NotchTap issue log</h1>
+<p class="subtitle">The UI problems you actually see, each with what you expected, what
+happened, and how to make it happen again. This page is the deliverable for
+<code>nt-4</code> and the source of every fix in modules 2 and 4.</p>
+
+<div class="why">
+<h3>How this page differs from the idea log</h3>
+<p><a href="ideas.html">ideas.html</a> holds opinions about how the app <em>should</em> be
+built. This page holds defects: something looks or behaves wrong, and it can be
+demonstrated. An issue needs four things before it can be fixed —
+<strong>expected</strong>, <strong>actual</strong>, <strong>trigger</strong>, and
+<strong>evidence</strong>. Anything missing one of those is marked
+<span class="badge queued">needs detail</span> and cannot start yet.</p>
+</div>
+
+<div class="note">
+<h3>Read this before trusting anything below</h3>
+<p>These observations come from an <strong>installed build made before the big cleanup</strong>.
+Proof: the screenshots show a music-note icon and a cloud icon in the strip. Those two
+tabs no longer exist in the code — the tab list is now Agent, Football, News only.</p>
+<p>That matters for two of the reports specifically, because the cleanup changed the exact
+code they touch:</p>
+<ul>
+  <li><strong>Hover width is derived from the number of visible icons</strong>
+  (<code>src-tauri/src/hover.rs:69</code>, <code>hovered_right_flank_width</code>).
+  Fewer icons means a different hover zone. The edge-hover report must be re-tested.</li>
+  <li><strong>The idle hover peek lost its weather branch</strong>, so the idle surface
+  itself is not the one in the screenshot.</li>
+</ul>
+<p><strong>Next step:</strong> rebuild and reinstall, then re-check each item. Ones that
+survive are real. This is not a delay, it is what stops us fixing a bug that is already
+gone.</p>
+</div>
+
+<h2>Open issues</h2>
+
+<h3>i-1. Idle state: the right side is empty <span class="badge queued">needs detail</span></h3>
+<table>
+  <tr><th>Expected</th><td>The idle bar looks balanced across its whole width.</td></tr>
+  <tr><th>Actual</th><td>Clock sits far left, face sits centre, the entire right half is blank.</td></tr>
+  <tr><th>Trigger</th><td>Let the app sit with nothing showing and no live sources. Look at the notch.</td></tr>
+  <tr><th>Evidence</th><td><a href="issues/nt4-02-idle-right-side-empty.png">nt4-02-idle-right-side-empty.png</a></td></tr>
+  <tr><th>Owner (guess)</th><td>Layout, not data. The resting cluster and <code>IdleFace</code> in <code>src/components/StatusRailCard.tsx</code> around line 675.</td></tr>
+  <tr><th>Missing</th><td>What you <em>want</em> on the right. Nothing at all but balanced? A mirrored element? Something informational? A fix cannot be written against "looks weird".</td></tr>
+</table>
+
+<h3>i-2. Idle state: the clock looks off <span class="badge queued">needs detail</span></h3>
+<table>
+  <tr><th>Expected</th><td>Unclear — you said "the timing is coming off".</td></tr>
+  <tr><th>Actual</th><td>Unclear. Could be position, size, weight, or the fact it updates on a 30s tick.</td></tr>
+  <tr><th>Trigger</th><td>Same as i-1.</td></tr>
+  <tr><th>Evidence</th><td>Same screenshot as i-1.</td></tr>
+  <tr><th>Missing</th><td>Which part is wrong. One sentence is enough: "the clock is too far left", or "it should be centred", or "it should show seconds".</td></tr>
+</table>
+
+<h3>i-3. Hover expand snaps instead of animating <span class="badge suggested">ready to pin down</span></h3>
+<table>
+  <tr><th>Expected</th><td>Hovering the idle notch grows it smoothly into the peek surface.</td></tr>
+  <tr><th>Actual</th><td>It appears instantly. No visible growth.</td></tr>
+  <tr><th>Trigger</th><td>From idle, move the pointer onto the notch.</td></tr>
+  <tr><th>Evidence</th><td>Described, not yet captured. Needs a screen recording — a still cannot show a missing animation.</td></tr>
+  <tr><th>Owner (guess)</th><td>Two candidates. Either the hover class flips with no transition attached, or the duration resolves to zero. Durations all come from <code>src/animationTiming.ts</code>, and several are pinned to CSS by a test, so a mismatch there is loud rather than silent. Start at the class flip.</td></tr>
+  <tr><th>Note</th><td>This is the cleanest first fix candidate: frontend-only, visual, and testable.</td></tr>
+</table>
+
+<h3>i-4. Hover does not register at the edges <span class="badge backlog">re-test first</span></h3>
+<table>
+  <tr><th>Expected</th><td>Hover responds anywhere over the notch, including near the left and right ends.</td></tr>
+  <tr><th>Actual</th><td>Pointer at the right edge produces no hover response. Same on the other side.</td></tr>
+  <tr><th>Trigger</th><td>Move the pointer slowly in from the far right edge of the notch.</td></tr>
+  <tr><th>Evidence</th><td>Described from live use. Needs a recording with the pointer visible.</td></tr>
+  <tr><th>Owner (guess)</th><td>Rust, not React. The hover rectangle is computed natively in <code>src-tauri/src/hover.rs</code>, and its right flank width is a function of how many icons are present (line 69).</td></tr>
+  <tr><th>Why re-test</th><td>Icon count changed from five possible to three. This geometry is a direct function of that count, so the current build almost certainly behaves differently.</td></tr>
+</table>
+
+<h3>i-5. Agent card churns while tools run <span class="badge queued">needs detail</span></h3>
+<table>
+  <tr><th>Expected</th><td>A calm surface that tells you an agent is working, without redrawing on every tool call.</td></tr>
+  <tr><th>Actual</th><td>Content changes constantly as the agent edits, greps, runs commands. Reads as restless.</td></tr>
+  <tr><th>Trigger</th><td>Run an agent that uses many tools in a row and watch the agent tab.</td></tr>
+  <tr><th>Evidence</th><td><a href="issues/nt4-01-agent-card-expanded.png">nt4-01</a> and <a href="issues/nt4-03-agent-card-expanded-2.png">nt4-03</a> show two consecutive states, one second apart, differing only in the path chip.</td></tr>
+  <tr><th>Missing</th><td>Which behaviour you want: fewer updates, the same updates but animated softly, or a summary that only changes on meaningful events. This is a design decision, not a bug fix, until you pick one.</td></tr>
+  <tr><th>Related</th><td>Touches <a href="ideas.html">idea 6</a> (fire-and-forget events versus persistent state). Worth reading that entry before deciding.</td></tr>
+</table>
+
+<h3>i-7. Idle state is physically too big <span class="badge suggested">ready to pin down</span></h3>
+<table>
+  <tr><th>Expected</th><td>The idle bar takes only as much room as it needs.</td></tr>
+  <tr><th>Actual</th><td>It occupies noticeably more width and height than its contents justify.</td></tr>
+  <tr><th>Trigger</th><td>Let the app go idle and compare the bar against the notch cutout.</td></tr>
+  <tr><th>Evidence</th><td>Visible in <a href="issues/nt4-02-idle-right-side-empty.png">nt4-02</a>, and closely tied to i-1: the empty right half <em>is</em> part of the excess size.</td></tr>
+  <tr><th>Try this first, it needs no code</th><td>Open the settings panel, Appearance section, and lower the card scale. Valid range is 0.8 to 1.4. The change applies instantly with no relaunch, because <code>set_appearance</code> broadcasts to the overlay rather than restarting.</td></tr>
+  <tr><th>Then decide</th><td>If a lower scale fixes it, this was a settings issue, not a defect. If the proportions still look wrong at 0.8, the idle surface has its own sizing problem and becomes a real fix. Report which.</td></tr>
+</table>
+
+<h3>i-6. Reference implementation to compare against <span class="badge queued">open</span></h3>
+<table>
+  <tr><th>What</th><td>You named another notch app whose implementation you consider clearly better, and said you would send the link.</td></tr>
+  <tr><th>Why it matters</th><td>A concrete reference turns "looks bad" into a specific target we can copy or reject on purpose.</td></tr>
+  <tr><th>Missing</th><td>The link, and one line on what specifically it does better.</td></tr>
+</table>
+
+<h2>How to run it and what to look for</h2>
+
+<div class="note">
+<h3>Weather and media cannot be switched on</h3>
+<p>There is no command or setting for them. You deleted both features, so the code, the
+settings sections, the tabs, and the icons are gone. Turning them back on means reverting
+that work, which is a decision, not a toggle. The screenshots show them only because that
+installed build predates the removal.</p>
+<p>What you <em>can</em> switch on: <strong>football</strong> and <strong>news</strong>.
+Those are the two content sources that still exist, alongside agents.</p>
+</div>
+
+<div class="note">
+<h3>Wait for the anti-slop run to finish first</h3>
+<p>That tool is editing the app right now. Building mid-edit gives you a binary that
+matches neither the old code nor the new. Let it finish and land, then build.</p>
+</div>
+
+<h3>Step 1 — run the app from source</h3>
+<pre><code>cd ~/Desktop/code/mac-notification-nudge
+just dev</code></pre>
+<p>This runs it in dev mode, which is what you want while hunting UI bugs: the web side
+hot-reloads, so a CSS or React change shows up without a rebuild. Rust changes still need
+a restart.</p>
+
+<h3>Step 2 — turn on the sources you want to see</h3>
+<p>Open the settings panel. The sections that matter here are <strong>Football</strong>,
+<strong>News</strong>, and <strong>Agents</strong>. Enabling football or news needs a save,
+and saving relaunches the app by design.</p>
+
+<h3>Step 3 — make notifications appear on demand</h3>
+<p>The settings panel can send a test notification for any of four sources: football, news,
+manual, agent. Use that instead of waiting for real events. It is the fastest way to reach
+the compact and expanded states repeatedly.</p>
+
+<h3>Step 4 — what to check, state by state</h3>
+<table>
+  <tr><th>State</th><th>How to get there</th><th>What to judge</th></tr>
+  <tr><td>Idle</td><td>Nothing showing, no live sources</td><td>Size, balance, the empty right half, the clock. Items i-1, i-2, i-7.</td></tr>
+  <tr><td>Idle plus hover</td><td>Move the pointer onto the notch</td><td>Does it grow smoothly or snap? Does hover register near the edges? Items i-3, i-4.</td></tr>
+  <tr><td>Compact</td><td>Send a test notification</td><td>Entry animation, spacing, whether text fits.</td></tr>
+  <tr><td>Expanded</td><td>Hover a showing card</td><td>The growth transition, and whether content reflows or jumps.</td></tr>
+  <tr><td>Agent board</td><td>Run a real agent with several tool calls</td><td>How restless it looks while tools fire. Item i-5.</td></tr>
+</table>
+
+<h3>Step 5 — record, do not just remember</h3>
+<p>For anything about motion, a still image cannot show the problem. Use the macOS screen
+recorder (Shift plus Command plus 5) and keep the clips to a few seconds. Two are needed:
+the idle hover snap, and the edge hover.</p>
+
+<h2>What happens next</h2>
+<ol>
+  <li>Rebuild and reinstall so the app matches the code.</li>
+  <li>Re-check i-1 to i-5. Drop the ones that are gone.</li>
+  <li>Fill in the <strong>Missing</strong> rows. Those are the only blockers.</li>
+  <li>Record two short clips: the idle hover snap (i-3) and the edge hover (i-4).</li>
+  <li>Pick the smallest survivor and start <code>nt-5</code>.</li>
+</ol>
+
+<div class="verify">
+<h3>This page is doing its job when</h3>
+<p>Every open issue has all four parts filled in, and each one names the layer that owns it:
+React, CSS, the Tauri boundary, or Rust. That naming is the real skill this track is
+teaching.</p>
+</div>
+
+<footer>teach / notchtap-tauri · <a href="plan.html">plan</a> · <a href="ideas.html">ideas</a> · <a href="../index.html">dashboard</a></footer>
+<script src="../assets/app.js"></script>
+</body>
+</html>
