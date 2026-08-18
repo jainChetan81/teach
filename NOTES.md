@@ -97,6 +97,11 @@ exist to serve this.
   for thorough exposition of the app's own code — the repo is more foreign territory than
   "just the Tauri boundary". Order: understand how it all works first, fix things second,
   no exceptions.
+- **2026-08-16 — no grep/CLI instructions in tasks.** He reads code in his editor, not the
+  terminal. Give him file path + line number + what to look for, never
+  `grep`/`rg`/`cat` commands. Same for lesson "do this now" blocks — rewrite existing ones
+  as editor instructions whenever a lesson is next touched (0002's section 5 still has
+  three `rg` blocks).
 - **2026-08-16 — first real defect candidate, unprompted: hover feels flaky.** He said the
   hover "was working a bit weird for me" and called the rust-side click/hover decision
   possibly wrong. This is the FIRST concrete nt-4 item — do not lose it. Not yet pinned
