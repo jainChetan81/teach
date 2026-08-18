@@ -11,7 +11,7 @@
 <nav class="crumbs"><a href="../../index.html">teach</a> / <a href="../plan.html">notchtap-tauri</a> / reference / frontend-map</nav>
 
 <h1>NotchTap frontend map</h1>
-<p class="subtitle">The smallest useful model of the real application. Updated 2026-08-16 after the Big Cleanup: hooks now live in <code>src/hooks/</code>, shared helpers in <code>src/lib/</code>; weather and media are gone.</p>
+<p class="subtitle">The smallest useful model of the real application. Hooks live in <code>src/hooks/</code>, shared helpers in <code>src/lib/</code>.</p>
 
 <div class="why">
 <h3>The main idea</h3>
@@ -57,7 +57,7 @@ overlay stays receive-only. The settings window can invoke a fixed command list.
   <tr><td>Control delayed exits</td><td><code>src/hooks/useExitChoreography.ts</code></td></tr>
   <tr><td>Control shared motion clocks</td><td><code>src/animationTiming.ts</code></td></tr>
   <tr><td>Paint shape and layout</td><td><code>src/overlay/*.css</code> and <code>src/styles.css</code></td></tr>
-  <tr><td>App-only design tokens</td><td><code>src/notchtap-tokens.css</code> — currently empty (the media accent left with the media feature); kept as the extension point, order still enforced by <code>src/entryImportOrder.test.ts</code></td></tr>
+  <tr><td>App-only design tokens</td><td><code>src/notchtap-tokens.css</code> — empty; the extension point for app-only tokens, with load order enforced by <code>src/entryImportOrder.test.ts</code></td></tr>
 </table>
 
 <h2>One event, end to end</h2>

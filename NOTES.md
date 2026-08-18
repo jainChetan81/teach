@@ -97,6 +97,11 @@ exist to serve this.
   for thorough exposition of the app's own code — the repo is more foreign territory than
   "just the Tauri boundary". Order: understand how it all works first, fix things second,
   no exceptions.
+- **2026-08-16 — no history in teaching pages.** Same rule he gave his repo now applies to
+  this workspace: lessons, plans, and reference pages describe the CURRENT repo only — no
+  "re-verified <date>" trails, no "after the Big Cleanup" framing, no what-changed
+  callouts. History lives in learning-records/ (and this file). ideas.html keeps its
+  dated-log format by design.
 - **2026-08-16 — post-cleanup resequencing.** The Big Cleanup merged (see learning record
   0010). He is NOT running the app for now and will bring the nt-4 issue list "later, when
   in the mood" — do not push it. Module 3 (Tauri boundary, reading-only) runs first;
