@@ -17,11 +17,10 @@
 
 <div class="why">
 <h3>Why this lesson</h3>
-<p>Lessons 0001 and 0002 were about what herdr <em>is</em>. This one is about not breaking
-it. Every fact below was measured on your own Mac mini on 28 Jul 2026, and four of them
-contradict what a reasonable person would assume. One of them silently kills every running
-agent. Another one is the single most likely thing to break your capstone, and it bit you
-on <em>both</em> machines in one evening.</p>
+<p>Lessons 0001 and 0002 are about what herdr <em>is</em>. This one is about not breaking
+it. Every fact below is measured on your own Mac mini, not assumed, and four of them
+contradict what a reasonable person would expect. One of them silently kills every running
+agent. Another is the single most likely thing to break your capstone.</p>
 <p>The capstone asks you to move a live session between devices. You cannot do that if you
 don't know which commands are safe, whether the server comes back on its own, and whose
 config wins when two machines disagree.</p>
@@ -56,9 +55,9 @@ server --help</code> also lists agent-manifest verbs
 <div class="note">
 <strong>The trap:</strong> you change <code>config.toml</code>, you want it applied, you
 reach for "restart", it doesn't exist — so you reach for <code>server stop</code> instead.
-That is the wrong instinct and it costs you every running agent. Measured on the mini:
-<code>reload-config</code> returned <code>{"diagnostics":[],"status":"applied"}</code> and
-all three panes were still alive afterwards. Use it.
+That is the wrong instinct and it costs you every running agent. On the mini,
+<code>reload-config</code> returns <code>{"diagnostics":[],"status":"applied"}</code> and
+leaves every pane alive. Use it.
 </div>
 
 <h2>Phase 2 — The server does not come back by itself</h2>
@@ -73,7 +72,7 @@ respawns on demand. It does not.</p>
 </ul>
 
 <p>A client command reports the truth and walks away. If nothing starts the server, nothing
-starts the server. On the mini this is now handled by a LaunchAgent with two settings worth
+starts the server. On the mini a LaunchAgent handles this, with two settings worth
 understanding:</p>
 
 <ul>
@@ -99,16 +98,15 @@ what you want when you're checking whether something was restored.</p>
 </ul>
 
 <p><code>visible</code> returns only the current viewport — one screen. <code>recent</code>
-returns the buffer. On the mini this exact confusion made a working feature look broken:
-<code>visible</code> reported 0, 18 and 19 lines across three panes, while <code>recent</code>
-found 127 and 378. Nothing was wrong. The question was wrong.</p>
+returns the buffer. This confusion makes a working feature look broken: on the mini,
+<code>visible</code> can report 0 lines in a pane where <code>recent</code> finds hundreds.
+Nothing is wrong. The question is wrong.</p>
 
 <div class="note">
-<strong>Correction to lesson 0002:</strong> <code>pane_history</code> does <em>not</em> save
-one screenful, and its restore half is no longer unproven. Measured across two clean
-shutdowns: panes saved 110 and 308 lines against a 40-row viewport, and after a full
-stop/start cycle 59/90 and 201/286 of those lines came back <em>verbatim</em>. It saves up
-to the available scrollback. One caveat: a pane running an agent restores the
+<strong>What <code>pane_history</code> really saves:</strong> up to the available
+scrollback, not one screenful. On the mini, panes save hundreds of lines against a 40-row
+viewport, and after a full stop/start cycle most of those lines come back
+<em>verbatim</em>. One caveat: a pane running an agent restores the
 <strong>agent</strong>, not the screen — <code>resume_agents_on_restore</code> relaunches it
 and the agent clears its own display on start.
 </div>
@@ -132,8 +130,8 @@ nothing else. <code>/opt/homebrew/bin</code> never lands on PATH, and <code>herd
 <div class="note">
 <strong>Why <code>env -i</code> and not just <code>zsh -c</code>:</strong> because you are
 almost certainly already inside a shell that has the fixed PATH. Your test inherits it and
-passes while the underlying config is still broken. This wasted real time on the mini —
-the "proof" commands passed <em>before</em> anything was fixed. <code>env -i</code> throws
+passes while the underlying config is still broken — a "proof" command run from an
+already-fixed shell proves nothing. <code>env -i</code> throws
 the environment away and asks the question properly.
 </div>
 
@@ -164,10 +162,10 @@ should print nothing.</p>
 </table>
 
 <div class="note">
-<strong>A real consequence:</strong> the mini used to set <code>theme.auto_switch = true</code>
-with a light theme name. Attaching from the MacBook let the <em>mini</em> flip the MacBook's
-display to light, and the MacBook's own dark-forcing could not stop it — because the MacBook
-was never the one deciding. Fixed by pinning <code>auto_switch = false</code> on the host.
+<strong>A real consequence:</strong> if the host sets <code>theme.auto_switch = true</code>
+with a light theme name, attaching from the MacBook lets the <em>mini</em> flip the MacBook's
+display to light, and the MacBook's own dark-forcing cannot stop it — the MacBook is never
+the one deciding. The guard: pin <code>auto_switch = false</code> on the host (the mini does).
 Never fix this by copying one config over the other; they are different roles.
 </div>
 

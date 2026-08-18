@@ -11,39 +11,16 @@
 <nav class="crumbs"><a href="index.html">teach</a> / learning-path</nav>
 
 <h1>Learning path</h1>
-<p class="subtitle">Every file, every claim, every lesson across all 9 subjects was
-cross-checked against its own sources (RESOURCES.md, live docs, and — where it exists —
-real code on this machine). This page is the result: what got fixed, and the order that
-gets you to the capstone with the least wasted motion.</p>
+<p class="subtitle">The order to work the 9 subjects in — every claim on this page is
+checked against its own sources (RESOURCES.md, live docs, and — where it exists — real
+code on this machine). Top to bottom is the path to the capstone with the least wasted
+motion.</p>
 
 <div class="why">
 <h3>How to read this page</h3>
 <p>Ordered top to bottom. Do the top block first. Nothing below it should start until
 its listed condition is met — that's the whole point of a sequence.</p>
 </div>
-
-<h2>Fixed during this audit</h2>
-<p>These were real errors sitting in material you were about to trust. All fixed in this
-same change:</p>
-<table>
-<tr><th>File</th><th>What was wrong</th></tr>
-<tr><td><code>herdr/lessons/0003</code> + cheat sheet</td><td>Taught a command that doesn't exist — <code>herdr server live-handoff</code>. The real command is <code>herdr update --handoff</code>, which the cheat sheet already had correctly elsewhere.</td></tr>
-<tr><td><code>herdr/reference/herdr-cheatsheet.html</code></td><td>The socket-API example used dead syntax from an old herdr version (<code>1-1</code> pane IDs, <code>herdr wait agent-status</code>). Updated to the current <code>w1:p1</code> format and <code>herdr agent wait</code>.</td></tr>
-<tr><td>same file</td><td>Agent states table listed 4 states, missing the real 5th one (<code>unknown</code>). Added.</td></tr>
-<tr><td><code>herdr/lessons/0002</code></td><td>The "survival ladder" diagram implied its rungs stack additively within one pane. Corrected: they stack across different panes, not within the same one.</td></tr>
-<tr><td>RESOURCES.md, MISSION.md, README.md, NOTES.md, herdr/plan.html, herdr lesson 0001, portable-sessions/plan.html</td><td>herdr's GitHub owner was cited everywhere as <code>ogulcancelik/herdr</code>. That redirects — the real org is <code>herdrdev/herdr</code>. Fixed in all seven files.</td></tr>
-<tr><td>RESOURCES.md</td><td>PAL MCP link was dead (<code>pal-mcp</code> → 404). Real repo is <code>pal-mcp-server</code>. Fixed.</td></tr>
-<tr><td>RESOURCES.md, NOTES.md, portable-sessions/plan.html</td><td>t3code was called "SQLite-backed" with more certainty than public docs support (docs only say "one SQL transaction," never name the engine). Softened to "confirm from source, don't repeat as fact."</td></tr>
-<tr><td>portable-sessions/plan.html</td><td>Phase 4 treated "what would t3code need for portability" as an open design question. It isn't — t3code already ships Tailscale pairing and an SSH-launch mode. Rewrote Phase 4 to be "set it up and demo it," not "invent it."</td></tr>
-<tr><td>networking/plan.html, RESOURCES.md</td><td>net-2 asked you to verify the whole SSH handshake including auth against RFC 4253 — but 4253 stops at host-key verification; auth is RFC 4252. Added the second RFC.</td></tr>
-<tr><td>RESOURCES.md</td><td>net-12 asks you to read "the mosh USENIX paper" but RESOURCES.md never listed it. Added the real citation.</td></tr>
-<tr><td>llm-internals/plan.html</td><td>nanoGPT is now frozen/deprecated by Karpathy himself (superseded by <code>nanochat</code>). Noted — the Shakespeare exercise still works, just flagging it so it's not a surprise.</td></tr>
-<tr><td>rust-tauri/plan.html, ai-tooling/plan.html</td><td>Added sequencing/overlap notes (detailed below) so these plans stop contradicting the rest of the workspace.</td></tr>
-</table>
-<p>Everything else — all four herdr lessons' core claims, every notchtap-tauri file
-(checked line-for-line against the real app repo), and every other resource link — held
-up. That's most of what exists. The workspace's knowledge is trustworthy; it had a
-handful of specific bugs, not a systemic problem.</p>
 
 <h2>Why the order below is the order</h2>
 <p>Three constraints do all the work here, and they're already written into this
@@ -67,9 +44,8 @@ workspace — this page just makes them concrete:</p>
 <div class="note">
 <strong>Step 0 — right now, no new subject, just two small actions:</strong>
 <ul>
-  <li>Read herdr lessons 0001–0004 in order (they're written; NOTES.md flagged that
-  four lessons exist and none had been read — that's still the biggest single thing
-  blocking progress here). They're now fact-checked and fixed.</li>
+  <li>Read herdr lessons 0001–0004 in order. All four are written and unread — the
+  biggest single thing blocking progress here.</li>
   <li>Open NotchTap and name <strong>one specific broken animation</strong> — not "the
   whole state ladder," one reproducible thing ("X doesn't exit when Y happens"). Lesson
   0002 cannot be written until this exists, per this workspace's own rule.</li>
@@ -103,9 +79,8 @@ workspace — this page just makes them concrete:</p>
 <tr>
   <td>3</td>
   <td><strong>Decide the kharcha go/no-go</strong> (llm-internals <code>llm-5</code>) —
-  a conversation, not a subject activation. It's been sitting undecided since this was
-  first deferred; resolving it now costs nothing and prevents an accidental 8-week
-  drift later.</td>
+  a conversation, not a subject activation. Still undecided; deciding costs nothing
+  and prevents an accidental 8-week drift later.</td>
   <td>Cheap to do at any time; expensive to leave open indefinitely per MISSION.md's own
   warning about drifting instead of deciding.</td>
 </tr>
@@ -155,8 +130,8 @@ workspace — this page just makes them concrete:</p>
   <td>9</td>
   <td><strong>portable-sessions capstone.</strong> By now: herdr finished, rust-tauri
   Module 1 done, networking's SSH/Tailscale modules done, ai-tooling's Kimi spike
-  resolved one way or another. Phase 4 is now "set up and demo t3code's existing remote
-  path," not "design one from scratch."</td>
+  resolved one way or another. Phase 4 is "set up and demo t3code's existing remote
+  path" — the remote path already exists, nothing needs designing.</td>
   <td>This is the point of the whole workspace, per MISSION.md. Everything above exists
   to make this phase quick instead of theoretical.</td>
 </tr>
@@ -180,9 +155,9 @@ workspace — this page just makes them concrete:</p>
 </table>
 
 <h2>Per-subject detail</h2>
-<p>The full audit for each subject — every file read, every claim checked against a
-live source, and the internal lesson order within that subject — is preserved as a
-learning record: <a href="learning-records/0008-workspace-wide-audit-and-sequence.md">learning-records/0008-workspace-wide-audit-and-sequence.md</a>.</p>
+<p>The per-subject detail behind this ordering — every dependency and the internal
+lesson order within each subject — lives in
+<a href="learning-records/0008-workspace-wide-audit-and-sequence.md">learning-records/0008-workspace-wide-audit-and-sequence.md</a>.</p>
 
 <div class="verify">
 <h3>What "done" looks like for this page</h3>
