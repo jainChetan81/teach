@@ -13,7 +13,7 @@
 <h1>NotchTap issue log</h1>
 <p class="subtitle">The UI problems you actually see, each with what you expected, what
 happened, and how to make it happen again. This page is the deliverable for
-<code>nt-4</code> and the source of every fix in modules 2 and 4.</p>
+<strong>step 4</strong> and the source of every fix in modules 2 and 4.</p>
 
 <div class="why">
 <h3>How this page differs from the idea log</h3>
@@ -105,11 +105,26 @@ new and surprising shows up while building.</p>
   <tr><th>Why re-test</th><td>Icon count changed from five possible to three. This geometry is a direct function of that count, so the current build almost certainly behaves differently.</td></tr>
 </table>
 
-<h3>i-5. Agent card churns while tools run <span class="badge queued">needs detail</span></h3>
+<h3>i-5. Agent card churns while tools run <span class="badge suggested">confirmed in code</span></h3>
 <table>
   <tr><th>Expected</th><td>A calm surface that tells you an agent is working, without redrawing on every tool call.</td></tr>
   <tr><th>Actual</th><td>Content changes constantly as the agent edits, greps, runs commands. Reads as restless.</td></tr>
   <tr><th>Trigger</th><td>Run an agent that uses many tools in a row and watch the agent tab.</td></tr>
+  <tr><th>Diagnosis, confirmed</th><td>Three causes stacked on each other.
+  <strong>One.</strong> Rust decides whether to push an update by comparing the whole session
+  including <code>summary</code> and <code>details</code> (<code>agents/model.rs:403</code>).
+  Every Claude Code tool call rewrites both (<code>providers/claude_code.rs:133</code>), so
+  every tool call pushes a fresh snapshot to React.
+  <strong>Two.</strong> On top of that, the board runs its own clock at one tick per second
+  whenever any session has been in its state for under a minute
+  (<code>AgentBoard.tsx:43</code>), and every state change resets that clock
+  (<code>registry.rs:281</code>), so during real work the fast tick almost never stops.
+  <strong>Three.</strong> Every row carries <code>layout="position"</code>
+  (<code>AgentBoard.tsx:263</code>), which makes the animation library re-measure every row on
+  every one of those renders.</td></tr>
+  <tr><th>Also</th><td>Rows genuinely reorder. Rust sorts by urgency (<code>model.rs:122</code>),
+  and "waiting for permission" ranks 0 while "working" ranks 5. Approving a permission moves a
+  session from top to near-bottom, animated. That is correct behaviour that reads as churn.</td></tr>
   <tr><th>Evidence</th><td><a href="issues/nt4-01-agent-card-expanded.png">nt4-01</a> and <a href="issues/nt4-03-agent-card-expanded-2.png">nt4-03</a> show two consecutive states, one second apart, differing only in the path chip.</td></tr>
   <tr><th>Missing</th><td>Which behaviour you want: fewer updates, the same updates but animated softly, or a summary that only changes on meaningful events. This is a design decision, not a bug fix, until you pick one.</td></tr>
   <tr><th>Related</th><td>Touches <a href="ideas.html">idea 6</a> (fire-and-forget events versus persistent state). Worth reading that entry before deciding.</td></tr>
@@ -121,6 +136,12 @@ new and surprising shows up while building.</p>
   <tr><th>Actual</th><td>It occupies noticeably more width and height than its contents justify.</td></tr>
   <tr><th>Trigger</th><td>Let the app go idle and compare the bar against the notch cutout.</td></tr>
   <tr><th>Evidence</th><td>Visible in <a href="issues/nt4-02-idle-right-side-empty.png">nt4-02</a>, and closely tied to i-1: the empty right half <em>is</em> part of the excess size.</td></tr>
+  <tr><th>The number, confirmed</th><td>Idle is <strong>370px wide by 32px tall</strong>. That is
+  a 200px cutout plus 85px of flank on each side. The 85 is a floor: the flank never gets
+  narrower than that even when it holds nothing. It is written by hand in three places that
+  must move together &mdash; <code>card-chrome.css:73</code>, <code>card-chrome.css:259</code>,
+  and <code>hover.rs:25</code>. The 200 and 32 are written in three places too
+  (<code>App.tsx:21</code>, <code>hover.rs:29</code>, and the CSS fallbacks).</td></tr>
   <tr><th>Try this first, it needs no code</th><td>Open the settings panel, Appearance section, and lower the card scale. Valid range is 0.8 to 1.4. The change applies instantly with no relaunch, because <code>set_appearance</code> broadcasts to the overlay rather than restarting.</td></tr>
   <tr><th>Then decide</th><td>If a lower scale fixes it, this was a settings issue, not a defect. If the proportions still look wrong at 0.8, the idle surface has its own sizing problem and becomes a real fix. Report which.</td></tr>
 </table>
@@ -153,7 +174,7 @@ new and surprising shows up while building.</p>
   <tr><th>Trigger</th><td>With an agent notification showing and a second session live, hover the card.</td></tr>
   <tr><th>Evidence</th><td>Resting: <a href="issues/nt4-05-belowblock-resting.png">nt4-05</a>, one flush line. Hovered: <a href="issues/nt4-04-belowblock-hovered.png">nt4-04</a>, a rounded bordered panel inset from the card edges.</td></tr>
   <tr><th>Owner (guess)</th><td>CSS only. The below-block surface styling in <code>src/overlay/</code>. The resting version already looks right, so this is about making the hovered state inherit the same flush treatment instead of gaining a border and inset.</td></tr>
-  <tr><th>Note</th><td>Good candidate for the first real fix after <code>nt-5</code>: visual, small, and you already have a before-and-after pair.</td></tr>
+  <tr><th>Note</th><td>Good candidate for the first real fix after <strong>step 5</strong>: visual, small, and you already have a before-and-after pair.</td></tr>
 </table>
 
 <h3>i-10. You cannot tell whether it is silenced <span class="badge suggested">confirmed in code</span></h3>
@@ -185,12 +206,14 @@ new and surprising shows up while building.</p>
   <tr><th>What a fix needs</th><td>A setter on the controller, plus a wake signal for the sleeping task, plus something in the settings save path that calls both.</td></tr>
 </table>
 
-<h3>i-13. The idle face sits low and off centre <span class="badge queued">open</span></h3>
+<h3>i-13. The idle face sits low and off centre <span class="badge suggested">confirmed in code</span></h3>
 <table>
   <tr><th>Expected</th><td>The face rests in the middle of the notch cutout, centred.</td></tr>
   <tr><th>Actual</th><td>It sits under the black bar, on the wallpaper, and reads as left of centre.</td></tr>
   <tr><th>Trigger</th><td>Leave the machine alone. The face fades in after about 4.5 seconds. <a href="issues/nt4-06-compact-face-off.png">nt4-06</a>.</td></tr>
-  <tr><th>Owner (guess)</th><td>CSS. <code>src/overlay/card-chrome.css:445</code> puts <code>.idle-face</code> in <code>grid-column: 2 / grid-row: 1</code>, the same cell as <code>.synthetic-cutout</code>, and it is HUD-mode only. On a real notch that cell is behind the camera housing, so this may be a mode problem, not an alignment one.</td></tr>
+  <tr><th>Owner</th><td>CSS, and the CSS does not exist. <code>StatusRailCard.tsx:681</code> wraps the face in <code>&lt;div className="rest-cluster"&gt;</code>. There is no <code>.rest-cluster</code> rule anywhere in the repo. Grep the whole project and the string appears in that one file.</td></tr>
+  <tr><th>Diagnosis, confirmed</th><td>The face's own <code>grid-column: 2; grid-row: 1</code> (<code>card-chrome.css:446</code>) is inert, because the face is no longer a direct child of the grid; the wrapper is. The wrapper has no placement rule, so it auto-places into the first free grid cell, which is column 3, row 1 &mdash; the cell <code>.flank-right</code> already claims (<code>card-chrome.css:206</code>). The face is very probably painting over the right flank, not under the cutout.</td></tr>
+  <tr><th>The part worth reading twice</th><td>A seven-line comment above that div describes the missing CSS in detail and calls it "authoritative". The comment documents code that was never written. Trust the stylesheet, not the comment.</td></tr>
   <tr><th>Note</th><td>Check which mode the screenshot was taken in before touching any numbers. <code>data-notchtap-mode</code> on the root element decides.</td></tr>
 </table>
 
@@ -266,7 +289,7 @@ the idle hover snap, and the edge hover.</p>
   <li>Re-check i-1 to i-5. Drop the ones that are gone.</li>
   <li>Fill in the <strong>Missing</strong> rows. Those are the only blockers.</li>
   <li>Record two short clips: the idle hover snap (i-3) and the edge hover (i-4).</li>
-  <li>Pick the smallest survivor and start <code>nt-5</code>.</li>
+  <li>Pick the smallest survivor and start <strong>step 5</strong>.</li>
 </ol>
 
 <div class="verify">

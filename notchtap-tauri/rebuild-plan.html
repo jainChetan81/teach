@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NotchTap rebuild plan</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<nav class="crumbs"><a href="../index.html">teach</a> / <a href="plan.html">notchtap-tauri</a> / rebuild plan</nav>
+
+<h1>NotchTap rebuild plan</h1>
+<p class="subtitle">Fourteen logged issues, four independent code surveys, one order of work.
+Written 19 August 2026.</p>
+
+<div class="why">
+<h3>The one sentence</h3>
+<p>The visual states are not broken one by one. There is no state machine holding them
+together, so they can contradict each other, and most of the fourteen issues are what that
+looks like from the outside.</p>
+</div>
+
+<h2>What the survey actually found</h2>
+
+<p>Four read-only agents read the live code. Three checked whether the teaching pages still
+told the truth. One mapped every visual state, timer, and size. The fourth one changed the
+shape of this plan.</p>
+
+<h3>Finding 1: there is no state machine. There are eleven booleans.</h3>
+
+<p>One file, <code>src/hooks/useExitChoreography.ts</code>, takes three inputs and returns
+eleven separate true-or-false values. <code>StatusRailCard.tsx</code> then glues eight of
+them into one string of CSS class names and hands it to the browser.</p>
+
+<pre><code>card-assembly | priority | expanded | promoting | hovered | bare | exiting | exit-to-bare</code></pre>
+
+<p>Nothing stops two of those from being on at once when they should not be. The rules that
+keep them apart are written as <em>comments</em>. One comment says "promoting and exiting
+never happen together", and that promise holds only because a particular line sits in a
+particular place. Move that line and the promise silently breaks, with no error.</p>
+
+<p>This is the root of the whole track. Every other item below is downstream of it.</p>
+
+<h3>Finding 2: three different things are all called "notch"</h3>
+
+<table>
+  <tr><th>Name</th><th>Where it comes from</th><th>What it means</th></tr>
+  <tr><td><code>data-notchtap-mode</code></td><td>Hardware detection at startup</td><td>Does this Mac physically have a notch?</td></tr>
+  <tr><td><code>restingState</code></td><td>A setting the user picks</td><td>At rest, hide completely or show a bar?</td></tr>
+  <tr><td><code>bare</code></td><td>Computed from the setting</td><td>Draw nothing right now.</td></tr>
+</table>
+
+<p>They are independent. You can have "notch" in one and "notch" in another and mean two
+unrelated things. The Rust hover code reads the first and ignores the second entirely. In
+<code>App.tsx</code> the word <code>mode</code> is even used for two different values in the
+same file.</p>
+
+<h3>Finding 3: a comment describing CSS that was never written</h3>
+
+<p>The idle face sits inside <code>&lt;div class="rest-cluster"&gt;</code>. Above it is a
+seven-line comment explaining how <code>.rest-cluster</code> is positioned and calling the
+shipped rule "authoritative".</p>
+
+<p>There is no <code>.rest-cluster</code> rule. Anywhere. The string appears in exactly one
+file in the whole repository, and that file is the one that uses it.</p>
+
+<p>So the wrapper falls into whatever grid cell is free, which is the cell the right flank
+already occupies. That is issue i-13, and it was never an alignment problem.</p>
+
+<h3>Finding 4: the agent board churn has three stacked causes</h3>
+
+<ol>
+  <li>Rust decides whether to send an update by comparing the whole session, including the
+  summary text. Every tool call rewrites the summary. So every tool call sends an update.</li>
+  <li>The board runs its own once-a-second clock whenever any session is under a minute old
+  in its current state. Every state change resets that age to zero. During real work the
+  fast clock effectively never stops.</li>
+  <li>Every row is marked to animate its position, so the animation library re-measures
+  every row on every one of those renders.</li>
+</ol>
+
+<p>Any one of these alone would be fine. Together they redraw a busy list many times a
+second.</p>
+
+<h3>Finding 5: the idle size is 370 by 32, and the number is written three times</h3>
+
+<p>200 pixels of cutout, plus 85 pixels of flank on each side. The 85 is a floor: the flank
+refuses to be narrower even when it holds nothing. That is issue i-1 and issue i-7 in one
+number.</p>
+
+<p>The 85 lives in two CSS rules and one Rust constant, kept equal by hand. Same for the 200
+and the 32. Change one and the app's mouse-tracking and its drawing disagree.</p>
+
+<h3>Finding 6: dead code that looks alive</h3>
+
+<ul>
+  <li>The news panel is fully built and wired to a permanently empty list. It renders
+  nothing, ever.</li>
+  <li>One condition in <code>App.tsx</code> can never be true, and a comment in another file
+  defends it against a version of <code>App.tsx</code> that no longer exists.</li>
+  <li>A comment describes "eq bars" in the rest state. There are no eq bars.</li>
+  <li>Eight hook files were moved to a new folder and every single caller still points at
+  the old address through a forwarding file.</li>
+</ul>
+
+<h2>The order of work</h2>
+
+<div class="note">
+<h3>The rule for this plan</h3>
+<p>Each stage ends with the app running and the tests green. No stage depends on a later
+stage. If you stop after any stage, what you have is better than what you started with.</p>
+</div>
+
+<h3>Stage 0 — three free wins, before any rebuild</h3>
+
+<p>These are small, safe, and independent. They also prove your test and build loop works
+before you touch anything structural.</p>
+
+<table>
+  <tr><th>#</th><th>Do</th><th>Fixes</th><th>Size</th></tr>
+  <tr><td>0.1</td><td>Write the missing <code>.rest-cluster</code> rule, or delete the wrapper and let the face sit in the grid again.</td><td>i-13</td><td>Tiny</td></tr>
+  <tr><td>0.2</td><td>Make <code>build_tray</code> call the function that writes both silence indicators, instead of writing one of them by hand.</td><td>i-11</td><td>Tiny</td></tr>
+  <tr><td>0.3</td><td>Add separators around the tray status row and give it text that reads as a state, not a disabled button.</td><td>i-10</td><td>Small</td></tr>
+</table>
+
+<h3>Stage 1 — one state machine</h3>
+
+<p>The centrepiece. Replace the eleven booleans with one value that can only ever be one
+thing at a time.</p>
+
+<p>In plain terms: instead of eight separate switches that might disagree, one dial with
+named positions. The compiler then refuses to let you build a position that does not exist,
+which is the whole point.</p>
+
+<table>
+  <tr><th>#</th><th>Do</th><th>Why</th></tr>
+  <tr><td>1.1</td><td>Write down every combination of the eight class names that the app can actually produce today. Do it on paper first.</td><td>You cannot replace a machine you have not written down. Expect to find combinations nobody intended.</td></tr>
+  <tr><td>1.2</td><td>Turn that list into one named type with one case per real state.</td><td>This is the moment the contradictions become impossible rather than merely unlikely.</td></tr>
+  <tr><td>1.3</td><td>Rewrite <code>useExitChoreography</code> to return that one value instead of eleven.</td><td>Every consumer gets simpler for free.</td></tr>
+  <tr><td>1.4</td><td>Rewrite the class-name assembly as a plain lookup from state to class.</td><td>The string stops being derived and starts being declared.</td></tr>
+  <tr><td>1.5</td><td>Delete the comments that were holding the invariants. The type holds them now.</td><td>A comment that is enforced by the compiler is noise.</td></tr>
+</table>
+
+<h3>Stage 2 — one vocabulary</h3>
+
+<table>
+  <tr><th>#</th><th>Do</th></tr>
+  <tr><td>2.1</td><td>Rename so the three "notch" meanings have three names. Suggestion: <code>hardware</code> (has a real notch), <code>restStyle</code> (what the user chose), <code>drawing</code> (what we paint right now).</td></tr>
+  <tr><td>2.2</td><td>Fix the shadowed <code>mode</code> in <code>App.tsx</code>.</td></tr>
+  <tr><td>2.3</td><td>Delete the dead condition in <code>App.tsx</code> and the comment defending it.</td></tr>
+</table>
+
+<h3>Stage 3 — the agent board</h3>
+
+<table>
+  <tr><th>#</th><th>Do</th><th>Fixes</th></tr>
+  <tr><td>3.1</td><td>Decide first: should the summary text change on every tool call at all? This is a product question, not a code question. Answer it before writing anything.</td><td>i-5</td></tr>
+  <tr><td>3.2</td><td>If no: stop comparing summary and details when deciding whether to send an update.</td><td>i-5</td></tr>
+  <tr><td>3.3</td><td>If yes: keep sending, but stop the board re-measuring every row every time.</td><td>i-5</td></tr>
+  <tr><td>3.4</td><td>Either way, make the once-a-second clock stop when nothing needs a second-level number.</td><td>i-5</td></tr>
+</table>
+
+<h3>Stage 4 — size and space</h3>
+
+<table>
+  <tr><th>#</th><th>Do</th><th>Fixes</th></tr>
+  <tr><td>4.1</td><td>Decide what idle should look like when it holds nothing. Right now it reserves 85 pixels on each side for content that is not there.</td><td>i-1, i-7</td></tr>
+  <tr><td>4.2</td><td>Put the shared numbers in one place both sides read, instead of three hand-copied copies.</td><td>Prevents the next drift</td></tr>
+  <tr><td>4.3</td><td>Make the hovered below block inherit the resting one's flush edges instead of gaining a border and an inset.</td><td>i-9</td></tr>
+  <tr><td>4.4</td><td>Look again at the expanded panel now that the states are real.</td><td>i-14</td></tr>
+</table>
+
+<h3>Stage 5 — the two that need a decision from you</h3>
+
+<table>
+  <tr><th>#</th><th>Do</th><th>Fixes</th></tr>
+  <tr><td>5.1</td><td>Decide which display wins: the one with the mouse, the one with the focused app, or one card per screen. Then add a screen-change watcher on the Rust side.</td><td>i-8</td></tr>
+  <tr><td>5.2</td><td>Give the silence controller a way to accept a new schedule, plus a way to wake the sleeping timer, plus a call on the settings save path.</td><td>i-12</td></tr>
+</table>
+
+<h3>Stage 6 — clear the dead wood</h3>
+
+<table>
+  <tr><th>#</th><th>Do</th></tr>
+  <tr><td>6.1</td><td>Either wire the news panel to real stories or delete it. It cannot stay as a fully built component that renders nothing.</td></tr>
+  <tr><td>6.2</td><td>Point every hook import at the real folder and delete the eight forwarding files.</td></tr>
+  <tr><td>6.3</td><td>Delete the comments describing things that do not exist: the eq bars, the rest-cluster rule if you chose to remove the wrapper, and the stale note about a listener path.</td></tr>
+</table>
+
+<h2>What this plan does not do</h2>
+
+<ul>
+  <li>It does not redesign how the app looks. It makes the states honest first, because you
+  cannot judge a design that contradicts itself.</li>
+  <li>It does not touch the Rust backend: the queue, the pollers, the HTTP server, the
+  config. None of that knows the overlay exists.</li>
+  <li>It does not touch the settings window, except to check the one preview that borrows the
+  overlay's card.</li>
+</ul>
+
+<h2>Things that will break loudly, and should</h2>
+
+<p>Several tests exist for the sole purpose of catching exactly the kind of change this plan
+makes. They are not obstacles. They are the reason this is safe.</p>
+
+<ul>
+  <li>A test that checks the icon spacing in CSS matches the icon spacing in Rust.</li>
+  <li>A test that checks every animation duration in JavaScript matches its twin in CSS.</li>
+  <li>A test that checks the overlay's card styles are not duplicated in the settings window.</li>
+  <li>A Rust test that checks the hit-test rectangle constants match the named style
+  constants.</li>
+  <li>Component tests that pin exact CSS selector strings and exact motion values.</li>
+</ul>
+
+<p>When one of these fails, read what it was protecting before you update it. That is the
+message the last person left for you.</p>
+
+<h2>Two decisions I need from you before Stage 3 and Stage 5</h2>
+
+<ol>
+  <li><strong>The agent board.</strong> Should the card's text change on every tool call?
+  Calm and vague, or live and busy? This decides 3.2 versus 3.3, and they are different
+  amounts of work.</li>
+  <li><strong>Multiple displays.</strong> Mouse, focused app, or one card per screen? Three
+  different behaviours, three different amounts of work.</li>
+</ol>
+
+<h2>Where the evidence lives</h2>
+
+<ul>
+  <li><a href="issues.html">The issue log</a> &mdash; fourteen issues, eight
+  screenshots, and the confirmed cause for each one that has been traced.</li>
+  <li><a href="reference/frontend-map.html">The frontend map</a> &mdash;
+  corrected 19 August 2026.</li>
+  <li><a href="reference/wire-table.html">The wire table</a> &mdash; line
+  numbers refreshed 19 August 2026.</li>
+</ul>
+
+</body>
+</html>
