@@ -151,33 +151,82 @@ which is the whole point.</p>
   <tr><td>2.3</td><td>Delete the dead condition in <code>App.tsx</code> and the comment defending it.</td></tr>
 </table>
 
-<h3>Stage 3 — the agent board</h3>
+<h3>Stage 3 — three tiers, not one surface</h3>
+
+<div class="why">
+<h3>The rule, decided 19 August 2026</h3>
+<p><strong>Resting is calm. Hovered is live. Taking over the screen is rare and earned.</strong></p>
+<p>Right now all three are the same surface, so a tool call and a finished session get the
+same treatment. Splitting them is the fix for the churn, and it is a design decision, not a
+performance one.</p>
+</div>
+
+<table>
+  <tr><th>Tier</th><th>Shows</th><th>Updates</th></tr>
+  <tr><td>Resting</td><td>Almost nothing. Idle says "Idle". Working says something equally short and stable.</td><td>Only when the tier itself changes. Never on a tool call.</td></tr>
+  <tr><td>Hovered</td><td>The live detail. What is running, what just finished, which files.</td><td>Freely. This is where movement belongs, because you asked for it by pointing at it.</td></tr>
+  <tr><td>Promoted</td><td>Takes over the screen and animates in.</td><td>Only on: session finished, needs your permission, needs your input, or failed.</td></tr>
+</table>
+
+<p>This is the reference app's pattern, and it removes the churn as a side effect. Constant
+redrawing stops being a problem the moment it only happens while you are deliberately
+looking at it.</p>
+
+<h4>What the reference actually puts in each tier</h4>
+
+<p>Three screenshots, three tiers, one anatomy. This is the target, not a sketch.</p>
+
+<table>
+  <tr><th>Tier</th><th>Contents</th><th>Evidence</th></tr>
+  <tr><td>Resting, nothing running</td><td>A pill inside the cutout. One glyph, the word "Idle". Nothing on the right. No reserved space.</td><td><a href="issues/nt4-09-reference-idle-pill.png">nt4-09</a></td></tr>
+  <tr><td>Resting, one agent working</td><td>The same pill. Animated glyph, the word "Working", and the elapsed time on the far right. That is the whole thing.</td><td><a href="issues/nt4-11-reference-resting-working.png">nt4-11</a></td></tr>
+  <tr><td>Hovered</td><td>Header repeats the resting pill exactly, then: project name, session title, model, machine, OS, start time, elapsed, git branch, a progress ring with a percentage, a state chip, and a scrolling activity feed of recent commands.</td><td><a href="issues/nt4-10-reference-hovered-activity.png">nt4-10</a></td></tr>
+</table>
+
+<div class="why">
+<h3>The thing to copy is not the look. It is that the resting pill never changes shape.</h3>
+<p>Idle and Working are the same pill, the same height, the same position. One word changes
+and a timer appears on the right. Nothing grows, nothing reflows, nothing slides. The eye has
+nothing to catch on.</p>
+<p>Then hover, and the panel that opens repeats that pill unchanged as its own header. So the
+thing you were looking at stays exactly where it was and the detail arrives underneath it.
+That is why it does not feel disruptive: the anchor never moves.</p>
+</div>
 
 <table>
   <tr><th>#</th><th>Do</th><th>Fixes</th></tr>
-  <tr><td>3.1</td><td>Decide first: should the summary text change on every tool call at all? This is a product question, not a code question. Answer it before writing anything.</td><td>i-5</td></tr>
-  <tr><td>3.2</td><td>If no: stop comparing summary and details when deciding whether to send an update.</td><td>i-5</td></tr>
-  <tr><td>3.3</td><td>If yes: keep sending, but stop the board re-measuring every row every time.</td><td>i-5</td></tr>
-  <tr><td>3.4</td><td>Either way, make the once-a-second clock stop when nothing needs a second-level number.</td><td>i-5</td></tr>
+  <tr><td>3.1</td><td>Split the agent surface into the three tiers above. The tier is part of the Stage 1 state machine, not a new separate flag.</td><td>i-5</td></tr>
+  <tr><td>3.2</td><td>Keep Rust sending every update. The frontend decides what to paint. Do not throttle at the source; a hovering user wants all of it.</td><td>i-5</td></tr>
+  <tr><td>3.3</td><td>Stop the resting tier re-rendering for updates it does not display.</td><td>i-5</td></tr>
+  <tr><td>3.4</td><td>Only mark rows to animate their position inside the hovered tier.</td><td>i-5</td></tr>
+  <tr><td>3.5</td><td>Keep a once-a-second clock in the resting tier, but let it update <em>only the elapsed-time text</em>. The reference counts seconds while resting and still reads as still, because one number changing is not motion. The expensive part was never the clock; it was re-rendering and re-measuring the whole list on every tick.</td><td>i-5</td></tr>
+  <tr><td>3.6</td><td>Restrict promotion to the four earned events. Everything else stays behind hover.</td><td>i-5</td></tr>
 </table>
 
 <h3>Stage 4 — size and space</h3>
 
 <table>
   <tr><th>#</th><th>Do</th><th>Fixes</th></tr>
-  <tr><td>4.1</td><td>Decide what idle should look like when it holds nothing. Right now it reserves 85 pixels on each side for content that is not there.</td><td>i-1, i-7</td></tr>
+  <tr><td>4.1</td><td><strong>Decided.</strong> Resting is one pill inside the cutout: glyph, one word, and an elapsed time on the right when something is running. Drop the 85-pixel floor entirely and let each flank size to its contents. The pill must be the same size in every resting state, so that switching between them moves nothing.</td><td>i-1, i-7</td></tr>
   <tr><td>4.2</td><td>Put the shared numbers in one place both sides read, instead of three hand-copied copies.</td><td>Prevents the next drift</td></tr>
   <tr><td>4.3</td><td>Make the hovered below block inherit the resting one's flush edges instead of gaining a border and an inset.</td><td>i-9</td></tr>
   <tr><td>4.4</td><td>Look again at the expanded panel now that the states are real.</td><td>i-14</td></tr>
 </table>
 
-<h3>Stage 5 — the two that need a decision from you</h3>
+<h3>Stage 5 — the silence schedule</h3>
 
 <table>
   <tr><th>#</th><th>Do</th><th>Fixes</th></tr>
-  <tr><td>5.1</td><td>Decide which display wins: the one with the mouse, the one with the focused app, or one card per screen. Then add a screen-change watcher on the Rust side.</td><td>i-8</td></tr>
-  <tr><td>5.2</td><td>Give the silence controller a way to accept a new schedule, plus a way to wake the sleeping timer, plus a call on the settings save path.</td><td>i-12</td></tr>
+  <tr><td>5.1</td><td>Give the silence controller a way to accept a new schedule, plus a way to wake the sleeping timer, plus a call on the settings save path.</td><td>i-12</td></tr>
 </table>
+
+<div class="note">
+<h3>Multiple displays: deliberately not in this plan</h3>
+<p>Decided 19 August 2026. One display only for now. Following you across screens needs a
+native screen-change observer on the Rust side plus a product answer about which display
+wins, and it is a bigger job than everything above it. Nothing else here depends on it.
+Revisit once the states are honest.</p>
+</div>
 
 <h3>Stage 6 — clear the dead wood</h3>
 
@@ -216,15 +265,21 @@ makes. They are not obstacles. They are the reason this is safe.</p>
 <p>When one of these fails, read what it was protecting before you update it. That is the
 message the last person left for you.</p>
 
-<h2>Two decisions I need from you before Stage 3 and Stage 5</h2>
+<h2>Both decisions, answered</h2>
 
-<ol>
-  <li><strong>The agent board.</strong> Should the card's text change on every tool call?
-  Calm and vague, or live and busy? This decides 3.2 versus 3.3, and they are different
-  amounts of work.</li>
-  <li><strong>Multiple displays.</strong> Mouse, focused app, or one card per screen? Three
-  different behaviours, three different amounts of work.</li>
-</ol>
+<table>
+  <tr><th>Question</th><th>Answer</th><th>Effect on this plan</th></tr>
+  <tr><td>Should the agent card's text change on every tool call?</td><td>Yes, but only where you are looking. Live detail on hover; the resting surface stays still; only finishing or needing you takes over the screen.</td><td>Stage 3 rewritten around three tiers.</td></tr>
+  <tr><td>Which display wins?</td><td>None. One display only for now.</td><td>Stage 5 shrank to one item. i-8 deferred.</td></tr>
+</table>
+
+<div class="why">
+<h3>The idea underneath both answers</h3>
+<p><strong>What you show and what you interrupt with are two different decisions.</strong>
+This app treats them as one, so the only way to make a tool call visible is to make it
+disruptive. Separate them and both problems dissolve: the detail can be as busy as it likes,
+because it only exists while you are pointing at it.</p>
+</div>
 
 <h2>Where the evidence lives</h2>
 

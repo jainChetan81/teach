@@ -146,7 +146,7 @@ new and surprising shows up while building.</p>
   <tr><th>Then decide</th><td>If a lower scale fixes it, this was a settings issue, not a defect. If the proportions still look wrong at 0.8, the idle surface has its own sizing problem and becomes a real fix. Report which.</td></tr>
 </table>
 
-<h3>i-8. The card does not follow you to another display <span class="badge suggested">confirmed in code</span></h3>
+<h3>i-8. The card does not follow you to another display <span class="badge queued">deferred, on purpose</span></h3>
 <table>
   <tr><th>Expected</th><td>Whichever screen you are working on, the card appears there.</td></tr>
   <tr><th>Actual</th><td>It stays on one display. Work on another monitor and you never see the notification.</td></tr>
@@ -162,9 +162,10 @@ new and surprising shows up while building.</p>
   <tr><th>What a fix needs</th><td>Something must notice "the active display changed" and
   re-run the placement. That means a native screen-change or focus observer on the Rust
   side. Not a React fix, and not a small one.</td></tr>
-  <tr><th>Decide first</th><td>Which display should win: the one with the mouse, the one with
-  the focused app, or all of them at once (one card per screen)? Three different behaviours,
-  three different amounts of work. Pick before anyone codes.</td></tr>
+  <tr><th>Decided, 19 Aug 2026</th><td><strong>Not now.</strong> One display only. The fix needs a
+  native screen-change observer on the Rust side and a product answer about which display wins,
+  and neither is worth spending before the states themselves are honest. Revisit after the
+  rebuild. Nothing else in the plan depends on it.</td></tr>
 </table>
 
 <h3>i-9. Hovered below block reads as a box inside a box <span class="badge suggested">ready to pin down</span></h3>
@@ -226,11 +227,16 @@ new and surprising shows up while building.</p>
   <tr><th>Note</th><td>Do not chase this one yet. It is a symptom of the states being rebuilt, not a standalone bug.</td></tr>
 </table>
 
-<h3>i-6. Reference implementation to compare against <span class="badge queued">open</span></h3>
+<h3>i-6. Reference implementation to compare against <span class="badge suggested">answered, with screenshots</span></h3>
 <table>
-  <tr><th>What</th><td>A second notch app you use alongside the t3code app, which you rate clearly better than this one. Link still pending.</td></tr>
-  <tr><th>Why it matters</th><td>A concrete reference turns "looks bad" into a specific target we can copy or reject on purpose.</td></tr>
-  <tr><th>Missing</th><td>The link, and one line on what specifically it does better.</td></tr>
+  <tr><th>What</th><td>The Notch, installed alongside t3code. You rate its behaviour clearly better than NotchTap's.</td></tr>
+  <tr><th>What it does better, in one line</th><td>It stays quiet by default and reveals on demand.</td></tr>
+  <tr><th>Resting, nothing running</th><td>A pill inside the cutout: one glyph, the word "Idle". Nothing on the right, no reserved empty space. <a href="issues/nt4-09-reference-idle-pill.png">nt4-09</a>.</td></tr>
+  <tr><th>Resting, one agent working</th><td>The same pill, same size, same place. Animated glyph, the word "Working", elapsed time on the far right. That is all. Tool calls do not move it. <a href="issues/nt4-11-reference-resting-working.png">nt4-11</a>.</td></tr>
+  <tr><th>Hovered</th><td>A panel whose header is that pill, unchanged. Below it: project, session title, model, machine, OS, start time, elapsed, git branch, a progress ring with a percent, a state chip, and a live activity feed of recent commands. <a href="issues/nt4-10-reference-hovered-activity.png">nt4-10</a>.</td></tr>
+  <tr><th>On finish</th><td>Only then does it take over the screen and tell you something.</td></tr>
+  <tr><th>The pattern, named</th><td>Three tiers: <strong>resting</strong> is calm and fixed, <strong>hovered</strong> is live and detailed, <strong>promoted</strong> is rare and earned. NotchTap currently collapses all three into one surface that updates constantly.</td></tr>
+  <tr><th>The detail that makes it work</th><td>The resting pill never changes shape. Idle and Working are the same pill; one word changes and a timer appears. And the hovered panel repeats that same pill as its header, so the thing you were looking at does not move when the detail arrives. The anchor stays put.</td></tr>
 </table>
 
 <h2>How to run it and what to look for</h2>
