@@ -54,6 +54,16 @@ app: when the idle bar or the agent card feels wrong, the question becomes
 instead of an abstract judgement. Keep this entry updated as surfaces reach the same bar.</p>
 </div>
 
+<div class="note">
+<h3>Status: the hunt is closed, on purpose</h3>
+<p>Fourteen issues are enough. The states themselves are being rebuilt on both sides, Rust
+and React, so most of what is listed here will be rewritten rather than patched. Finding a
+fifteenth issue in code that is about to be replaced buys nothing.</p>
+<p>This page now has one job: it is the acceptance list for the rebuild. When a state is
+rebuilt, the matching issue here has to come out true. Do not add more unless something
+new and surprising shows up while building.</p>
+</div>
+
 <h2>Open issues</h2>
 
 <h3>i-1. Idle state: the right side is empty <span class="badge queued">needs detail</span></h3>
@@ -144,6 +154,53 @@ instead of an abstract judgement. Keep this entry updated as surfaces reach the 
   <tr><th>Evidence</th><td>Resting: <a href="issues/nt4-05-belowblock-resting.png">nt4-05</a>, one flush line. Hovered: <a href="issues/nt4-04-belowblock-hovered.png">nt4-04</a>, a rounded bordered panel inset from the card edges.</td></tr>
   <tr><th>Owner (guess)</th><td>CSS only. The below-block surface styling in <code>src/overlay/</code>. The resting version already looks right, so this is about making the hovered state inherit the same flush treatment instead of gaining a border and inset.</td></tr>
   <tr><th>Note</th><td>Good candidate for the first real fix after <code>nt-5</code>: visual, small, and you already have a before-and-after pair.</td></tr>
+</table>
+
+<h3>i-10. You cannot tell whether it is silenced <span class="badge suggested">confirmed in code</span></h3>
+<table>
+  <tr><th>Expected</th><td>Open the menu and know, in one glance, whether notifications are being held back right now.</td></tr>
+  <tr><th>Actual</th><td>The answer is there, but it does not read as an answer. The second row says <strong>Not Silenced</strong> in grey. Grey means "disabled button" everywhere else on a Mac, so it scans as a broken menu item, not as a status line.</td></tr>
+  <tr><th>Trigger</th><td>Click the NotchTap icon in the menu bar. <a href="issues/nt4-08-tray-menu-silence.png">nt4-08</a>.</td></tr>
+  <tr><th>Owner</th><td>Rust. <code>src-tauri/src/tray.rs</code>, <code>silence_indicator_label</code> (line 63) and <code>build_tray</code> (line 219).</td></tr>
+  <tr><th>Diagnosis, already confirmed</th><td>The status is a real menu item created with <code>enabled = false</code>, so macOS greys it out. There is no separator above or below it, so it sits in the same visual run as the four real actions. There is also no expiry text: when a mute is running, the menu never says until when.</td></tr>
+  <tr><th>What a fix needs</th><td>Separators around the status row, and text that names the state as a state, for example "Silenced until 12:30" or "Notifications on". A checkmark next to the active mute preset would do the same job.</td></tr>
+</table>
+
+<h3>i-11. Two silence indicators, set from different places <span class="badge suggested">confirmed in code</span></h3>
+<table>
+  <tr><th>Expected</th><td>The moon glyph in the menu bar and the menu's status row always agree.</td></tr>
+  <tr><th>Actual</th><td>They are written by two different code paths, and one of them is skipped at startup.</td></tr>
+  <tr><th>Owner</th><td>Rust. <code>src-tauri/src/tray.rs</code>: <code>set_silence_indicators</code> (line 84) writes both; <code>build_tray</code> (line 231) writes only the menu text.</td></tr>
+  <tr><th>Diagnosis, already confirmed</th><td><code>build_tray</code> sets the menu label from the boot verdict but never sets the tray title, so the moon is unset until <code>spawn_silence_task</code> runs its first pass (<code>lib.rs:872</code>, after the tray is built at <code>lib.rs:677</code>). Small window, but the two indicators have no single owner.</td></tr>
+  <tr><th>What a fix needs</th><td>One function that writes both, called at boot and on every change. <code>set_silence_indicators</code> already is that function. <code>build_tray</code> just has to call it.</td></tr>
+</table>
+
+<h3>i-12. Changing quiet hours does nothing until you restart <span class="badge suggested">confirmed in code</span></h3>
+<table>
+  <tr><th>Expected</th><td>Edit the silence window in Settings, and the app starts obeying the new window.</td></tr>
+  <tr><th>Actual</th><td>Nothing changes until you quit and reopen the app.</td></tr>
+  <tr><th>Trigger</th><td>Settings, change the silence window, then wait for the new window to begin.</td></tr>
+  <tr><th>Owner</th><td>Rust. <code>src-tauri/src/silence.rs</code> and <code>src-tauri/src/lib.rs:351</code>.</td></tr>
+  <tr><th>Diagnosis, already confirmed</th><td><code>SilenceController::new(schedule_enabled, window)</code> is called once at startup. The type has no setter for the schedule at all: its public methods are <code>is_silenced</code>, <code>start_mute</code>, <code>cancel_mute</code>, <code>skip_current_window</code>, <code>next_boundary</code>. Nothing else in the codebase mentions <code>SilenceController</code> outside <code>lib.rs</code> boot and <code>tray.rs</code>. The background timer also sleeps until the <em>old</em> schedule's next boundary, so even a setter would need to wake it.</td></tr>
+  <tr><th>What a fix needs</th><td>A setter on the controller, plus a wake signal for the sleeping task, plus something in the settings save path that calls both.</td></tr>
+</table>
+
+<h3>i-13. The idle face sits low and off centre <span class="badge queued">open</span></h3>
+<table>
+  <tr><th>Expected</th><td>The face rests in the middle of the notch cutout, centred.</td></tr>
+  <tr><th>Actual</th><td>It sits under the black bar, on the wallpaper, and reads as left of centre.</td></tr>
+  <tr><th>Trigger</th><td>Leave the machine alone. The face fades in after about 4.5 seconds. <a href="issues/nt4-06-compact-face-off.png">nt4-06</a>.</td></tr>
+  <tr><th>Owner (guess)</th><td>CSS. <code>src/overlay/card-chrome.css:445</code> puts <code>.idle-face</code> in <code>grid-column: 2 / grid-row: 1</code>, the same cell as <code>.synthetic-cutout</code>, and it is HUD-mode only. On a real notch that cell is behind the camera housing, so this may be a mode problem, not an alignment one.</td></tr>
+  <tr><th>Note</th><td>Check which mode the screenshot was taken in before touching any numbers. <code>data-notchtap-mode</code> on the root element decides.</td></tr>
+</table>
+
+<h3>i-14. The expanded panel is mostly empty, with a stray line <span class="badge queued">open</span></h3>
+<table>
+  <tr><th>Expected</th><td>Expanding shows content worth the space it takes.</td></tr>
+  <tr><th>Actual</th><td>A clock top left, a red icon top right, one thin horizontal line with a single dot on it, and then a large empty black area.</td></tr>
+  <tr><th>Trigger</th><td>Hover to expand with no card showing. <a href="issues/nt4-07-expanded-empty-slider.png">nt4-07</a>.</td></tr>
+  <tr><th>Relates to</th><td>The same emptiness as <a href="#">i-1</a>, but seen expanded rather than at rest. The thin line is likely the position bar or the TTL bar rendering with nothing to measure.</td></tr>
+  <tr><th>Note</th><td>Do not chase this one yet. It is a symptom of the states being rebuilt, not a standalone bug.</td></tr>
 </table>
 
 <h3>i-6. Reference implementation to compare against <span class="badge queued">open</span></h3>
