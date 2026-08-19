@@ -66,7 +66,7 @@ new and surprising shows up while building.</p>
 
 <h2>Open issues</h2>
 
-<h3>i-1. Idle state: the right side is empty <span class="badge queued">needs detail</span></h3>
+<h3>Issue 1. Idle state: the right side is empty <span class="badge queued">needs detail</span></h3>
 <table>
   <tr><th>Expected</th><td>The idle bar looks balanced across its whole width.</td></tr>
   <tr><th>Actual</th><td>Clock sits far left, face sits centre, the entire right half is blank.</td></tr>
@@ -76,16 +76,16 @@ new and surprising shows up while building.</p>
   <tr><th>Missing</th><td>What you <em>want</em> on the right. Nothing at all but balanced? A mirrored element? Something informational? A fix cannot be written against "looks weird".</td></tr>
 </table>
 
-<h3>i-2. Idle state: the clock looks off <span class="badge queued">needs detail</span></h3>
+<h3>Issue 2. Idle state: the clock looks off <span class="badge queued">needs detail</span></h3>
 <table>
   <tr><th>Expected</th><td>Unclear — you said "the timing is coming off".</td></tr>
   <tr><th>Actual</th><td>Unclear. Could be position, size, weight, or the fact it updates on a 30s tick.</td></tr>
-  <tr><th>Trigger</th><td>Same as i-1.</td></tr>
-  <tr><th>Evidence</th><td>Same screenshot as i-1.</td></tr>
+  <tr><th>Trigger</th><td>Same as issue 1.</td></tr>
+  <tr><th>Evidence</th><td>Same screenshot as issue 1.</td></tr>
   <tr><th>Missing</th><td>Which part is wrong. One sentence is enough: "the clock is too far left", or "it should be centred", or "it should show seconds".</td></tr>
 </table>
 
-<h3>i-3. Hover expand snaps instead of animating <span class="badge suggested">ready to pin down</span></h3>
+<h3>Issue 3. Hover expand snaps instead of animating <span class="badge suggested">ready to pin down</span></h3>
 <table>
   <tr><th>Expected</th><td>Hovering the idle notch grows it smoothly into the peek surface.</td></tr>
   <tr><th>Actual</th><td>It appears instantly. No visible growth.</td></tr>
@@ -95,7 +95,7 @@ new and surprising shows up while building.</p>
   <tr><th>Note</th><td>This is the cleanest first fix candidate: frontend-only, visual, and testable.</td></tr>
 </table>
 
-<h3>i-4. Hover does not register at the edges <span class="badge backlog">re-test first</span></h3>
+<h3>Issue 4. Hover does not register at the edges <span class="badge backlog">re-test first</span></h3>
 <table>
   <tr><th>Expected</th><td>Hover responds anywhere over the notch, including near the left and right ends.</td></tr>
   <tr><th>Actual</th><td>Pointer at the right edge produces no hover response. Same on the other side.</td></tr>
@@ -105,7 +105,7 @@ new and surprising shows up while building.</p>
   <tr><th>Why re-test</th><td>Icon count changed from five possible to three. This geometry is a direct function of that count, so the current build almost certainly behaves differently.</td></tr>
 </table>
 
-<h3>i-5. Agent card churns while tools run <span class="badge suggested">confirmed in code</span></h3>
+<h3>Issue 5. Agent card churns while tools run <span class="badge suggested">confirmed in code</span></h3>
 <table>
   <tr><th>Expected</th><td>A calm surface that tells you an agent is working, without redrawing on every tool call.</td></tr>
   <tr><th>Actual</th><td>Content changes constantly as the agent edits, greps, runs commands. Reads as restless.</td></tr>
@@ -130,12 +130,12 @@ new and surprising shows up while building.</p>
   <tr><th>Related</th><td>Touches <a href="ideas.html">idea 6</a> (fire-and-forget events versus persistent state). Worth reading that entry before deciding.</td></tr>
 </table>
 
-<h3>i-7. Idle state is physically too big <span class="badge suggested">ready to pin down</span></h3>
+<h3>Issue 7. Idle state is physically too big <span class="badge suggested">ready to pin down</span></h3>
 <table>
   <tr><th>Expected</th><td>The idle bar takes only as much room as it needs.</td></tr>
   <tr><th>Actual</th><td>It occupies noticeably more width and height than its contents justify.</td></tr>
   <tr><th>Trigger</th><td>Let the app go idle and compare the bar against the notch cutout.</td></tr>
-  <tr><th>Evidence</th><td>Visible in <a href="issues/nt4-02-idle-right-side-empty.png">nt4-02</a>, and closely tied to i-1: the empty right half <em>is</em> part of the excess size.</td></tr>
+  <tr><th>Evidence</th><td>Visible in <a href="issues/nt4-02-idle-right-side-empty.png">nt4-02</a>, and closely tied to issue 1: the empty right half <em>is</em> part of the excess size.</td></tr>
   <tr><th>The number, confirmed</th><td>Idle is <strong>370px wide by 32px tall</strong>. That is
   a 200px cutout plus 85px of flank on each side. The 85 is a floor: the flank never gets
   narrower than that even when it holds nothing. It is written by hand in three places that
@@ -146,7 +146,7 @@ new and surprising shows up while building.</p>
   <tr><th>Then decide</th><td>If a lower scale fixes it, this was a settings issue, not a defect. If the proportions still look wrong at 0.8, the idle surface has its own sizing problem and becomes a real fix. Report which.</td></tr>
 </table>
 
-<h3>i-8. The card does not follow you to another display <span class="badge queued">deferred, on purpose</span></h3>
+<h3>Issue 8. The card does not follow you to another display <span class="badge queued">deferred, on purpose</span></h3>
 <table>
   <tr><th>Expected</th><td>Whichever screen you are working on, the card appears there.</td></tr>
   <tr><th>Actual</th><td>It stays on one display. Work on another monitor and you never see the notification.</td></tr>
@@ -168,7 +168,7 @@ new and surprising shows up while building.</p>
   rebuild. Nothing else in the plan depends on it.</td></tr>
 </table>
 
-<h3>i-9. Hovered below block reads as a box inside a box <span class="badge suggested">ready to pin down</span></h3>
+<h3>Issue 9. Hovered below block reads as a box inside a box <span class="badge suggested">ready to pin down</span></h3>
 <table>
   <tr><th>Expected</th><td>Hovering reveals more detail without the panel detaching from the card.</td></tr>
   <tr><th>Actual</th><td>The strip becomes a bordered, inset panel with its own background, so it reads as a separate box sitting inside the card.</td></tr>
@@ -178,7 +178,7 @@ new and surprising shows up while building.</p>
   <tr><th>Note</th><td>Good candidate for the first real fix after <strong>step 5</strong>: visual, small, and you already have a before-and-after pair.</td></tr>
 </table>
 
-<h3>i-10. You cannot tell whether it is silenced <span class="badge suggested">confirmed in code</span></h3>
+<h3>Issue 10. You cannot tell whether it is silenced <span class="badge suggested">confirmed in code</span></h3>
 <table>
   <tr><th>Expected</th><td>Open the menu and know, in one glance, whether notifications are being held back right now.</td></tr>
   <tr><th>Actual</th><td>The answer is there, but it does not read as an answer. The second row says <strong>Not Silenced</strong> in grey. Grey means "disabled button" everywhere else on a Mac, so it scans as a broken menu item, not as a status line.</td></tr>
@@ -188,7 +188,7 @@ new and surprising shows up while building.</p>
   <tr><th>What a fix needs</th><td>Separators around the status row, and text that names the state as a state, for example "Silenced until 12:30" or "Notifications on". A checkmark next to the active mute preset would do the same job.</td></tr>
 </table>
 
-<h3>i-11. Two silence indicators, set from different places <span class="badge suggested">confirmed in code</span></h3>
+<h3>Issue 11. Two silence indicators, set from different places <span class="badge suggested">confirmed in code</span></h3>
 <table>
   <tr><th>Expected</th><td>The moon glyph in the menu bar and the menu's status row always agree.</td></tr>
   <tr><th>Actual</th><td>They are written by two different code paths, and one of them is skipped at startup.</td></tr>
@@ -197,7 +197,7 @@ new and surprising shows up while building.</p>
   <tr><th>What a fix needs</th><td>One function that writes both, called at boot and on every change. <code>set_silence_indicators</code> already is that function. <code>build_tray</code> just has to call it.</td></tr>
 </table>
 
-<h3>i-12. Changing quiet hours does nothing until you restart <span class="badge suggested">confirmed in code</span></h3>
+<h3>Issue 12. Changing quiet hours does nothing until you restart <span class="badge suggested">confirmed in code</span></h3>
 <table>
   <tr><th>Expected</th><td>Edit the silence window in Settings, and the app starts obeying the new window.</td></tr>
   <tr><th>Actual</th><td>Nothing changes until you quit and reopen the app.</td></tr>
@@ -207,7 +207,7 @@ new and surprising shows up while building.</p>
   <tr><th>What a fix needs</th><td>A setter on the controller, plus a wake signal for the sleeping task, plus something in the settings save path that calls both.</td></tr>
 </table>
 
-<h3>i-13. The idle face sits low and off centre <span class="badge suggested">confirmed in code</span></h3>
+<h3>Issue 13. The idle face sits low and off centre <span class="badge suggested">confirmed in code</span></h3>
 <table>
   <tr><th>Expected</th><td>The face rests in the middle of the notch cutout, centred.</td></tr>
   <tr><th>Actual</th><td>It sits under the black bar, on the wallpaper, and reads as left of centre.</td></tr>
@@ -218,16 +218,16 @@ new and surprising shows up while building.</p>
   <tr><th>Note</th><td>Check which mode the screenshot was taken in before touching any numbers. <code>data-notchtap-mode</code> on the root element decides.</td></tr>
 </table>
 
-<h3>i-14. The expanded panel is mostly empty, with a stray line <span class="badge queued">open</span></h3>
+<h3>Issue 14. The expanded panel is mostly empty, with a stray line <span class="badge queued">open</span></h3>
 <table>
   <tr><th>Expected</th><td>Expanding shows content worth the space it takes.</td></tr>
   <tr><th>Actual</th><td>A clock top left, a red icon top right, one thin horizontal line with a single dot on it, and then a large empty black area.</td></tr>
   <tr><th>Trigger</th><td>Hover to expand with no card showing. <a href="issues/nt4-07-expanded-empty-slider.png">nt4-07</a>.</td></tr>
-  <tr><th>Relates to</th><td>The same emptiness as <a href="#">i-1</a>, but seen expanded rather than at rest. The thin line is likely the position bar or the TTL bar rendering with nothing to measure.</td></tr>
+  <tr><th>Relates to</th><td>The same emptiness as issue 1, but seen expanded rather than at rest. The thin line is likely the position bar or the TTL bar rendering with nothing to measure.</td></tr>
   <tr><th>Note</th><td>Do not chase this one yet. It is a symptom of the states being rebuilt, not a standalone bug.</td></tr>
 </table>
 
-<h3>i-6. Reference implementation to compare against <span class="badge suggested">answered, with screenshots</span></h3>
+<h3>Issue 6. Reference implementation to compare against <span class="badge suggested">answered, with screenshots</span></h3>
 <table>
   <tr><th>What</th><td>The Notch, installed alongside t3code. You rate its behaviour clearly better than NotchTap's.</td></tr>
   <tr><th>What it does better, in one line</th><td>It stays quiet by default and reveals on demand.</td></tr>
@@ -279,11 +279,11 @@ the compact and expanded states repeatedly.</p>
 <h3>Step 4 — what to check, state by state</h3>
 <table>
   <tr><th>State</th><th>How to get there</th><th>What to judge</th></tr>
-  <tr><td>Idle</td><td>Nothing showing, no live sources</td><td>Size, balance, the empty right half, the clock. Items i-1, i-2, i-7.</td></tr>
-  <tr><td>Idle plus hover</td><td>Move the pointer onto the notch</td><td>Does it grow smoothly or snap? Does hover register near the edges? Items i-3, i-4.</td></tr>
+  <tr><td>Idle</td><td>Nothing showing, no live sources</td><td>Size, balance, the empty right half, the clock. Items issue 1, issue 2, issue 7.</td></tr>
+  <tr><td>Idle plus hover</td><td>Move the pointer onto the notch</td><td>Does it grow smoothly or snap? Does hover register near the edges? Items issue 3, issue 4.</td></tr>
   <tr><td>Compact</td><td>Send a test notification</td><td>Entry animation, spacing, whether text fits.</td></tr>
   <tr><td>Expanded</td><td>Hover a showing card</td><td>The growth transition, and whether content reflows or jumps.</td></tr>
-  <tr><td>Agent board</td><td>Run a real agent with several tool calls</td><td>How restless it looks while tools fire. Item i-5.</td></tr>
+  <tr><td>Agent board</td><td>Run a real agent with several tool calls</td><td>How restless it looks while tools fire. Item issue 5.</td></tr>
 </table>
 
 <h3>Step 5 — record, do not just remember</h3>
@@ -294,9 +294,9 @@ the idle hover snap, and the edge hover.</p>
 <h2>What happens next</h2>
 <ol>
   <li>Rebuild and reinstall so the app matches the code.</li>
-  <li>Re-check i-1 to i-5. Drop the ones that are gone.</li>
+  <li>Re-check issue 1 to issue 5. Drop the ones that are gone.</li>
   <li>Fill in the <strong>Missing</strong> rows. Those are the only blockers.</li>
-  <li>Record two short clips: the idle hover snap (i-3) and the edge hover (i-4).</li>
+  <li>Record two short clips: the idle hover snap (issue 3) and the edge hover (issue 4).</li>
   <li>Pick the smallest survivor and start <strong>step 5</strong>.</li>
 </ol>
 

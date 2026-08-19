@@ -43,10 +43,10 @@ Rust arrive later, at the exact boundary where the frontend stops owning the ans
 
 <div class="note">
 <h3>Start here</h3>
-<p>Read <a href="lessons/0001-the-seven-wires.html">lesson 0001 — the seven wires</a>. It
-covers where the data comes from, where it sits, and the three things that start an
-animation. 20 minutes, no app code changes. Keep the
-<a href="reference/wire-table.html">wire table</a> open beside it.</p>
+<p>Part 1 is done. You are on <strong>step 5</strong>: read the official Tauri architecture
+page, then explain it back using NotchTap's own files. Lessons 1 and 2 are the ground under
+it; the <a href="reference/wire-table.html">wire table</a> and the
+<a href="reference/frontend-map.html">frontend map</a> are the pages to keep open.</p>
 </div>
 
 <div class="note">
@@ -78,37 +78,91 @@ Two decisions in it are yours to make, not mine.</p>
 <a href="ideas.html">ideas.html</a>, with a status and an honest take. Say it when you think
 it; we decide later.</p>
 
-<h2>Module 1: map the frontend</h2>
+<div class="why">
+<h3>Two names. That is all.</h3>
+<p>There were four ways of numbering things here and it was unusable. There are now two,
+and they can never be confused, because you <em>do</em> one and you <em>fix</em> the other.</p>
+<table>
+  <tr><th>Name</th><th>Means</th><th>Example</th></tr>
+  <tr><td><strong>Step</strong></td><td>Something you do. One list, numbered 1 upward, in the order you do it.</td><td>"Step 7" is the seventh thing you do on this track.</td></tr>
+  <tr><td><strong>Issue</strong></td><td>Something that is broken, in <a href="issues.html">issues.html</a>. Numbered 1 upward, in the order you found it.</td><td>"Issue 13" is the off-centre idle face.</td></tr>
+</table>
+<p>Retired: modules, stages, <code>nt-</code>, <code>i-</code>, and the separate stage numbers
+in the rebuild plan. The rebuild's stages are now just steps 9 to 17 below.</p>
+</div>
+
+<h2>The shape of this track</h2>
+
+<p>Four parts, twenty steps, in the order you actually work through them.</p>
+
+<table>
+  <tr><th>Part</th><th>Steps</th><th>What it is for</th><th>State</th></tr>
+  <tr><td>Read the map</td><td>1&ndash;4</td><td>Learn where things are before touching them.</td><td>Done</td></tr>
+  <tr><td>Understand the wall</td><td>5&ndash;8</td><td>Learn how React and Rust talk, and what that costs.</td><td><strong>Next</strong></td></tr>
+  <tr><td>Practise the repair loop</td><td>9&ndash;12</td><td>Fix three small, confirmed bugs. Learn the loop on easy ones.</td><td>Waiting</td></tr>
+  <tr><td>Rebuild the state layer</td><td>13&ndash;20</td><td>Replace the one layer that is genuinely wrong, then finish.</td><td>Waiting</td></tr>
+</table>
+
+<div class="note">
+<h3>Why this order and not another</h3>
+<p>Understand, then design, then build. Your words. The wall comes before any fixing because
+the reference app has buttons and NotchTap architecturally cannot have buttons yet, and you
+should know that before you design anything. The small fixes come before the big rebuild
+because you should learn the repair loop on a one-line CSS bug, not on the largest change in
+the plan.</p>
+</div>
+
+<h2>Part 1: read the map <span class="badge queued">done</span></h2>
+<p class="small">History, not a to-do list. No checkboxes: these are finished.</p>
+<table>
+  <tr><th>Step</th><th>What you did</th><th>What it produced</th></tr>
+  <tr><td>1</td><td>Learn where data enters the UI and what starts an animation.</td><td><a href="lessons/0001-the-seven-wires.html">Lesson 1</a> and the <a href="reference/wire-table.html">wire table</a>. Seven events in, five hooks, two inline effects.</td></tr>
+  <tr><td>2</td><td>Learn the two windows and how the frontend is laid out.</td><td>The <a href="reference/frontend-map.html">frontend map</a>. Overlay listens; settings asks.</td></tr>
+  <tr><td>3</td><td>Record every UI problem with expected, actual, trigger and evidence.</td><td><a href="issues.html">The issue log</a>. Fourteen issues, thirteen screenshots.</td></tr>
+  <tr><td>4</td><td>Survey the live code and turn the issues into an order of work.</td><td><a href="rebuild-plan.html">The rebuild plan</a>. Found that the fourteen issues are mostly one issue.</td></tr>
+</table>
+
+<h2>Part 2: understand the wall <span class="badge active">next</span></h2>
+<p class="small">One boundary between a Rust program and a browser window. Everything the app
+can and cannot do follows from it.</p>
 <ul class="actions">
-  <li><input type="checkbox" data-item="nt-1" id="nt-1"><label for="nt-1">Read <a href="lessons/0001-the-seven-wires.html">lesson 0001</a> and the <a href="reference/frontend-map.html">frontend map</a>. Name the seven wires and three triggers from memory <span class="tag">20 min</span></label></li>
-  <li><input type="checkbox" data-item="nt-2" id="nt-2"><label for="nt-2">Open <code>vite.config.ts</code>, <code>src/main.tsx</code>, and <code>src/settings/main.tsx</code>. Name the two webview entries and their root components <span class="tag">15 min</span></label></li>
-  <li><input type="checkbox" data-item="nt-3" id="nt-3"><label for="nt-3">Trace <code>slot-state</code> through <code>useSlotState.ts</code>, <code>App.tsx</code>, and <code>StatusRailCard.tsx</code>. Write one sentence per file <span class="tag">25 min</span></label></li>
+  <li><input type="checkbox" data-item="step-5" id="step-5"><label for="step-5"><strong>Step 5.</strong> Read the official Tauri architecture page. Then explain the Rust process, the webview, and the message boundary using NotchTap's own files <span class="tag">20 min</span></label></li>
+  <li><input type="checkbox" data-item="step-6" id="step-6"><label for="step-6"><strong>Step 6.</strong> Compare one overlay listener against one settings call. Say out loud why they point in opposite directions <span class="tag">25 min</span></label></li>
+  <li><input type="checkbox" data-item="step-7" id="step-7"><label for="step-7"><strong>Step 7.</strong> Follow one settings button all the way down: the JavaScript call, the permission file, the build script, and the Rust function that answers <span class="tag">30 min</span></label></li>
+  <li><input type="checkbox" data-item="step-8" id="step-8"><label for="step-8"><strong>Step 8.</strong> Work out why the overlay has no buttons, and what one button would actually cost. Read <code>click.rs</code> and the empty click handler it forces <span class="tag">25 min</span></label></li>
 </ul>
 
-<h2>Module 2: use the frontend repair loop</h2>
-<p class="small"><em>Module 3 is done. This module runs off
-<a href="issues.html">issues.html</a>: fill in the missing rows there, then start
-<code>step 5</code> on the smallest surviving issue.</em></p>
+<h2>Part 3: practise the repair loop</h2>
+<p class="small">Three confirmed bugs, smallest first. The point is the loop, not the bugs.</p>
 <ul class="actions">
-  <li><input type="checkbox" data-item="nt-4" id="nt-4" checked><label for="nt-4">Record the UI issues that bother you. Give each one a screen recording, expected result, actual result, and repeatable trigger <span class="tag">25 min</span></label></li>
-  <li><input type="checkbox" data-item="nt-5" id="nt-5"><label for="nt-5">Choose the smallest frontend-only issue. Find its deciding prop, component, and final CSS rule without editing them <span class="tag">25 min</span></label></li>
-  <li><input type="checkbox" data-item="nt-6" id="nt-6"><label for="nt-6">Add one failing Vitest case that describes the expected UI state. Run only that test and see the intended failure <span class="tag">30 min</span></label></li>
-  <li><input type="checkbox" data-item="nt-7" id="nt-7"><label for="nt-7">Make the smallest fix. Run the focused test, frontend suite, type check, lint, and a hardware check <span class="tag">45 min</span></label></li>
+  <li><input type="checkbox" data-item="step-9" id="step-9"><label for="step-9"><strong>Step 9.</strong> Take issue 13, the off-centre idle face. Find the component and the CSS rule that decide it, without editing either <span class="tag">25 min</span></label></li>
+  <li><input type="checkbox" data-item="step-10" id="step-10"><label for="step-10"><strong>Step 10.</strong> Write one test that says where the face should be. Run only that test and watch it fail for the right reason <span class="tag">30 min</span></label></li>
+  <li><input type="checkbox" data-item="step-11" id="step-11"><label for="step-11"><strong>Step 11.</strong> Make the smallest fix. Run the focused test, the frontend suite, the type check, the linter, and look at it on the real machine <span class="tag">45 min</span></label></li>
+  <li><input type="checkbox" data-item="step-12" id="step-12"><label for="step-12"><strong>Step 12.</strong> Repeat the whole loop on issues 10 and 11, the tray silence indicators. These are Rust, so you cross the wall for the first time <span class="tag">60 min</span></label></li>
 </ul>
 
-<h2>Module 3: cross the Tauri boundary</h2>
+<h2>Part 4: rebuild the state layer</h2>
+<p class="small">The one layer that is genuinely wrong. Everything else in the app stays.
+Full detail in the <a href="rebuild-plan.html">rebuild plan</a>.</p>
 <ul class="actions">
-  <li><input type="checkbox" data-item="nt-8" id="nt-8"><label for="nt-8">Read the official Tauri architecture page. Explain the Rust process, webview, and message boundary using NotchTap files <span class="tag">20 min</span></label></li>
-  <li><input type="checkbox" data-item="nt-9" id="nt-9"><label for="nt-9">Compare an overlay listener in <code>useSlotState.ts</code> with a settings command in <code>src/settings/ipc.ts</code>. State why their directions differ <span class="tag">25 min</span></label></li>
-  <li><input type="checkbox" data-item="nt-10" id="nt-10"><label for="nt-10">Trace one settings command through <code>ipc.ts</code>, the Tauri capability, <code>build.rs</code>, and its Rust handler <span class="tag">30 min</span></label></li>
+  <li><input type="checkbox" data-item="step-13" id="step-13"><label for="step-13"><strong>Step 13.</strong> On paper, write down every combination of the eight card class names the app can actually produce today. Expect surprises <span class="tag">45 min</span></label></li>
+  <li><input type="checkbox" data-item="step-14" id="step-14"><label for="step-14"><strong>Step 14.</strong> Replace the eleven separate true-or-false values with one value that can only ever be one thing at a time <span class="tag">90 min</span></label></li>
+  <li><input type="checkbox" data-item="step-15" id="step-15"><label for="step-15"><strong>Step 15.</strong> Give the three different meanings of the word "notch" three different names <span class="tag">30 min</span></label></li>
+  <li><input type="checkbox" data-item="step-16" id="step-16"><label for="step-16"><strong>Step 16.</strong> Split the agent surface into three tiers: still at rest, live on hover, taking over only when finished or blocked <span class="tag">90 min</span></label></li>
+  <li><input type="checkbox" data-item="step-17" id="step-17"><label for="step-17"><strong>Step 17.</strong> Fix the sizes. Drop the 85-pixel floor, and put the shared numbers in one place both Rust and CSS read <span class="tag">60 min</span></label></li>
+  <li><input type="checkbox" data-item="step-18" id="step-18"><label for="step-18"><strong>Step 18.</strong> Let the silence schedule change without a restart (issue 12) <span class="tag">45 min</span></label></li>
+  <li><input type="checkbox" data-item="step-19" id="step-19"><label for="step-19"><strong>Step 19.</strong> Clear the dead code: the news panel that renders nothing, the eight forwarding files, the comments describing things that do not exist <span class="tag">45 min</span></label></li>
+  <li><input type="checkbox" data-item="step-20" id="step-20"><label for="step-20"><strong>Step 20.</strong> Write the learning record. Draw the final path from a Rust event to a pixel, and name which layer owned each fix <span class="tag">25 min</span></label></li>
 </ul>
 
-<h2>Module 4: close the UI backlog</h2>
-<ul class="actions">
-  <li><input type="checkbox" data-item="nt-11" id="nt-11"><label for="nt-11">Fix a second issue that crosses the event boundary. Test the TypeScript payload and the Rust publisher <span class="tag">60 min</span></label></li>
-  <li><input type="checkbox" data-item="nt-12" id="nt-12"><label for="nt-12">Fix a third issue involving layout or motion. Verify both HUD and notch modes <span class="tag">60 min</span></label></li>
-  <li><input type="checkbox" data-item="nt-13" id="nt-13"><label for="nt-13">Write the learning record. Draw the final event path, list the three fixes, and name which layer owned each one <span class="tag">25 min</span></label></li>
-</ul>
+<div class="note">
+<h3>Deliberately not on this list</h3>
+<p><strong>Following you to another display</strong> (issue 8). Decided against on 19 August
+2026. It needs a native screen-change watcher plus a product answer about which display wins,
+and nothing else here depends on it.</p>
+<p><strong>How any of it looks.</strong> This track makes the states honest. The visual design
+comes after, once there is something coherent to design.</p>
+</div>
 
 <h2>Commands used during the track</h2>
 <pre><code>cd ~/Desktop/code/mac-notification-nudge
@@ -124,9 +178,9 @@ cargo clippy --locked --all-targets -- -D warnings</code></pre>
 
 <div class="verify">
 <h3>You have finished this track when</h3>
-<p>Three UI issues are fixed and verified on hardware. You can draw the path from a Rust
-event to the rendered card. You can also explain why the overlay listens while the
-settings window invokes.</p>
+<p>All twenty steps are ticked. In plain terms: the card can no longer be in two states at
+once, the agent surface is still until you look at it, idle takes only the room it needs, and
+you can draw the path from a Rust event to a pixel without opening a file.</p>
 </div>
 
 <h2>Primary sources</h2>

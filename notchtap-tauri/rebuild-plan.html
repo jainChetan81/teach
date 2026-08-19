@@ -66,7 +66,7 @@ shipped rule "authoritative".</p>
 file in the whole repository, and that file is the one that uses it.</p>
 
 <p>So the wrapper falls into whatever grid cell is free, which is the cell the right flank
-already occupies. That is issue i-13, and it was never an alignment problem.</p>
+already occupies. That is issue issue 13, and it was never an alignment problem.</p>
 
 <h3>Finding 4: the agent board churn has three stacked causes</h3>
 
@@ -86,7 +86,7 @@ second.</p>
 <h3>Finding 5: the idle size is 370 by 32, and the number is written three times</h3>
 
 <p>200 pixels of cutout, plus 85 pixels of flank on each side. The 85 is a floor: the flank
-refuses to be narrower even when it holds nothing. That is issue i-1 and issue i-7 in one
+refuses to be narrower even when it holds nothing. That is issue issue 1 and issue issue 7 in one
 number.</p>
 
 <p>The 85 lives in two CSS rules and one Rust constant, kept equal by hand. Same for the 200
@@ -129,19 +129,19 @@ untouched. That is a rebuild of the state layer, not of the application.</p>
 stage. If you stop after any stage, what you have is better than what you started with.</p>
 </div>
 
-<h3>Stage 0 — three free wins, before any rebuild</h3>
+<h3>Steps 9 to 12 — three free wins, before any rebuild</h3>
 
 <p>These are small, safe, and independent. They also prove your test and build loop works
 before you touch anything structural.</p>
 
 <table>
   <tr><th>#</th><th>Do</th><th>Fixes</th><th>Size</th></tr>
-  <tr><td>0.1</td><td>Write the missing <code>.rest-cluster</code> rule, or delete the wrapper and let the face sit in the grid again.</td><td>i-13</td><td>Tiny</td></tr>
-  <tr><td>0.2</td><td>Make <code>build_tray</code> call the function that writes both silence indicators, instead of writing one of them by hand.</td><td>i-11</td><td>Tiny</td></tr>
-  <tr><td>0.3</td><td>Add separators around the tray status row and give it text that reads as a state, not a disabled button.</td><td>i-10</td><td>Small</td></tr>
+  <tr><td>9</td><td>Write the missing <code>.rest-cluster</code> rule, or delete the wrapper and let the face sit in the grid again.</td><td>issue 13</td><td>Tiny</td></tr>
+  <tr><td>12a</td><td>Make <code>build_tray</code> call the function that writes both silence indicators, instead of writing one of them by hand.</td><td>issue 11</td><td>Tiny</td></tr>
+  <tr><td>12b</td><td>Add separators around the tray status row and give it text that reads as a state, not a disabled button.</td><td>issue 10</td><td>Small</td></tr>
 </table>
 
-<h3>Stage 1 — one state machine</h3>
+<h3>Steps 13 and 14 — one state machine</h3>
 
 <p>The centrepiece. Replace the eleven booleans with one value that can only ever be one
 thing at a time.</p>
@@ -159,7 +159,7 @@ which is the whole point.</p>
   <tr><td>1.5</td><td>Delete the comments that were holding the invariants. The type holds them now.</td><td>A comment that is enforced by the compiler is noise.</td></tr>
 </table>
 
-<h3>Stage 2 — one vocabulary</h3>
+<h3>Step 15 — one vocabulary</h3>
 
 <table>
   <tr><th>#</th><th>Do</th></tr>
@@ -168,7 +168,7 @@ which is the whole point.</p>
   <tr><td>2.3</td><td>Delete the dead condition in <code>App.tsx</code> and the comment defending it.</td></tr>
 </table>
 
-<h3>Stage 3 — three tiers, not one surface</h3>
+<h3>Step 16 — three tiers, not one surface</h3>
 
 <div class="why">
 <h3>The rule, decided 19 August 2026</h3>
@@ -234,29 +234,29 @@ That is why it does not feel disruptive: the anchor never moves.</p>
 
 <table>
   <tr><th>#</th><th>Do</th><th>Fixes</th></tr>
-  <tr><td>3.1</td><td>Split the agent surface into the three tiers above. The tier is part of the Stage 1 state machine, not a new separate flag.</td><td>i-5</td></tr>
-  <tr><td>3.2</td><td>Keep Rust sending every update. The frontend decides what to paint. Do not throttle at the source; a hovering user wants all of it.</td><td>i-5</td></tr>
-  <tr><td>3.3</td><td>Stop the resting tier re-rendering for updates it does not display.</td><td>i-5</td></tr>
-  <tr><td>3.4</td><td>Only mark rows to animate their position inside the hovered tier.</td><td>i-5</td></tr>
-  <tr><td>3.5</td><td>Keep a once-a-second clock in the resting tier, but let it update <em>only the elapsed-time text</em>. The reference counts seconds while resting and still reads as still, because one number changing is not motion. The expensive part was never the clock; it was re-rendering and re-measuring the whole list on every tick.</td><td>i-5</td></tr>
-  <tr><td>3.6</td><td>Restrict promotion to the four earned events. Everything else stays behind hover.</td><td>i-5</td></tr>
+  <tr><td>3.1</td><td>Split the agent surface into the three tiers above. The tier is part of the step 14 state machine, not a new separate flag.</td><td>issue 5</td></tr>
+  <tr><td>3.2</td><td>Keep Rust sending every update. The frontend decides what to paint. Do not throttle at the source; a hovering user wants all of it.</td><td>issue 5</td></tr>
+  <tr><td>3.3</td><td>Stop the resting tier re-rendering for updates it does not display.</td><td>issue 5</td></tr>
+  <tr><td>3.4</td><td>Only mark rows to animate their position inside the hovered tier.</td><td>issue 5</td></tr>
+  <tr><td>3.5</td><td>Keep a once-a-second clock in the resting tier, but let it update <em>only the elapsed-time text</em>. The reference counts seconds while resting and still reads as still, because one number changing is not motion. The expensive part was never the clock; it was re-rendering and re-measuring the whole list on every tick.</td><td>issue 5</td></tr>
+  <tr><td>3.6</td><td>Restrict promotion to the four earned events. Everything else stays behind hover.</td><td>issue 5</td></tr>
 </table>
 
-<h3>Stage 4 — size and space</h3>
+<h3>Step 17 — size and space</h3>
 
 <table>
   <tr><th>#</th><th>Do</th><th>Fixes</th></tr>
-  <tr><td>4.1</td><td><strong>Decided.</strong> Resting is one pill inside the cutout: glyph, one word, and an elapsed time on the right when something is running. Drop the 85-pixel floor entirely and let each flank size to its contents. The pill must be the same size in every resting state, so that switching between them moves nothing.</td><td>i-1, i-7</td></tr>
+  <tr><td>4.1</td><td><strong>Decided.</strong> Resting is one pill inside the cutout: glyph, one word, and an elapsed time on the right when something is running. Drop the 85-pixel floor entirely and let each flank size to its contents. The pill must be the same size in every resting state, so that switching between them moves nothing.</td><td>issue 1, issue 7</td></tr>
   <tr><td>4.2</td><td>Put the shared numbers in one place both sides read, instead of three hand-copied copies.</td><td>Prevents the next drift</td></tr>
-  <tr><td>4.3</td><td>Make the hovered below block inherit the resting one's flush edges instead of gaining a border and an inset.</td><td>i-9</td></tr>
-  <tr><td>4.4</td><td>Look again at the expanded panel now that the states are real.</td><td>i-14</td></tr>
+  <tr><td>4.3</td><td>Make the hovered below block inherit the resting one's flush edges instead of gaining a border and an inset.</td><td>issue 9</td></tr>
+  <tr><td>4.4</td><td>Look again at the expanded panel now that the states are real.</td><td>issue 14</td></tr>
 </table>
 
-<h3>Stage 5 — the silence schedule</h3>
+<h3>Step 18 — the silence schedule</h3>
 
 <table>
   <tr><th>#</th><th>Do</th><th>Fixes</th></tr>
-  <tr><td>5.1</td><td>Give the silence controller a way to accept a new schedule, plus a way to wake the sleeping timer, plus a call on the settings save path.</td><td>i-12</td></tr>
+  <tr><td>5.1</td><td>Give the silence controller a way to accept a new schedule, plus a way to wake the sleeping timer, plus a call on the settings save path.</td><td>issue 12</td></tr>
 </table>
 
 <div class="note">
@@ -267,7 +267,7 @@ wins, and it is a bigger job than everything above it. Nothing else here depends
 Revisit once the states are honest.</p>
 </div>
 
-<h3>Stage 6 — clear the dead wood</h3>
+<h3>Step 19 — clear the dead wood</h3>
 
 <table>
   <tr><th>#</th><th>Do</th></tr>
@@ -308,8 +308,8 @@ message the last person left for you.</p>
 
 <table>
   <tr><th>Question</th><th>Answer</th><th>Effect on this plan</th></tr>
-  <tr><td>Should the agent card's text change on every tool call?</td><td>Yes, but only where you are looking. Live detail on hover; the resting surface stays still; only finishing or needing you takes over the screen.</td><td>Stage 3 rewritten around three tiers.</td></tr>
-  <tr><td>Which display wins?</td><td>None. One display only for now.</td><td>Stage 5 shrank to one item. i-8 deferred.</td></tr>
+  <tr><td>Should the agent card's text change on every tool call?</td><td>Yes, but only where you are looking. Live detail on hover; the resting surface stays still; only finishing or needing you takes over the screen.</td><td>Step 16 rewritten around three tiers.</td></tr>
+  <tr><td>Which display wins?</td><td>None. One display only for now.</td><td>Step 18 shrank to one item. issue 8 deferred.</td></tr>
 </table>
 
 <div class="why">
