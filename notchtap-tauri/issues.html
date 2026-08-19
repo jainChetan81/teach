@@ -13,7 +13,7 @@
 <h1>NotchTap issue log</h1>
 <p class="subtitle">The UI problems you actually see, each with what you expected, what
 happened, and how to make it happen again. This page is the deliverable for
-<strong>step 4</strong> and the source of every fix in modules 2 and 4.</p>
+<strong>step 4</strong> and the source of every fix in parts 3 and 4.</p>
 
 <div class="why">
 <h3>How this page differs from the idea log</h3>
@@ -254,29 +254,28 @@ Those are the two content sources that still exist, alongside agents.</p>
 </div>
 
 <div class="note">
-<h3>Wait for the anti-slop run to finish first</h3>
-<p>That tool is editing the app right now. Building mid-edit gives you a binary that
-matches neither the old code nor the new. Let it finish and land, then build.</p>
+<h3>Already landed</h3>
+<p>The anti-slop purge that this box once waited for landed on 18 August in <code>7645a73</code> and <code>4009adf</code>. You can build now. The note is kept so you know why a mid-purge build once gave a mismatched binary.</p>
 </div>
 
-<h3>Step 1 — run the app from source</h3>
+<h3>How to run — step A — run the app from source</h3>
 <pre><code>cd ~/Desktop/code/mac-notification-nudge
 just dev</code></pre>
 <p>This runs it in dev mode, which is what you want while hunting UI bugs: the web side
 hot-reloads, so a CSS or React change shows up without a rebuild. Rust changes still need
 a restart.</p>
 
-<h3>Step 2 — turn on the sources you want to see</h3>
+<h3>How to run — step B — turn on the sources you want to see</h3>
 <p>Open the settings panel. The sections that matter here are <strong>Football</strong>,
 <strong>News</strong>, and <strong>Agents</strong>. Enabling football or news needs a save,
 and saving relaunches the app by design.</p>
 
-<h3>Step 3 — make notifications appear on demand</h3>
+<h3>How to run — step C — make notifications appear on demand</h3>
 <p>The settings panel can send a test notification for any of four sources: football, news,
 manual, agent. Use that instead of waiting for real events. It is the fastest way to reach
 the compact and expanded states repeatedly.</p>
 
-<h3>Step 4 — what to check, state by state</h3>
+<h3>How to run — step D — what to check, state by state</h3>
 <table>
   <tr><th>State</th><th>How to get there</th><th>What to judge</th></tr>
   <tr><td>Idle</td><td>Nothing showing, no live sources</td><td>Size, balance, the empty right half, the clock. Items issue 1, issue 2, issue 7.</td></tr>
@@ -286,7 +285,7 @@ the compact and expanded states repeatedly.</p>
   <tr><td>Agent board</td><td>Run a real agent with several tool calls</td><td>How restless it looks while tools fire. Item issue 5.</td></tr>
 </table>
 
-<h3>Step 5 — record, do not just remember</h3>
+<h3>How to run — step E — record, do not just remember</h3>
 <p>For anything about motion, a still image cannot show the problem. Use the macOS screen
 recorder (Shift plus Command plus 5) and keep the clips to a few seconds. Two are needed:
 the idle hover snap, and the edge hover.</p>
@@ -297,7 +296,7 @@ the idle hover snap, and the edge hover.</p>
   <li>Re-check issue 1 to issue 5. Drop the ones that are gone.</li>
   <li>Fill in the <strong>Missing</strong> rows. Those are the only blockers.</li>
   <li>Record two short clips: the idle hover snap (issue 3) and the edge hover (issue 4).</li>
-  <li>Pick the smallest survivor and start <strong>step 5</strong>.</li>
+  <li>Pick the smallest survivor and start <strong>step 5a</strong>.</li>
 </ol>
 
 <div class="verify">

@@ -89,6 +89,8 @@ pre code { background: none; padding: 0; }
 .badge.queued   { background: var(--paper-2); color: var(--ink-soft); border: 1px solid var(--line); }
 .badge.backlog  { background: transparent; color: var(--ink-faint); border: 1px dashed var(--line); }
 .badge.suggested{ background: var(--accent-soft); color: var(--accent); }
+.badge.done     { background: var(--paper-2); color: var(--ink-soft); border: 1px solid var(--line); text-decoration: none; }
+.badge.next     { background: var(--accent); color: #fff; }
 
 /* ---------- cards & grids (dashboard) ---------- */
 

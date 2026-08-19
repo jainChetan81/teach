@@ -41,8 +41,7 @@ reason why a lot of these issues are happening."</em></p>
   (idea 2).</li>
   <li><strong>My take:</strong> right that the architecture is worth re-opening, wrong
   that Rust ownership is the culprit. Two owners of visual state (Rust for "what",
-  React for "how it moves") is the real shape. Test the hypothesis against real defects
-  before restructuring — that is exactly what module 2 is for.</li>
+  React for "how it moves") is the real shape. Confirmed 19 August by the survey: the state machine missing in <code>useExitChoreography.ts</code> is the root cause, see <a href="rebuild-plan.html">rebuild plan</a> finding 1. Test remaining doubts against real defects before restructuring — that is exactly what part 3 is for.</li>
 </ul>
 
 <h3>9. One generated source for commands and capabilities <span class="badge queued">open</span></h3>
@@ -85,7 +84,7 @@ will track what the current state is."</em></p>
   state shows up.</li>
 </ul>
 
-<h3>8. Comment noise makes files unreadable <span class="badge queued">open</span></h3>
+<h3>8. Comment noise makes files unreadable <span class="badge queued">parked</span></h3>
 <p><em>Your words (2026-08-16): "there are so many unnecessary comments and crap that I
 can't even understand what's going on."</em></p>
 <ul>
@@ -98,14 +97,7 @@ can't even understand what's going on."</em></p>
   delete the few load-bearing ones. Right move: as we touch each file for a real fix, keep
   constraint comments, delete history comments. Cleanup rides along with fixes, not as its
   own pass.</li>
-  <li><strong>Confirmed leftovers after the cleanup, found by you while tracing a
-  command.</strong> The comment purge missed prose outside <code>//</code> comments:
-  <code>src-tauri/capabilities/settings.json</code>'s <code>description</code> field still
-  narrates removals ("the telegram-connector removal dropped…", "the secrets-store removal
-  dropped…") and cites two spec docs that no longer exist, and
-  <code>src-tauri/build.rs</code> still opens with "v5 (V5_TECHNICAL_SPEC.md §2)". Both
-  break your own current-product-only rule. Real, small, worth a follow-up sweep of JSON
-  description fields and doc-comment spec citations.</li>
+  <li><strong>Shipped 18 August in <code>7645a73</code> and <code>4009adf</code>.</strong> The purge removed about 1,550 comment lines and split modules. The two leftover prose cases noted earlier, <code>src-tauri/capabilities/settings.json</code>'s description and <code>src-tauri/build.rs</code>'s V5 header, now read current product only. No further sweep needed unless a new stale prose appears.</li>
 </ul>
 
 <h3>5. One persistent shell, plugins inside <span class="badge queued">open</span></h3>
@@ -129,7 +121,7 @@ the way they work; the big structure never moves."</em></p>
   Two independent derivations now. Signal is getting stronger.</li>
 </ul>
 
-<h3>6. Split command-events from state-events <span class="badge queued">open</span></h3>
+<h3>6. Split command-events from state-events <span class="badge queued">parked</span></h3>
 <p><em>Your words (2026-08-15): "an event should come, happen, die. But weather and media
 player are permanent, remembered. Coding notifications fire and forget."</em></p>
 <ul>
@@ -139,13 +131,10 @@ player are permanent, remembered. Coding notifications fire and forget."</em></p
   <li><strong>What exists today:</strong> the repo is deliberately all state-sync — every
   wire re-sends the current truth and dedups with compare-with-last. That is why the
   weather/player wires re-emit periodically.</li>
-  <li><strong>My take:</strong> your split is the correct mental model for <em>how it should
-  feel</em>, and it maps onto real source kinds (news/agent = event-ish, weather/media =
-  state-ish). Worth encoding when we design a future restructure. Keep it parked; it will
-  inform how we read the plugin question, not something to change now.</li>
+  <li><strong>Decided 19 August:</strong> Rust keeps sending every update. The frontend decides what to paint per tier. Do not throttle at the source, because a hovering user wants everything. See <a href="rebuild-plan.html">rebuild plan</a> step 16b and <code>issues.html</code> issue 5. Parked because the decision is now in the rebuild, not here.</li>
 </ul>
 
-<h2>Your animation focus (stated 2026-08-03)</h2>
+<h2>Your animation focus</h2>
 
 <h3>1. One source of truth for the types on both sides <span class="badge suggested">ready</span></h3>
 <p><em>Your words: "a way to unify types between events, Rust and TS."</em></p>
@@ -179,8 +168,7 @@ player are permanent, remembered. Coding notifications fire and forget."</em></p
   animation bugs live.</li>
   <li><strong>My take:</strong> no Redux or Zustand for wire data. Yes to eventually
   consolidating the choreography into one explicit state machine, so "which visual state am I
-  in, and what is allowed next" has one answer instead of six booleans. Revisit after we have
-  fixed two real bugs by hand, so the machine is designed from evidence.</li>
+  in, and what is allowed next" has one answer instead of six booleans. That is steps 13 and 14 in the <a href="rebuild-plan.html">rebuild plan</a> and <a href="plan.html">plan</a>. Revisit the exact shape after we have fixed two real bugs by hand, so the machine is designed from evidence.</li>
 </ul>
 
 <h3>3. Zod for payload validation <span class="badge queued">open</span></h3>
@@ -195,7 +183,7 @@ player are permanent, remembered. Coding notifications fire and forget."</em></p
   <li><strong>My take:</strong> good idea, wrong order. Bundle it into the idea 1 decision.</li>
 </ul>
 
-<h3>4. Own click and UI state in the UI, not Rust <span class="badge backlog">blocked</span></h3>
+<h3>4. Own click and UI state in the UI, not Rust <span class="badge suggested">ready</span></h3>
 <p><em>Your words: "click and UI state through UI itself not rust."</em></p>
 <ul>
   <li><strong>This is the deepest of the four.</strong> Hover, tab selection, and the viewed
@@ -206,7 +194,7 @@ player are permanent, remembered. Coding notifications fire and forget."</em></p
   window's click-through behaviour and hit testing in Rust, then deleting the tracking area.
   Real work, with a real payoff: interaction state would become instant and local instead of
   a round trip.</li>
-  <li><strong>My take:</strong> keep it. It is the single best motivation for module 3 of the
+  <li><strong>My take:</strong> keep it. It is the single best motivation for part 2 of the
   plan, because it is the exact place where "just fix it in React" stops being possible. We
   should not touch it until you have crossed the boundary once on something smaller.</li>
   <li><strong>Raised again (2nd time):</strong> you predicted the Notch must become
@@ -247,7 +235,7 @@ player are permanent, remembered. Coding notifications fire and forget."</em></p
   restructure candidate on this page.</li>
 </ul>
 
-<h2>Your animation focus (stated 2026-08-03)</h2>
+<h2>Animation focus — the whole card</h2>
 <p>Not one bug. The whole shape of the card, and how it moves between shapes:</p>
 <ol>
   <li>The idle, minimal, compact, and expanded states.</li>

@@ -19,7 +19,7 @@ two windows never use the same door. One sitting, ~25 minutes, no code changes.<
 <p>You already found that the Notch and the settings panel are two separate pages that
 never talk to each other. This lesson names the two mechanisms they use to talk to Rust,
 and shows the four-layer allowlist that keeps them apart. It is the groundwork for
-<strong>step 8</strong> and <strong>step 9</strong> on the <a href="../plan.html">plan</a>.</p>
+<strong>steps 5b, 5c, 6, 7, and 8</strong> on the <a href="../plan.html">plan</a>.</p>
 </div>
 
 <h2>1. One boundary, two doors</h2>
@@ -100,7 +100,7 @@ which do not.</p>
 
 <h2>4. Why the directions differ</h2>
 
-<p>This is the <strong>step 9</strong> question, answered once and properly:</p>
+<p>This is the <strong>step 6</strong> question, answered once and properly:</p>
 
 <ul>
   <li><strong>The Notch listens because Rust owns the truth.</strong> Queue, pause, tabs,
@@ -193,9 +193,9 @@ rg -n 'invoke\(' src --glob '!settings/**' --glob '!*.test.*'</code></pre>
 <div class="verify">
 <h3>Done with this lesson when</h3>
 <p>You can name both doors, say which window uses which and why, and list the four layers
-between <code>settingsInvoke()</code> and a running Rust handler. That completes the reading
-half of <strong>step 8</strong> and <strong>step 9</strong>; tell your teacher your answers to lock them
-in, then <strong>step 10</strong> traces one command through all four layers yourself.</p>
+between <code>settingsInvoke()</code> and a running Rust handler. That completes steps
+<strong>5b</strong> and <strong>5c</strong> plus the ground for <strong>steps 6 and 7</strong>; tell your teacher your answers to lock them
+in, then <strong>step 7</strong> traces one command through all four layers yourself.</p>
 </div>
 
 <h2>Primary source</h2>
