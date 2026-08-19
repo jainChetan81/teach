@@ -1,12 +1,50 @@
 # NOTES.md — teaching scratchpad
 
 ## User preferences (stated 2026-07-26)
-- **HTML only** for anything he will read (plans, goals, lessons, reference). Markdown is for agent state only.
+- **HTML for lessons and plans. Markdown for everything else.** Revised 2026-08-19: "we don't
+  need an HTML for everything, I think we already have way too much HTML anyway." HTML is for
+  pages he sits down and works through. A link list, a scratch note or a lookup table is a
+  plain document. When in doubt, ask, or default to markdown.
 - **He studies in Claude Code** (`/teach` there), not on the Kimi platform. The workspace is self-contained — see CLAUDE.md.
 - Folder must be `~/Desktop/teach` (iCloud-synced Desktop, available on all his devices).
 - Structure he asked for (revised 2026-07-27): general goals at the top level (index.html), **one folder per subject at the root** (`teach/<subject>/` with plan + lessons + reference inside), growing over time. New subject → new root folder.
 - Motivation is the historical failure point → single-sitting wins; when he stalls, shrink the step, never grow the plan.
 - Enforce the two-active-subjects rule gently but firmly. Current active: **herdr, notchtap-tauri**. The user explicitly replaced ai-tooling on 2026-08-03.
+
+## Who he actually is, technically (stated 2026-08-19)
+
+- **Senior web developer. React is his home turf.** He said it plainly: "I already know React.
+  I know I'm a web developer. I'm a senior web developer. I can understand architecture."
+- **This changes the teaching level, and the research says so, not just politeness.** The
+  expertise reversal effect is well measured: high-assistance instruction helps low-prior-
+  knowledge learners (d = 0.505) and actively *hurts* high-prior-knowledge learners
+  (d = -0.428). Explaining React basics to him is not neutral, it is counterproductive.
+- **So the codebase splits in two for teaching purposes:**
+  - *Frontend (React, TypeScript, Motion, CSS):* he has the schemas. Point at things, do not
+    explain them. Top-down works here. Cut assistance hard.
+  - *Rust, Tauri, native macOS, the IPC boundary:* genuine novice. Keep the guided lessons.
+    Research says newcomers to an unfamiliar system fall back to bottom-up comprehension
+    whether they intend to or not, and bottom-up needs running code as an anchor.
+- **He has used the production app heavily but never run the dev server.** So he is not
+  starved of feedback about *behaviour* — he is starved of the edit-to-observe loop. Different
+  gap, and the second one is the one that matters for changing code.
+
+## How he wants to study (agreed 2026-08-19)
+
+- **The sandwich, his phrase "I like this sandwich method":** guess first in one line, then
+  read, then run something that proves it right or wrong. Stacks pretesting (g = 0.66 on the
+  asked-about item), the generation effect (d = 0.40) and task feedback (d = 0.48).
+- **Quiz him by asking him to explain, not recite.** Meta-analysis of 94 studies: narrating
+  your thoughts has *zero* effect on accuracy (r = -.03); describing or explaining measurably
+  raises performance. So the prompt is always "explain why", never "say what".
+- **He asked for a "grill me" skill.** No such skill is installed locally. Either it lives on
+  another machine or he means it as a request. Do the grilling inline until one exists.
+- **He decides the order, not me.** 2026-08-19: "Do not make decisions for me please!" Present
+  the evidence, give a recommendation, then follow his call. He chose to read before running
+  the dev server, having heard the evidence against it. That is his call to make.
+- Voice transcription drops and mangles words in his messages. Before correcting him on a
+  term, consider that the transcript may be wrong rather than his understanding. He flagged
+  this directly.
 
 ## Confirmed identities (resolved 2026-07-26)
 - **herdr** = herdrdev/herdr — Rust agent multiplexer; background session server holds PTYs, thin clients attach via Unix socket or SSH (`herdr --remote`). Docs: herdr.dev/docs (concepts, session state, remote).

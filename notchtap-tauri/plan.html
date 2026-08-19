@@ -103,6 +103,38 @@ in the rebuild plan. The rebuild's stages are now just steps 9 to 17 below.</p>
   <tr><td>Rebuild the state layer</td><td>13&ndash;20</td><td>Replace the one layer that is genuinely wrong, then finish.</td><td>Waiting</td></tr>
 </table>
 
+<div class="why">
+<h3>Calibrated to you, not to a beginner</h3>
+<p>You are a senior web developer. React, TypeScript, CSS and Motion are your home turf. So
+this track does not teach them, and that is a research finding rather than flattery: giving a
+lot of explanation to someone who already knows a thing measurably <em>hurts</em> their
+performance. The measured effect is about the same size in both directions.</p>
+<p>Which splits this codebase in two:</p>
+<table>
+  <tr><th>Half</th><th>You are</th><th>So the track</th></tr>
+  <tr><td>React, TypeScript, Motion, CSS</td><td>Fluent</td><td>Points at things. Does not explain them. Skim the frontend reading.</td></tr>
+  <tr><td>Rust, Tauri, the boundary, native macOS</td><td>New</td><td>Teaches properly, and wants running code to check against.</td></tr>
+</table>
+<p>The one caution worth repeating: for the half you know, reading is enough, because you
+already have the mental models to hang it on. For the half you do not know, reading alone
+tends to produce confident wrong beliefs. That is the half to be suspicious of yourself on.</p>
+</div>
+
+<div class="note">
+<h3>The sandwich: do this on every step</h3>
+<p><strong>Guess. Read. Run.</strong></p>
+<ol>
+  <li><strong>Guess first.</strong> Before opening a page or a file, write one line: what do I think this does? Being wrong is fine and is part of why it works.</li>
+  <li><strong>Then read.</strong></li>
+  <li><strong>Then run something</strong> that proves you right or wrong.</li>
+</ol>
+<p>It costs about a minute per sitting and it stacks three separately proven effects. It is
+the highest-value change available to how you study, larger than any change to what you read.</p>
+<p>And when you are asked to explain something back, the instruction is always
+<em>explain why</em>, never <em>say what</em>. Ninety-four studies: narrating your own thoughts
+has no measurable effect, while constructing an explanation raises performance.</p>
+</div>
+
 <div class="note">
 <h3>Why this order and not another</h3>
 <p>Understand, then design, then build. Your words. The wall comes before any fixing because
@@ -126,7 +158,7 @@ the plan.</p>
 <p class="small">One boundary between a Rust program and a browser window. Everything the app
 can and cannot do follows from it.</p>
 <ul class="actions">
-  <li><input type="checkbox" data-item="step-5" id="step-5"><label for="step-5"><strong>Step 5.</strong> Read the official Tauri architecture page. Then explain the Rust process, the webview, and the message boundary using NotchTap's own files <span class="tag">20 min</span></label></li>
+  <li><input type="checkbox" data-item="step-5" id="step-5"><label for="step-5"><strong>Step 5.</strong> Work the short path in the <a href="reference/reading-list.md">reading list</a>: ten pages, about 100 minutes, verified links. Then explain the Rust side, the browser window, and the boundary using NotchTap's own files <span class="tag">100 min</span></label></li>
   <li><input type="checkbox" data-item="step-6" id="step-6"><label for="step-6"><strong>Step 6.</strong> Compare one overlay listener against one settings call. Say out loud why they point in opposite directions <span class="tag">25 min</span></label></li>
   <li><input type="checkbox" data-item="step-7" id="step-7"><label for="step-7"><strong>Step 7.</strong> Follow one settings button all the way down: the JavaScript call, the permission file, the build script, and the Rust function that answers <span class="tag">30 min</span></label></li>
   <li><input type="checkbox" data-item="step-8" id="step-8"><label for="step-8"><strong>Step 8.</strong> Work out why the overlay has no buttons, and what one button would actually cost. Read <code>click.rs</code> and the empty click handler it forces <span class="tag">25 min</span></label></li>
