@@ -34,7 +34,7 @@ them. You can hold seven in your head.</p>
     ↓
 Rust decides
     ↓  one of 7 named events, carrying JSON
-one React hook per event
+5 React hooks + 2 inline effects in App.tsx
     ↓  useState
 App.tsx
     ↓  plain props
@@ -76,8 +76,21 @@ useEffect(() =&gt; {
     setSlot(isValidSlotState(payload) ? payload : { state: "empty" }));  // 3. validate
 }, []);</code></pre>
 
-<p>That is <code>useSlotState.ts</code>, compressed. All seven hooks are the same shape.
+<p>That is <code>useSlotState.ts</code>, compressed. All five hooks are the same shape.
 <code>App.tsx</code> calls them, and from there everything travels down as ordinary props.</p>
+
+<div class="note">
+<h3>Seven wires, but only five hooks</h3>
+<p>Count the files and you get five, not seven. <code>appearance-changed</code> and
+<code>hover-changed</code> never got a hook of their own: they are plain
+<code>useEffect</code> blocks written straight into <code>App.tsx</code>
+(<code>App.tsx:115</code> and <code>App.tsx:145</code>). The table above already said
+"Lands in <code>App.tsx</code>" for both. So the rule is "one listener per event", not
+"one hook per event".</p>
+<p><code>src/hooks/</code> holds eight files, and three of them are not wires at all:
+<code>useClock.ts</code>, <code>useDelayedSwap.ts</code>, <code>useExitChoreography.ts</code>.
+Do not count files to count wires. Count <code>listen&lt;</code> calls.</p>
+</div>
 
 <div class="note">
 <h3>Why the validator is not paranoia</h3>

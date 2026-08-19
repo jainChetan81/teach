@@ -13,6 +13,19 @@
 <h1>NotchTap frontend map</h1>
 <p class="subtitle">The smallest useful model of the real application. Hooks live in <code>src/hooks/</code>, shared helpers in <code>src/lib/</code>.</p>
 
+<div class="note">
+<h3>Warning: the hooks moved, the imports did not</h3>
+<p>The hook files really do sit in <code>src/hooks/</code>. But not one line of overlay code
+imports them from there. Every caller still writes <code>from "./useSlotState"</code>, and
+<code>src/useSlotState.ts</code> is a one-line forwarding file left behind by the move.</p>
+<p>What this costs you when hunting a bug: searching for <code>hooks/useSlotState</code>
+finds the forwarding file and nothing else. Searching for <code>"./useSlotState"</code>
+finds every real caller. Search for the hook <em>name</em>, not its path.</p>
+<p><code>src/lib/</code> is the opposite: that move finished, and every import points at the
+real path. Two moves, one done, one abandoned halfway. This is what an unfinished refactor
+looks like from the inside.</p>
+</div>
+
 <div class="why">
 <h3>The main idea</h3>
 <p>The frontend renders a state machine owned mostly by Rust. React receives state,
@@ -45,6 +58,11 @@ left only when the value arriving there is wrong.</p>
 <p>Vite builds both entries. Tauri places each build inside a separate webview. The
 overlay stays receive-only. The settings window can invoke a fixed command list.</p>
 
+<p>The split is not perfectly clean. The settings window's Appearance section renders
+<code>StatusRailCard</code> as a live preview, and pulls in the overlay's stylesheet to do
+it. So the overlay's root card component has two parents in two different windows. Change it
+and check both.</p>
+
 <h2>The overlay by responsibility</h2>
 <table>
   <tr><th>Responsibility</th><th>Start with</th></tr>
@@ -67,8 +85,8 @@ showing. Four shape states does not mean four possible layouts.</p>
 
 <table>
   <tr><th>Piece</th><th>What it is</th><th>Where it lives</th></tr>
-  <tr><td>The card body</td><td>The main surface. Its shape is the state: idle, bare, showing, expanded.</td><td><code>StatusRailCard.tsx</code></td></tr>
-  <tr><td>Below block</td><td>A whole extra panel that mounts under the card when a tab is summoned. Agent sessions get one, news stories get one.</td><td><code>TabBelowBlock.tsx</code>, which picks <code>AgentBelowBlock</code> or <code>NewsBelowBlock</code></td></tr>
+  <tr><td>The card body</td><td>The main surface. Its shape is the state. See the corrected list below the table: there is no class called <code>showing</code>.</td><td><code>StatusRailCard.tsx</code></td></tr>
+  <tr><td>Below block</td><td>A whole extra panel that mounts under the card when a tab is summoned. Agent sessions get one, news stories get one, in theory. See the correction below: the news one is wired to an empty list and renders nothing today.</td><td><code>TabBelowBlock.tsx</code>, which picks <code>AgentBelowBlock</code> or <code>NewsBelowBlock</code></td></tr>
   <tr><td>Countdown strip</td><td>A thin bar at the floor of a showing notification. It counts down how long the card stays, and its segments double as the queue position.</td><td><code>TtlBar.tsx</code>, mounted by <code>NotificationBody.tsx</code></td></tr>
   <tr><td>Position bar</td><td>The "item 2 of 5" strip at the floor of a below block.</td><td><code>PositionBar.tsx</code>, mounted by both below blocks</td></tr>
   <tr><td>Icon strip</td><td>The row of source icons along the top.</td><td><code>IconStrip.tsx</code></td></tr>
@@ -77,6 +95,29 @@ showing. Four shape states does not mean four possible layouts.</p>
 <p>So a bar along the bottom is not a fifth mode. On a notification it is the countdown
 strip. On the agent board it is the position bar telling you which session you are looking
 at. Same place on screen, different component, different meaning.</p>
+
+<div class="note">
+<h3>Three corrections to the table above</h3>
+<p><strong>There is no "showing" state.</strong> Search the CSS for <code>.showing</code> and
+you get nothing. The real shape axis is <code>idle</code>, <code>low</code>,
+<code>medium</code>, <code>high</code>: when a card is showing, the class is the
+notification's <em>priority</em>, not the word "showing". On top of that sit the modifiers
+<code>bare</code>, <code>expanded</code>, <code>hovered</code>, <code>promoting</code>,
+<code>exiting</code>, and <code>exit-to-bare</code>. The last two own the exit geometry and
+were missing from this page entirely, which matters because exit bugs are the ones you have
+been seeing.</p>
+<p><strong>The two bars are the same CSS.</strong> The page said "different component,
+different meaning", which is true, and then implied they look different in the inspector,
+which is false. <code>PositionBar.tsx</code> renders
+<code>&lt;div class="ttl-bar"&gt;</code> with <code>ttl-fill</code> and <code>ttl-seg</code>
+children, byte-for-byte the classes <code>TtlBar.tsx</code> uses. It reuses them on purpose,
+to add no new CSS. So opening the inspector and seeing <code>.ttl-bar</code> tells you
+nothing about which component drew it. You have to check the React tree.</p>
+<p><strong>The news below block never renders.</strong> <code>TabBelowBlock.tsx</code> holds
+a constant empty array and passes it in, and <code>NewsBelowBlock</code> returns nothing for
+an empty list. The component is fully built and completely dead. Selecting the news tab falls
+through to the ambient idle peek instead. Do not debug it as if it were live.</p>
+</div>
 
 <p>Worth noticing: the below block is already a slot. One shell, different content plugged
 in depending on the tab. That is the shape a bigger restructure would extend, not invent.</p>

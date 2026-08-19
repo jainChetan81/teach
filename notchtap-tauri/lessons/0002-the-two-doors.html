@@ -67,7 +67,7 @@ which must agree:</p>
 <table>
 <tr><th>#</th><th>Layer</th><th>File</th><th>What it does</th></tr>
 <tr><td>1</td><td>Typed mirror</td><td><code>src/settings/ipc.ts</code></td><td>Types the fifteen commands for TypeScript. Grants nothing.</td></tr>
-<tr><td>2</td><td>Capability</td><td><code>src-tauri/capabilities/settings.json</code></td><td>Grants the settings window, and only it, permission to call them.</td></tr>
+<tr><td>2</td><td>Capability</td><td><code>src-tauri/capabilities/settings.json</code></td><td>Grants the settings window, and only it, permission to call them. It also grants that window <code>core:event:allow-listen</code> and <code>allow-unlisten</code>.</td></tr>
 <tr><td>3</td><td>Allowlist + registration</td><td><code>src-tauri/src/settings_commands.rs</code> → <code>build.rs</code> → <code>generate_handler!</code> in <code>lib.rs</code></td><td>One list of fifteen names, asserted by a test, fed to the build and the runtime registry.</td></tr>
 <tr><td>4</td><td>Runtime guard</td><td><code>ensure_settings_window()</code> in <code>src-tauri/src/settings.rs</code></td><td>Each handler re-checks the caller is the settings window. Defense in depth.</td></tr>
 </table>
@@ -75,7 +75,28 @@ which must agree:</p>
 <p>Layer 4 exists because layers 1–3 are configuration, and configuration drifts. If a
 future edit registered a command without the capability opt-in, the handler itself would
 still refuse the wrong window. Adding or removing a command touches all four layers in
-one change — the count assertion in layer 3 fails the build on any partial edit.</p>
+one change.</p>
+
+<div class="note">
+<h3>Correction: the build does not catch this. Tests do.</h3>
+<p>An earlier version of this page said the count assertion "fails the build". It does not.
+It is a <code>#[cfg(test)]</code> unit test, so it runs under <code>cargo test</code>, never
+under <code>cargo build</code>. A half-finished edit compiles cleanly and would ship.</p>
+<p>And the direction that matters fails <em>open</em>. The code says so itself, in
+<code>settings_commands.rs:6-10</code>: a command missing from the canonical list "silently
+becomes callable from the overlay window as well". Forgetting is not a build error. It is a
+quietly widened permission.</p>
+<p>Three tests in <code>src-tauri/src/settings_commands.rs</code> are what actually hold the
+line: <code>canonical_list_has_the_documented_fifteen_commands</code> (line 73) checks the
+count, <code>settings_json_permissions_match_exactly</code> (line 95) compares the whole
+permission set against the command names, and
+<code>generate_handler_registers_exactly_the_canonical_commands</code> (line 138) reads
+<code>lib.rs</code> as text and pins the registration list. The count assertion alone is the
+weakest of the three.</p>
+<p>The lesson underneath: <strong>when a mistake fails open, a test that must be remembered
+and run is the only guard you have.</strong> Know which of your guards run automatically and
+which do not.</p>
+</div>
 
 <h2>4. Why the directions differ</h2>
 

@@ -21,55 +21,66 @@ decides, Rust emits, React renders. There are exactly <strong>seven</strong> nam
 channels. If a value on screen is wrong, it came through one of these seven rows.</p>
 </div>
 
+<div class="note">
+<h3>Line numbers rot. Names do not.</h3>
+<p>Every Rust line number on this page moved once already, when <code>tray.rs</code> was
+split out of <code>lib.rs</code> and the file shrank from 3,460 lines to 2,881. Nothing
+about the app changed; the numbers just slid up by roughly 70 to 160 lines.</p>
+<p>Use the numbers to jump. Use the <em>function name</em> to confirm you landed in the
+right place. If the name in the table is not on the line you opened, search for the name
+and trust that instead. Two of the numbers on this page had drifted into
+<code>#[cfg(test)]</code> blocks, which look convincingly like real code.</p>
+</div>
+
 <h2>The seven wires</h2>
 <table>
 <tr><th>Event name</th><th>Emitted by (Rust)</th><th>Received by (React)</th><th>Decides</th></tr>
 
 <tr>
   <td><code>slot-state</code></td>
-  <td><code>event.rs:448</code> <span class="tag">emit_slot_state</span><br>called from <code>engine.rs</code> ×5, <code>lib.rs:1107</code></td>
+  <td><code>event.rs:435</code> <span class="tag">emit_slot_state</span><br>called from <code>engine.rs</code> ×5, <code>lib.rs:1029</code></td>
   <td><code>src/hooks/useSlotState.ts:209</code></td>
   <td>Which notification is visible, or none.</td>
 </tr>
 
 <tr>
   <td><code>status-state</code></td>
-  <td><code>status.rs:177</code> <span class="tag">emit_status_state</span><br>called from <code>engine.rs</code> ×2, <code>lib.rs:1122</code></td>
+  <td><code>status.rs:175</code> <span class="tag">emit_status_state</span><br>called from <code>engine.rs</code> ×2, <code>lib.rs:1044</code></td>
   <td><code>src/hooks/useStatusState.ts:108</code></td>
   <td>Paused or not, live sources (agent, football, news), idle content.</td>
 </tr>
 
 <tr>
   <td><code>agent-state</code></td>
-  <td><code>agents/board.rs:441</code> <span class="tag">publish_if_changed</span></td>
+  <td><code>agents/board.rs:402</code> <span class="tag">publish_if_changed</span></td>
   <td><code>src/hooks/useAgentState.ts:290</code></td>
   <td>Agent sessions, and whether the Board appears.</td>
 </tr>
 
 <tr>
   <td><code>tab-selection-changed</code></td>
-  <td><code>status.rs:158</code> <span class="tag">emit_tab_selection_if_transitioned</span></td>
-  <td><code>src/hooks/useTabSelection.ts:57</code></td>
+  <td><code>status.rs:156</code> <span class="tag">emit_tab_selection_if_transitioned</span></td>
+  <td><code>src/hooks/useTabSelection.ts:56</code></td>
   <td>Which tab Rust currently has selected.</td>
 </tr>
 
 <tr>
   <td><code>agent-viewed-session-changed</code></td>
-  <td><code>lib.rs:1014</code> (auto-advance timer)<br><code>lib.rs:2291</code> (manual key cycling)</td>
+  <td><code>lib.rs:943</code> (auto-advance timer)<br><code>lib.rs:2131</code> (manual key cycling)</td>
   <td><code>src/hooks/useAgentViewedSession.ts:28</code></td>
   <td>Which agent session the Agent tab shows.</td>
 </tr>
 
 <tr>
   <td><code>appearance-changed</code></td>
-  <td><code>settings.rs:459</code> (a setting was saved)<br><code>lib.rs:1141</code> (boot)</td>
+  <td><code>settings.rs:459</code> (a setting was saved)<br><code>lib.rs:1063</code> (boot)</td>
   <td><code>src/App.tsx:120</code></td>
   <td>Scale, radius, opacity, resting state.</td>
 </tr>
 
 <tr>
   <td><code>hover-changed</code></td>
-  <td><code>lib.rs:1556</code> (native tracking area)</td>
+  <td><code>lib.rs:1429</code> (native tracking area)</td>
   <td><code>src/App.tsx:145</code></td>
   <td>Is the cursor over the card.</td>
 </tr>
@@ -90,10 +101,10 @@ then emitting anyway. Whichever arrives second wins, and both paths run the same
 
 <table>
 <tr><th>Global</th><th>Planted at</th><th>Read by</th></tr>
-<tr><td><code>window.__NOTCHTAP_SLOT_STATE__</code></td><td><code>lib.rs:1106</code></td><td><code>hooks/useSlotState.ts:199</code></td></tr>
-<tr><td><code>window.__NOTCHTAP_STATUS_STATE__</code></td><td><code>lib.rs:1121</code></td><td><code>hooks/useStatusState.ts:98</code></td></tr>
-<tr><td><code>window.__NOTCHTAP_APPEARANCE__</code></td><td><code>lib.rs:1140</code></td><td><code>App.tsx:76, 108</code></td></tr>
-<tr><td><code>window.__NOTCHTAP_MODE__</code><br><code>__NOTCHTAP_CUTOUT_WIDTH__</code><br><code>__NOTCHTAP_CUTOUT_HEIGHT__</code></td><td><code>lib.rs:1155</code></td><td><code>lib/presentationFacts.ts</code></td></tr>
+<tr><td><code>window.__NOTCHTAP_SLOT_STATE__</code></td><td><code>lib.rs:1028</code></td><td><code>hooks/useSlotState.ts:199</code></td></tr>
+<tr><td><code>window.__NOTCHTAP_STATUS_STATE__</code></td><td><code>lib.rs:1043</code></td><td><code>hooks/useStatusState.ts:98</code></td></tr>
+<tr><td><code>window.__NOTCHTAP_APPEARANCE__</code></td><td><code>lib.rs:1062</code></td><td><code>App.tsx:76, 108</code></td></tr>
+<tr><td><code>window.__NOTCHTAP_MODE__</code><br><code>__NOTCHTAP_CUTOUT_WIDTH__</code><br><code>__NOTCHTAP_CUTOUT_HEIGHT__</code></td><td><code>lib.rs:1077</code></td><td><code>lib/presentationFacts.ts</code></td></tr>
 </table>
 
 <h2>Where the data then lives</h2>
@@ -109,9 +120,9 @@ then emitting anyway. Whichever arrives second wins, and both paths run the same
 <h2>When a wire fires</h2>
 <p>On change, never on a clock. Three examples of that discipline in the Rust source:</p>
 <ul>
-  <li><code>emit_slot_state</code> runs only where the displayed slot actually changed (<code>event.rs:448</code> doc).</li>
+  <li><code>emit_slot_state</code> runs only where the displayed slot actually changed (<code>event.rs:435</code> doc).</li>
   <li><code>status_state_if_changed</code> returns nothing when the status is identical.</li>
-  <li><code>emit_tab_selection_if_transitioned</code> returns early when the selection matches the last one (<code>status.rs:158</code>).</li>
+  <li><code>emit_tab_selection_if_transitioned</code> returns early when the selection matches the last one (<code>status.rs:156</code>).</li>
 </ul>
 <p>Consequence for debugging: a screen that never updates is usually a wire that never
 fired, not a React component that failed to re-render.</p>
@@ -121,7 +132,7 @@ fired, not a React component that failed to re-render.</p>
 <tr><th>Trigger</th><th>Mechanism</th><th>Where</th></tr>
 <tr><td>Surface swap</td><td>A child mounts or unmounts inside <code>AnimatePresence</code></td><td><code>App.tsx:179</code>, driven by <code>presentationMode()</code></td></tr>
 <tr><td>Content swap</td><td>A React <code>key</code> changes, so the old node exits and a new one enters</td><td><code>StatusRailCard.tsx:248</code>, <code>swapKey = slot.id</code></td></tr>
-<tr><td>Class flip</td><td>A boolean adds or removes a class, and CSS transitions the difference</td><td><code>hovered</code>, <code>exiting</code>, plus <code>overlay/*.css</code></td></tr>
+<tr><td>Class flip</td><td>A boolean adds or removes a class, and CSS transitions the difference</td><td><code>hovered</code>, <code>exiting</code>, plus <code>overlay-card.css and overlay/*.css</code></td></tr>
 </table>
 <p>Durations for all three come from one file, <code>src/animationTiming.ts</code>. Several of
 those constants are locked to a CSS value by a test, so changing one number without the
