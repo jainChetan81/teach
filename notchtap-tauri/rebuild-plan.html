@@ -104,6 +104,23 @@ and the 32. Change one and the app's mouse-tracking and its drawing disagree.</p
   the old address through a forwarding file.</li>
 </ul>
 
+<h2>How much of this is a rewrite? Less than it feels like.</h2>
+
+<p>"Re-architect the whole application" is the wrong size. Here is the honest split, from the
+survey.</p>
+
+<table>
+  <tr><th>Layer</th><th>Verdict</th></tr>
+  <tr><td>The Rust backend: queue, pollers, HTTP server, config, history, settings</td><td><strong>Leave it alone.</strong> It does not know the overlay exists. Roughly ten thousand lines that this plan does not touch.</td></tr>
+  <tr><td>The message wiring: seven events in, fifteen commands out, the permission files</td><td><strong>Leave it alone.</strong> Verified sound, and deliberately locked down.</td></tr>
+  <tr><td>The overlay's state layer: four files</td><td><strong>This is the rebuild.</strong> Eleven booleans become one state machine. Everything else follows from it.</td></tr>
+  <tr><td>The overlay's components and CSS</td><td><strong>Rework, not rewrite.</strong> They mostly render fine; they are fed contradictory state.</td></tr>
+  <tr><td>The shared size constants, duplicated by hand across Rust and CSS</td><td><strong>Consolidate.</strong> Small, mechanical, guarded by existing tests.</td></tr>
+</table>
+
+<p>So: one layer is genuinely wrong and needs replacing. The rest is downstream of it, or
+untouched. That is a rebuild of the state layer, not of the application.</p>
+
 <h2>The order of work</h2>
 
 <div class="note">
@@ -165,7 +182,7 @@ performance one.</p>
   <tr><th>Tier</th><th>Shows</th><th>Updates</th></tr>
   <tr><td>Resting</td><td>Almost nothing. Idle says "Idle". Working says something equally short and stable.</td><td>Only when the tier itself changes. Never on a tool call.</td></tr>
   <tr><td>Hovered</td><td>The live detail. What is running, what just finished, which files.</td><td>Freely. This is where movement belongs, because you asked for it by pointing at it.</td></tr>
-  <tr><td>Promoted</td><td>Takes over the screen and animates in.</td><td>Only on: session finished, needs your permission, needs your input, or failed.</td></tr>
+  <tr><td>Promoted</td><td>Takes over the screen and animates in. This is the only tier that may carry actions.</td><td>Only on: session finished, needs your permission, needs your input, or failed.</td></tr>
 </table>
 
 <p>This is the reference app's pattern, and it removes the churn as a side effect. Constant
@@ -181,7 +198,29 @@ looking at it.</p>
   <tr><td>Resting, nothing running</td><td>A pill inside the cutout. One glyph, the word "Idle". Nothing on the right. No reserved space.</td><td><a href="issues/nt4-09-reference-idle-pill.png">nt4-09</a></td></tr>
   <tr><td>Resting, one agent working</td><td>The same pill. Animated glyph, the word "Working", and the elapsed time on the far right. That is the whole thing.</td><td><a href="issues/nt4-11-reference-resting-working.png">nt4-11</a></td></tr>
   <tr><td>Hovered</td><td>Header repeats the resting pill exactly, then: project name, session title, model, machine, OS, start time, elapsed, git branch, a progress ring with a percentage, a state chip, and a scrolling activity feed of recent commands.</td><td><a href="issues/nt4-10-reference-hovered-activity.png">nt4-10</a></td></tr>
+  <tr><td>Resting, finished</td><td>Still the same pill. Glyph, the word "Done", final elapsed time on the right. It does not grab you.</td><td><a href="issues/nt4-13-reference-done-resting.png">nt4-13</a></td></tr>
+  <tr><td>Hovered, finished</td><td>The same panel, plus a footer bar that was not there before: a status line, and two buttons, <strong>Open in T3 Code</strong> and <strong>Dismiss</strong>.</td><td><a href="issues/nt4-12-reference-done-hovered.png">nt4-12</a></td></tr>
 </table>
+
+<div class="note">
+<h3>The buttons are the one thing NotchTap cannot do today</h3>
+<p>Everything else in these screenshots is drawing. The footer is not. Those two buttons act:
+one opens an editor at the right place, one dismisses the card. NotchTap's overlay window has
+<strong>no permission to call Rust at all</strong>. Its permission file grants exactly two
+things, and both of them are "listen for messages". Zero commands. The build script makes that
+deny-by-default on purpose.</p>
+<p>So the overlay cannot have a button in the way a web page has a button. NotchTap already
+works around this for its icon strip: the click handler in React is a deliberate empty
+function (<code>StatusRailCard.tsx:728</code>), and the real click is caught natively in Rust
+by a system-wide mouse monitor that maps screen coordinates to a target
+(<code>src-tauri/src/click.rs</code>). Rust decides, then tells the UI what happened.</p>
+<p>That is not a bug and it is not the wrong choice. It is a security position: a window with
+no way to call in cannot be tricked into calling in. But it means <strong>every action you
+want in the overlay costs a native hit-test rectangle</strong>, kept in agreement with a CSS
+rule by hand. Know that price before designing a panel with buttons on it.</p>
+<p>This is exactly what steps 8, 9 and 10 teach. Learn the boundary first, then design
+against it.</p>
+</div>
 
 <div class="why">
 <h3>The thing to copy is not the look. It is that the resting pill never changes shape.</h3>
